@@ -1,125 +1,202 @@
-.main-content {
-  max-width: 1100px;
-  margin: 28px auto;
-  background: #fff;
-  border-radius: 12px;
-  padding: 28px;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
-  color: #263238;
+/* crear-horario.scss — estilo compacto y responsivo para mostrar varios días */
+:host {
+  display: block;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size: 13px;
+  color: #222;
 }
 
-.horario-form { display: block; margin-bottom: 20px; }
-
-.form-row {
+/* contenedor general */
+.container {
+  max-width: 1200px;
+  margin: 0.8rem auto;
+  padding: 0.6rem;
+  box-sizing: border-box;
   display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 12px;
-}
-.form-row label { min-width: 140px; font-weight: 600; }
-.form-row input, select {
-  flex: 1;
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid #cfd8dc;
-  font-size: 0.95rem;
-}
-.form-row input:focus, select:focus { outline: none; border-color: #42a5f5; box-shadow: 0 0 0 3px rgba(66,165,245,0.08); }
-
-.horario-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-  margin-bottom: 18px;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.dia-section {
-  background: #fbfdff;
-  border: 1px solid #e6eef6;
-  padding: 12px;
-  border-radius: 8px;
-}
-.dia-header {
-  display:flex;
-  justify-content: space-between;
-  align-items:center;
-  margin-bottom:8px;
-}
-.dia-header h3 { margin:0; font-size:1.05rem; }
-
-.slots-list { display:flex; flex-direction: column; gap:8px; }
-
-.slot-row {
-  display: grid;
-  grid-template-columns: 70px 1fr 1fr 1fr 36px;
-  gap: 8px;
-  align-items: center;
-}
-.slot-label { font-size: 0.9rem; color:#37474f; font-weight:600; }
-
-.field select, .field input {
-  width:100%;
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid #d0d7db;
-  background: white;
-  font-size: 0.95rem;
-}
-
-.slot-actions { display:flex; justify-content:center; }
-.btn-icon {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 0.95rem;
-  padding: 4px;
-  color: #888;
-}
-.btn-icon:hover { color: #c62828; }
-
-.form-actions {
-  margin-top: 14px;
-  display:flex;
-  gap: 10px;
-  align-items:center;
-}
-
-button {
-  border: none;
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
+/* encabezado */
+h2 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
   font-weight: 600;
 }
-.btn-aceptar {
-  background: var(--verde-olivo, #6b8e23);
-  color: #fff;
-}
-.btn-secondary { background:#eceff1; color:#263238; }
-.btn-ghost { background: transparent; color:#546e7a; }
 
-.preview-json {
-  background: #0b0f12;
-  color: #bfe3c0;
-  padding: 12px;
-  border-radius: 8px;
-  overflow:auto;
-  max-height: 200px;
+p {
+  margin: 0 0 0.6rem 0;
+  color: #555;
+  font-size: 0.85rem;
 }
 
-.horarios-list { margin-top: 18px; display:grid; gap:12px; }
-.horario-card {
-  border: 1px solid #e6eef6;
+/* layout de tarjetas de días: grid compacto */
+.dias-grid {
+  display: grid;
+  grid-template-rows: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.6rem;
+  align-items: start;
+}
+
+/* tarjeta de día */
+.dia-card {
+  background: #ffffff;
+  border: 1px solid #e6e6e6;
   border-radius: 8px;
-  padding: 12px;
-  background: #fff;
+  padding: 0.6rem;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 120px;
 }
-.horario-card header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:8px;
+
+/* cabecera compacta de la tarjeta */
+.dia-card > h3 {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.92rem;
+  font-weight: 600;
 }
-.mini-table { width:100%; border-collapse: collapse; font-size: 0.95rem; }
-.mini-table th, .mini-table td { border-bottom:1px solid #f0f4f7; padding:6px 8px; text-align:left; }
-.empty { color:#546e7a; padding:12px; background:#f7fbfc; border-radius:8px; }
+
+/* select dia pequeño */
+select[formControlName="dia"] {
+  font-size: 12px;
+  padding: 0.18rem 0.32rem;
+}
+
+/* lista de clases dentro de la tarjeta */
+.clases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+  max-height: 420px;
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
+/* tarjeta de clase (compacta) */
+.clase-card {
+  border: 1px solid #f0f0f0;
+  background: #fbfbfb;
+  padding: 0.45rem;
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+/* fila compacta para inputs */
+.row {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+/* etiquetas pequeñas */
+.row label {
+  min-width: 46px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  color: #444;
+}
+
+/* inputs y time pickers compactos */
+input[type="time"],
+input[type="text"],
+select {
+  font-size: 12px;
+  padding: 0.22rem 0.38rem;
+  height: 28px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.15) brightness(0.9);
+}
+
+/* botones pequeños */
+button {
+  font-size: 12px;
+  padding: 0.28rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: #f2f4f7;
+  cursor: pointer;
+}
+
+button:hover { filter: brightness(0.98); }
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+/* botón primario destacado */
+.actions button:first-child,
+button.primary {
+  background: #0b63ff;
+  color: white;
+  border-color: rgba(11,99,255,0.9);
+}
+
+button.danger {
+  background: #ffecec;
+  border-color: #ffb3b3;
+  color: #8a1e1e;
+}
+
+/* warning / conflictos */
+.warning {
+  font-size: 12px;
+  color: #9a3b00;
+  background: #fff4e6;
+  border: 1px solid #ffd8a8;
+  padding: 0.3rem 0.4rem;
+  border-radius: 6px;
+}
+
+/* pequeña ayuda visual: badges (ej: número de clases) */
+.badge {
+  background: #eef2ff;
+  color: #1b3b8a;
+  padding: 0.18rem 0.4rem;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* scrollbar fino para las listas de clases */
+.clases-list::-webkit-scrollbar {
+  width: 8px;
+}
+.clases-list::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.08);
+  border-radius: 8px;
+}
+
+/* responsive: en pantallas muy pequeñas baja columnas */
+@media (max-width: 680px) {
+  :host { font-size: 12px; }
+  .dias-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .row label { min-width: 36px; font-size: 0.72rem; }
+  input[type="time"], input[type="text"], select { height: 26px; font-size: 12px; }
+}
+
+/* opción compact extra: reduce espacios si quieres aún más densidad */
+.compact {
+  gap: 0.35rem;
+}
+
+.compact .dia-card { padding: 0.4rem; border-radius: 6px; }
+.compact .clase-card { padding: 0.35rem; }

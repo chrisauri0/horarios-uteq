@@ -1,97 +1,102 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-
-interface Slot {
-  etiqueta: string;
-  asignatura?: any;
-  profesor?: any;
-  salon?: any;
-}
-
-interface Dia {
-  dia_nombre: string;
-  slots: Slot[];
-}
-
-interface Horario {
-  grupo_nombre: string;
-  dias: Dia[];
-}
-
-
-
+import { HorarioFormService, HorarioData, DiaData, ClaseData } from '../services/crear-horario.service';
 
 @Component({
   selector: 'app-crear-horario',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgSelectModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgSelectModule],
   templateUrl: './crear-horario.html',
   styleUrls: ['./crear-horario.scss']
 })
-export class CrearHorarioComponent {
- dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
-  slots = ['08:00', '09:00', '10:00', '11:00']; // ajusta según necesites
+export class CrearHorarioComponent implements OnInit {
+  horarioForm!: FormGroup;
 
-  // datos de ejemplo (pueden ser strings o objetos con propiedad nombre)
-  materias = [{ nombre: 'Matemáticas' }, { nombre: 'Física' }, { nombre: 'Prog.' }];
-  profesores = [{ nombre: 'Ana Pérez' }, { nombre: 'Juan Ruiz' }];
-  salones = [{ nombre: 'A101' }, { nombre: 'B203' }];
+  // inyectamos el servicio como privado (encapsulado)
+  constructor(
+    private fb: FormBuilder,
+    private horarioService: HorarioFormService
+  ) {}
 
-  horarios: Horario[] = [];
+  ngOnInit(): void {
+    // inicializamos el formulario con 1 día y 1 clase como ejemplo
+    this.horarioForm = this.horarioService.buildHorario({
+      nombre: 'Horario Semestral',
+      ciclo: '2025-1',
+      dias: [
+        {
+          dia: 'Lun',
+          clases: [
+            {
+              horaInicio: '08:00',
+              horaFin: '09:30',
+              profesorNombre: 'Ana',
+              materiaNombre: 'Matemáticas',
+              salonNombre: 'A1'
+            },
+            {
+              horaInicio: '10:00',
+              horaFin: '11:30',
+              profesorNombre: 'Luis',
+              materiaNombre: 'Programación',
+              salonNombre: 'B2'
+            }
+          ]
+        }
+      ]
+    });
 
-  nuevoHorario: Horario = this.crearHorarioVacio();
-
-  crearHorarioVacio(): Horario {
-    const diasObj: Dia[] = this.dias.map(dia => ({
-      dia_nombre: dia,
-      slots: this.slots.map(etq => ({ etiqueta: etq }))
-    }));
-    return { grupo_nombre: '', dias: diasObj };
+    // ejemplo: añadir otro día vacío si quieres
+    // this.horarioService.addDia(this.horarioForm);
   }
 
-  onSubmit() {
-    // validación breve
-    if (!this.nuevoHorario.grupo_nombre?.trim()) {
-      alert('Ingresa un nombre de grupo.');
-      return;
-    }
-    // clonar para evitar referencias
-    this.horarios.push(JSON.parse(JSON.stringify(this.nuevoHorario)));
-    this.nuevoHorario = this.crearHorarioVacio();
+  // ---------------- Helpers públicos para la plantilla ----------------
+
+  // devuelve el FormArray de días del formulario padre
+  get diasArray(): FormArray {
+    return this.horarioService.getDiasArray(this.horarioForm);
   }
 
-  previsualizar() {
-    // solo para debug o abrir modal
-    console.log('Previsualizar', this.nuevoHorario);
-    alert('Ver consola para previsualización rápida.');
+  // devuelve el FormArray de clases para un FormGroup día (por índice)
+  getClasesArrayAt(diaIndex: number): FormArray {
+    const diaGroup = this.diasArray.at(diaIndex) as FormGroup;
+    return this.horarioService.getClasesArray(diaGroup);
   }
 
-  resetHorario() {
-    if (confirm('¿Deseas resetear el formulario?')) {
-      this.nuevoHorario = this.crearHorarioVacio();
-    }
+  // añadir / remover día (usa el servicio)
+  addDia() {
+    this.horarioService.addDia(this.horarioForm);
   }
 
-  resetDia(dIdx: number) {
-    this.nuevoHorario.dias[dIdx].slots.forEach(s => { s.asignatura = undefined; s.profesor = undefined; s.salon = undefined; });
+  removeDia(index: number) {
+    this.horarioService.removeDia(this.horarioForm, index);
   }
 
-  vaciarSlot(dIdx: number, sIdx: number) {
-    const s = this.nuevoHorario.dias[dIdx].slots[sIdx];
-    s.asignatura = undefined; s.profesor = undefined; s.salon = undefined;
+  // añadir / remover clase dentro de un día (delegamos al servicio)
+  addClaseToDia(diaIndex: number, c?: Partial<ClaseData>) {
+    const diaGroup = this.diasArray.at(diaIndex) as FormGroup;
+    this.horarioService.addClase(diaGroup, c);
   }
 
-  editarHorario(index: number) {
-    // carga el horario al formulario para editar: elimina de la lista para luego guardar
-    const h = this.horarios.splice(index, 1)[0];
-    this.nuevoHorario = JSON.parse(JSON.stringify(h));
-    // scroll o foco opcional
+  removeClaseFromDia(diaIndex: number, claseIndex: number) {
+    const diaGroup = this.diasArray.at(diaIndex) as FormGroup;
+    this.horarioService.removeClase(diaGroup, claseIndex);
   }
 
-  eliminarHorario(index: number) {
-    if (confirm('Eliminar horario?')) this.horarios.splice(index, 1);
+  // obtener el valor tipado para enviar o ver
+  getHorarioValue(): HorarioData {
+    return this.horarioService.getHorarioValue(this.horarioForm);
   }
 
+  // utilidad rápida para chequear conflictos en un día
+  findConflictsInDia(diaIndex: number): number[] {
+    const diaGroup = this.diasArray.at(diaIndex) as FormGroup;
+    return this.horarioService.findConflictsInDia(diaGroup);
+  }
+  verConsola() {
+    console.log(this.getHorarioValue());
+  }
 }

@@ -9,7 +9,7 @@ export interface ProfesorData {
   nombre: string;
   correo: string;
   tutorGrupo?: string;
-  materias?: string[];
+  materias: string[];
 }
 
 @Component({
@@ -40,7 +40,7 @@ nuevoProfesor: ProfesorData = {
     if (!this.nuevoProfesor.nombre.trim() || !this.nuevoProfesor.correo.trim()) return;
     this.nuevoProfesor.id = Date.now();
     this.profesores.push({ ...this.nuevoProfesor });
-    this.nuevoProfesor = { id: 0, nombre: '', correo: '' };
+    this.nuevoProfesor = { id: 0, nombre: '', correo: '', materias: [] };
   }
 
   eliminarProfesor(id: number) {
@@ -55,12 +55,12 @@ nuevoProfesor: ProfesorData = {
   guardarEdicion() {
     if (!this.nuevoProfesor.nombre.trim() || !this.nuevoProfesor.correo.trim()) return;
     this.profesores = this.profesores.map(p => p.id === this.editandoId ? { ...this.nuevoProfesor } : p);
-    this.nuevoProfesor = { id: 0, nombre: '', correo: '' };
+    this.nuevoProfesor = { id: 0, nombre: '', correo: '', materias: [] };
     this.editandoId = null;
   }
 
   cancelarEdicion() {
-    this.nuevoProfesor = { id: 0, nombre: '', correo: '' };
+    this.nuevoProfesor = { id: 0, nombre: '', correo: '', materias: [] };
     this.editandoId = null;
   }
 }

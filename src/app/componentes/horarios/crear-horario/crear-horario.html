@@ -1,113 +1,64 @@
-<div class="main-content">
-    <h1>Crear Horario</h1>
+<div class="container" [formGroup]="horarioForm">
+    <h2>{{ horarioForm.get('nombre')?.value }}</h2>
+    <p><strong>Ciclo:</strong> {{ horarioForm.get('ciclo')?.value }}</p>
 
-    <form (ngSubmit)="onSubmit()" #horarioForm="ngForm" class="horario-form">
-        <div class="form-row">
-            <label for="grupo_nombre">Nombre del grupo</label>
-            <input id="grupo_nombre" name="grupo_nombre" type="text" required [(ngModel)]="nuevoHorario.grupo_nombre"
-                placeholder="Ej. 3° A" />
-        </div>
+    <div formArrayName="dias">
+        <div *ngFor="let diaGroup of diasArray.controls; let i = index" [formGroupName]="i" class="dia-card">
+            <h3> Día {{ i + 1 }} — {{ diaGroup.get('dia')?.value }}</h3>
 
-        <div class="horario-grid">
-            <ng-container *ngFor="let dia of dias; let dIdx = index">
-                <section class="dia-section">
-                    <header class="dia-header">
-                        <h3>{{ dia }}</h3>
-                        <button type="button" class="btn-small" (click)="resetDia(dIdx)"
-                            title="Vaciar día">Limpiar</button>
-                    </header>
+            <!-- selector de día (Lun..Dom) -->
+            <label>Día:</label>
+            <select formControlName="dia">
+                <option *ngFor="let d of ['Lun','Mar','Mie','Jue','Vie','Sab','Dom']" [value]="d">{{ d }}</option>
+            </select>
 
-                    <div class="slots-list">
-                        <div *ngFor="let slot of slots; let sIdx = index" class="slot-row">
-                            <div class="slot-label">{{ slot }}</div>
+            <!-- ---------- Lista de clases (FormArray dentro de cada día) ---------- -->
+            <div formArrayName="clases" class="clases-list">
+                <div *ngFor="let claseCtrl of getClasesArrayAt(i).controls; let j = index" [formGroupName]="j"
+                    class="clase-card">
+                    <h4>Clase {{ j + 1 }}</h4>
 
-                            <!-- Asignatura -->
-                            <div class="field">
-                                <!-- si usas ng-select, reemplaza el select por ng-select -->
-                                <select name="asignatura-{{dIdx}}-{{sIdx}}"
-                                    [(ngModel)]="nuevoHorario.dias[dIdx].slots[sIdx].asignatura"
-                                    [ngModelOptions]="{standalone: true}" required>
-                                    <option value="">— Materia —</option>
-                                    <option *ngFor="let m of materias" [ngValue]="m">{{ m.nombre || m }}</option>
-                                </select>
-                            </div>
-
-                            <!-- Profesor -->
-                            <div class="field">
-                                <select name="profesor-{{dIdx}}-{{sIdx}}"
-                                    [(ngModel)]="nuevoHorario.dias[dIdx].slots[sIdx].profesor"
-                                    [ngModelOptions]="{standalone: true}" required>
-                                    <option value="">— Profesor —</option>
-                                    <option *ngFor="let p of profesores" [ngValue]="p">{{ p.nombre || p }}</option>
-                                </select>
-                            </div>
-
-                            <!-- Salón -->
-                            <div class="field">
-                                <select name="salon-{{dIdx}}-{{sIdx}}"
-                                    [(ngModel)]="nuevoHorario.dias[dIdx].slots[sIdx].salon"
-                                    [ngModelOptions]="{standalone: true}">
-                                    <option value="">— Salón —</option>
-                                    <option *ngFor="let s of salones" [ngValue]="s">{{ s.nombre || s }}</option>
-                                </select>
-                            </div>
-
-                            <!-- Opciones por slot -->
-                            <div class="slot-actions">
-                                <button type="button" class="btn-icon" (click)="vaciarSlot(dIdx, sIdx)"
-                                    title="Vaciar slot">✖</button>
-                            </div>
-                        </div>
+                    <div class="row">
+                        <label>Inicio:</label>
+                        <input type="time" formControlName="horaInicio" />
+                        <label>Fin:</label>
+                        <input type="time" formControlName="horaFin" />
                     </div>
-                </section>
-            </ng-container>
-        </div>
 
-        <div class="form-actions">
-            <button class="btn-aceptar" type="submit" [disabled]="!horarioForm.form.valid">Guardar horario</button>
-            <button type="button" class="btn-secondary" (click)="previsualizar()">Previsualizar</button>
-            <button type="button" class="btn-ghost" (click)="resetHorario()">Reset</button>
-        </div>
-    </form>
+                    <div class="row">
+                        <label>Profesor:</label>
+                        <input type="text" formControlName="profesorNombre" />
+                    </div>
 
-    <h2>Previsualización / JSON</h2>
-    <pre class="preview-json">{{ nuevoHorario | json }}</pre>
+                    <div class="row">
+                        <label>Materia:</label>
+                        <input type="text" formControlName="materiaNombre" />
+                    </div>
 
-    <h2>Horarios creados</h2>
-    <div *ngIf="horarios.length === 0" class="empty">No hay horarios registrados.</div>
+                    <div class="row">
+                        <label>Salón:</label>
+                        <input type="text" formControlName="salonNombre" />
+                    </div>
 
-    <div class="horarios-list" *ngFor="let horario of horarios; let hi = index">
-        <div class="horario-card">
-            <header>
-                <strong>{{ horario.grupo_nombre }}</strong>
-                <div class="card-actions">
-                    <button (click)="editarHorario(hi)">Editar</button>
-                    <button (click)="eliminarHorario(hi)">Eliminar</button>
+                    <button type="button" (click)="removeClaseFromDia(i, j)">Eliminar clase</button>
+                    <hr />
                 </div>
-            </header>
+            </div>
 
-            <table class="mini-table">
-                <thead>
-                    <tr>
-                        <th>Día</th>
-                        <th>Hora</th>
-                        <th>Materia</th>
-                        <th>Profesor</th>
-                        <th>Salón</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <ng-container *ngFor="let dia of horario.dias">
-                        <tr *ngFor="let slot of dia.slots">
-                            <td>{{ dia.dia_nombre }}</td>
-                            <td>{{ slot.etiqueta }}</td>
-                            <td>{{ slot.asignatura?.nombre || slot.asignatura || '-' }}</td>
-                            <td>{{ slot.profesor?.nombre || slot.profesor || '-' }}</td>
-                            <td>{{ slot.salon?.nombre || slot.salon || '-' }}</td>
-                        </tr>
-                    </ng-container>
-                </tbody>
-            </table>
+            <!-- botones para manejar clases del día -->
+            <button type="button" (click)="addClaseToDia(i)">Agregar clase a este día</button>
+            <button type="button" (click)="removeDia(i)">Eliminar día</button>
+
+            <!-- mostrar conflictos simples por día -->
+            <div *ngIf="findConflictsInDia(i).length > 0" class="warning">
+                ⚠️ Conflictos en las clases: índices {{ findConflictsInDia(i).join(', ') }}
+            </div>
         </div>
+    </div>
+
+    <!-- botones globales -->
+    <div class="actions">
+        <button type="button" (click)="addDia()">Agregar día</button>
+        <button type="button" (click)="verConsola()">Ver horario en consola</button>
     </div>
 </div>
