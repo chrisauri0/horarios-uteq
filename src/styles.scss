@@ -1,1 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
+@font-face {
+ font-family: 'IosevkaNerd';
+  src: url('/assets/fonts/IosevkaNerdFontPropo-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  
+
+  --azul-oscuro: #212955ff;
+  --azul-claro: #1564beff;
+  --verde-oscuro: #209b41ff;
+  --verde-claro: #4ebc15ff;
+  --verde-olivo: #90be00ff;
+}
+
+.body {
+  font-family: 'IosevkaNerd';
+}

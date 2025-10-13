@@ -1,0 +1,125 @@
+.main-content {
+  max-width: 1100px;
+  margin: 28px auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+  color: #263238;
+}
+
+.horario-form { display: block; margin-bottom: 20px; }
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.form-row label { min-width: 140px; font-weight: 600; }
+.form-row input, select {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #cfd8dc;
+  font-size: 0.95rem;
+}
+.form-row input:focus, select:focus { outline: none; border-color: #42a5f5; box-shadow: 0 0 0 3px rgba(66,165,245,0.08); }
+
+.horario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.dia-section {
+  background: #fbfdff;
+  border: 1px solid #e6eef6;
+  padding: 12px;
+  border-radius: 8px;
+}
+.dia-header {
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  margin-bottom:8px;
+}
+.dia-header h3 { margin:0; font-size:1.05rem; }
+
+.slots-list { display:flex; flex-direction: column; gap:8px; }
+
+.slot-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 1fr 1fr 36px;
+  gap: 8px;
+  align-items: center;
+}
+.slot-label { font-size: 0.9rem; color:#37474f; font-weight:600; }
+
+.field select, .field input {
+  width:100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #d0d7db;
+  background: white;
+  font-size: 0.95rem;
+}
+
+.slot-actions { display:flex; justify-content:center; }
+.btn-icon {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 4px;
+  color: #888;
+}
+.btn-icon:hover { color: #c62828; }
+
+.form-actions {
+  margin-top: 14px;
+  display:flex;
+  gap: 10px;
+  align-items:center;
+}
+
+button {
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn-aceptar {
+  background: var(--verde-olivo, #6b8e23);
+  color: #fff;
+}
+.btn-secondary { background:#eceff1; color:#263238; }
+.btn-ghost { background: transparent; color:#546e7a; }
+
+.preview-json {
+  background: #0b0f12;
+  color: #bfe3c0;
+  padding: 12px;
+  border-radius: 8px;
+  overflow:auto;
+  max-height: 200px;
+}
+
+.horarios-list { margin-top: 18px; display:grid; gap:12px; }
+.horario-card {
+  border: 1px solid #e6eef6;
+  border-radius: 8px;
+  padding: 12px;
+  background: #fff;
+}
+.horario-card header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+}
+.mini-table { width:100%; border-collapse: collapse; font-size: 0.95rem; }
+.mini-table th, .mini-table td { border-bottom:1px solid #f0f4f7; padding:6px 8px; text-align:left; }
+.empty { color:#546e7a; padding:12px; background:#f7fbfc; border-radius:8px; }

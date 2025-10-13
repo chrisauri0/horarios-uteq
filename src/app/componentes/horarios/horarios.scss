@@ -1,0 +1,77 @@
+.horario-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(44, 62, 80, 0.10);
+    padding: 32px 24px;
+}
+
+h2 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 2em;
+    margin-bottom: 24px;
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    letter-spacing: 1px;
+    text-shadow: 1px 2px 8px #d6e6f2;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #f4f8fb;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 8px rgba(44, 62, 80, 0.05);
+}
+
+th, td {
+    padding: 14px 10px;
+    border-bottom: 1px solid #dfe6e9;
+    text-align: center;
+    font-size: 1.08em;
+}
+
+th {
+    background: linear-gradient(90deg, #3498db 60%, #6dd5fa 100%);
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+td {
+    background: #fff;
+}
+
+td b {
+    color: #2980b9;
+    font-size: 1.05em;
+}
+
+td div {
+    margin: 2px 0;
+}
+
+ng-template {
+    color: #b2bec3;
+    font-size: 1em;
+}
+
+@media (max-width: 700px) {
+    .horario-container {
+        padding: 12px 4px;
+        max-width: 98vw;
+    }
+    h2 {
+        font-size: 1.3em;
+    }
+    th, td {
+        font-size: 0.95em;
+        padding: 8px 4px;
+    }
+}

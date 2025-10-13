@@ -1,0 +1,139 @@
+.main-content {
+  max-width: 700px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(44, 62, 80, 0.08);
+  padding: 32px 24px;
+}
+
+.profesor-form {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.profesor-form input {
+  padding: 10px;
+  border: 1px solid #b2bec3;
+  border-radius: 6px;
+  font-size: 1em;
+  width: 180px;
+  transition: border-color 0.2s;
+}
+.profesor-form input:focus {
+  border-color: #3498db;
+  outline: none;
+}
+.profesor-form button {
+  padding: 10px 18px;
+  background: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+/* más específico: botón dentro del formulario con la clase */
+.profesor-form .btn-aceptar {
+  display: inline-block;
+  padding: 10px 18px;
+  background: var(--verde-oscuro, #6b8e23); /* fallback por si falla la variable */
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.profesor-form .btn-aceptar:hover {
+  background: var(--verde-olivo);
+}
+
+.profesor-form button:hover {
+  background: #2980b9;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f4f8fb;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 8px rgba(44, 62, 80, 0.05);
+}
+th, td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #dfe6e9;
+}
+th {
+  background: #3498db;
+  color: #fff;
+  font-weight: 600;
+}
+tr:last-child td {
+  border-bottom: none;
+}
+td button {
+  margin: 0 4px;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+td button:hover {
+  background: #dfe6e9;
+}
+::ng-deep .ng-select {
+  width: 100%;
+  margin-bottom: 16px;
+  font-size: 1em;
+}
+
+::ng-deep .ng-select .ng-select-container {
+  min-height: 44px;
+  border-radius: 8px;
+  border: 1.5px solid #b2bec3;
+  background: #f4f8fb;
+  box-shadow: 0 1px 4px rgba(44, 62, 80, 0.05);
+  transition: border-color 0.2s;
+}
+
+::ng-deep .ng-select.ng-select-focused .ng-select-container {
+  border-color: #3498db;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+}
+
+::ng-deep .ng-select .ng-select-dropdown {
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.10);
+  background: #fff;
+}
+
+select[multiple] {
+  height: auto;
+  min-height: 100px;
+}
+::ng-deep .ng-select .ng-option {
+  padding: 10px 16px;
+  font-size: 1em;
+}
+
+::ng-deep .ng-select .ng-option-selected {
+  background: #3498db;
+  color: #fff;
+}
+
+::ng-deep .ng-select .ng-option:hover {
+  background: #eaf6fb;
+  color: #2980b9;
+}
+
+@media (max-width: 600px) {
+  ::ng-deep .ng-select {
+    font-size: 0.95em;
+  }
+}

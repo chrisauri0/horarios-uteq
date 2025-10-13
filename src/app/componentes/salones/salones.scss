@@ -1,0 +1,93 @@
+// Estilos para la vista de salones
+.main-content {
+	max-width: 700px;
+	margin: 40px auto;
+	background: #fff;
+	border-radius: 12px;
+	box-shadow: 0 2px 16px rgba(44, 62, 80, 0.08);
+	padding: 32px 24px;
+}
+
+.salon-form {
+	display: flex;
+	gap: 16px;
+	margin-bottom: 24px;
+	flex-wrap: wrap;
+}
+
+.salon-form input {
+	padding: 10px;
+	border: 1px solid #b2bec3;
+	border-radius: 6px;
+	font-size: 1em;
+	width: 180px;
+	transition: border-color 0.2s;
+}
+.salon-form input:focus {
+	border-color: #3498db;
+	outline: none;
+}
+.salon-form button {
+	padding: 10px 18px;
+	background: #3498db;
+	color: #fff;
+	border: none;
+	border-radius: 6px;
+	font-size: 1em;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+.salon-form button:hover {
+	background: #2980b9;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	background: #f4f8fb;
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 1px 8px rgba(44, 62, 80, 0.05);
+}
+th, td {
+	padding: 12px 8px;
+	border-bottom: 1px solid #dfe6e9;
+}
+th {
+	background: #3498db;
+	color: #fff;
+	font-weight: 600;
+}
+tr:last-child td {
+	border-bottom: none;
+}
+td button {
+	margin: 0 4px;
+	padding: 6px 12px;
+	border-radius: 4px;
+	border: none;
+	background: #636e72;
+	color: #fff;
+	cursor: pointer;
+	font-size: 0.95em;
+	transition: background 0.2s;
+}
+td button:hover {
+	background: #b2bec3;
+	color: #2d3436;
+}
+@media (max-width: 600px) {
+	.main-content {
+		padding: 12px 4px;
+	}
+	.salon-form {
+		flex-direction: column;
+		gap: 8px;
+	}
+	.salon-form input {
+		width: 100%;
+	}
+	table, th, td {
+		font-size: 0.95em;
+	}
+}

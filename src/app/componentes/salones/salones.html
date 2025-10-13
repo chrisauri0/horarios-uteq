@@ -1,0 +1,36 @@
+<div class="main-content">
+    <h1>Salones</h1>
+    <p>Bienvenido {{ usuarioNombre }} al panel de control.</p>
+    <p>Tu carrera es: {{ usuarioCarrera }}</p>
+    <p>Aquí puedes gestionar los salones disponibles.</p>
+
+    <form (submit)="$event.preventDefault(); editandoId ? guardarEdicion() : agregarSalon()" class="salon-form">
+        <input type="text" placeholder="Nombre del salón" [(ngModel)]="nuevoSalon.nombre" name="nombre" required />
+        <input type="text" placeholder="Edificio" [(ngModel)]="nuevoSalon.edificio" name="edificio" required />
+        <button type="submit">{{ editandoId ? 'Guardar' : 'Agregar' }}</button>
+        <button type="button" *ngIf="editandoId" (click)="cancelarEdicion()">Cancelar</button>
+    </form>
+
+    <table border="1" style="width:100%; margin-top:20px; border-collapse:collapse; text-align:center;">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Edificio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let salon of salones">
+                <td>{{ salon.nombre }}</td>
+                <td>{{ salon.edificio }}</td>
+                <td>
+                    <button (click)="editarSalon(salon)">Editar</button>
+                    <button (click)="eliminarSalon(salon.id)">Eliminar</button>
+                </td>
+            </tr>
+            <tr *ngIf="salones.length === 0">
+                <td colspan="3">No hay salones registrados.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

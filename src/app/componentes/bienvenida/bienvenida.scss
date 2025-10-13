@@ -1,0 +1,81 @@
+body {
+    background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
+    min-height: 100vh;
+}
+
+div {
+    text-align: center;
+    margin-top: 70px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(44, 62, 80, 0.10);
+    padding: 48px 32px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h1 {
+    color: #2c3e50;
+    font-size: 2.2em;
+    margin-bottom: 12px;
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    letter-spacing: 1px;
+    text-shadow: 1px 2px 8px #d6e6f2;
+}
+
+p {
+    font-size: 1.15em;
+    color: #34495e;
+    margin-bottom: 28px;
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+}
+
+input {
+    padding: 12px;
+    margin: 12px 0;
+    width: 90%;
+    border: 1.5px solid #b2bec3;
+    border-radius: 8px;
+    font-size: 1.05em;
+    background: #f4f8fb;
+    transition: border-color 0.2s;
+    box-shadow: 0 1px 4px rgba(44, 62, 80, 0.05);
+}
+input:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+button {
+    padding: 12px 28px;
+    background: linear-gradient(90deg, #3498db 60%, #6dd5fa 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.08em;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+    transition: background 0.2s, transform 0.2s;
+}
+button:hover {
+    background: linear-gradient(90deg, #2980b9 60%, #57b6e6 100%);
+    transform: translateY(-2px) scale(1.04);
+}
+
+@media (max-width: 500px) {
+    div {
+        padding: 24px 8px;
+        max-width: 98vw;
+    }
+    h1 {
+        font-size: 1.3em;
+    }
+    input {
+        width: 98%;
+    }
+    button {
+        width: 100%;
+    }
+}

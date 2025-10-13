@@ -1,0 +1,176 @@
+{
+  "grupo_id": 1,
+  "grupo_nombre": "Grupo1",
+  "dias": [
+    {
+      "dia_semana": 1,
+      "dia_nombre": "Lunes",
+      "slots": [
+        {
+          "timeslot_id": 1,
+          "etiqueta": "08:00-09:00",
+          "hora_inicio": "08:00:00",
+          "hora_fin": "09:00:00",
+          "clase": {
+            "horario_id": 10,
+            "asignatura": "Matemáticas",
+            "profesor": { "id": 1, "nombre": "Profe Juan" },
+            "salon": { "id": 1, "nombre": "Aula 101" }
+          }
+        },
+        {
+          "timeslot_id": 2,
+          "etiqueta": "09:00-10:00",
+          "hora_inicio": "09:00:00",
+          "hora_fin": "10:00:00",
+          "clase": null
+        },
+        {
+          "timeslot_id": 3,
+          "etiqueta": "10:00-11:00",
+          "hora_inicio": "10:00:00",
+          "hora_fin": "11:00:00",
+          "clase": {
+            "horario_id": 11,
+            "asignatura": "Física",
+            "profesor": { "id": 2, "nombre": "Profe Ana" },
+            "salon": { "id": 2, "nombre": "Aula 202" }
+          }
+        }
+      ]
+    },
+    {
+      "dia_semana": 2,
+      "dia_nombre": "Martes",
+      "slots": [
+        {
+          "timeslot_id": 1,
+          "etiqueta": "08:00-09:00",
+          "hora_inicio": "08:00:00",
+          "hora_fin": "09:00:00",
+          "clase": null
+        },
+        {
+          "timeslot_id": 2,
+          "etiqueta": "09:00-10:00",
+          "hora_inicio": "09:00:00",
+          "hora_fin": "10:00:00",
+          "clase": {
+            "horario_id": 12,
+            "asignatura": "Química",
+            "profesor": { "id": 3, "nombre": "Profe Luis" },
+            "salon": { "id": 3, "nombre": "Aula 303" }
+          }
+        },
+        {
+          "timeslot_id": 3,
+          "etiqueta": "10:00-11:00",
+          "hora_inicio": "10:00:00",
+          "hora_fin": "11:00:00",
+          "clase": null
+        }
+      ]
+    },
+    {
+      "dia_semana": 3,
+      "dia_nombre": "Miércoles",
+      "slots": [
+        {
+          "timeslot_id": 1,
+          "etiqueta": "08:00-09:00",
+          "hora_inicio": "08:00:00",
+          "hora_fin": "09:00:00",
+          "clase": {
+            "horario_id": 13,
+            "asignatura": "Biología",
+            "profesor": { "id": 4, "nombre": "Profe María" },
+            "salon": { "id": 4, "nombre": "Aula 404" }
+          }
+        },
+        {
+          "timeslot_id": 2,
+          "etiqueta": "09:00-10:00",
+          "hora_inicio": "09:00:00",
+          "hora_fin": "10:00:00",
+          "clase": null
+        },
+        {
+          "timeslot_id": 3,
+          "etiqueta": "10:00-11:00",
+          "hora_inicio": "10:00:00",
+          "hora_fin": "11:00:00",
+          "clase": {
+            "horario_id": 14,
+            "asignatura": "Historia",
+            "profesor": { "id": 5, "nombre": "Profe Carlos" },
+            "salon": { "id": 5, "nombre": "Aula 505" }
+          }
+        }
+      ]
+    },
+    {
+      "dia_semana": 4,
+      "dia_nombre": "Jueves",
+      "slots": [
+        {
+          "timeslot_id": 1,
+          "etiqueta": "08:00-09:00",
+          "hora_inicio": "08:00:00",
+          "hora_fin": "09:00:00",
+          "clase": null
+        },
+        {
+          "timeslot_id": 2,
+          "etiqueta": "09:00-10:00",
+          "hora_inicio": "09:00:00",
+          "hora_fin": "10:00:00",
+          "clase": {
+            "horario_id": 15,
+            "asignatura": "Geografía",
+            "profesor": { "id": 6, "nombre": "Profe Elena" },
+            "salon": { "id": 6, "nombre": "Aula 606" }
+          }
+        },
+        {
+          "timeslot_id": 3,
+          "etiqueta": "10:00-11:00",
+          "hora_inicio": "10:00:00",
+          "hora_fin": "11:00:00",
+          "clase": null
+        }
+      ]
+    },
+    {
+      "dia_semana": 5,
+      "dia_nombre": "Viernes",
+      "slots": [
+        {
+          "timeslot_id": 1,
+          "etiqueta": "08:00-09:00",
+          "hora_inicio": "08:00:00",
+          "hora_fin": "09:00:00",
+          "clase": {
+            "horario_id": 16,
+            "asignatura": "Educación Física",
+            "profesor": { "id": 7, "nombre": "Profe Pedro" },
+            "salon": { "id": 7, "nombre": "Gimnasio" }
+          }
+        },
+        {
+          "timeslot_id": 2,
+          "etiqueta": "09:00-10:00",
+          "hora_inicio": "09:00:00",
+          "hora_fin": "10:00:00",
+          "clase": null
+        },
+        {
+          "timeslot_id": 3,
+          "etiqueta": "10:00-11:00",
+          "hora_inicio": "10:00:00",
+          "hora_fin": "11:00:00",
+          "clase": null
+        }
+      ]
+    }
+  ]
+}

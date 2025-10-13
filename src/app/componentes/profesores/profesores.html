@@ -1,0 +1,56 @@
+<div class="main-content">
+    <h1>Profesores</h1>
+    <form (submit)="$event.preventDefault(); editandoId ? guardarEdicion() : agregarProfesor()" class="profesor-form">
+        <input type="text" placeholder="Nombre del profesor" [(ngModel)]="nuevoProfesor.nombre" name="nombre"
+            required />
+        <input type="text" placeholder="Correo" [(ngModel)]="nuevoProfesor.correo" name="correo" required />
+
+        <!-- Tutor de grupo -->
+        <select [(ngModel)]="nuevoProfesor.tutorGrupo" name="tutorGrupo">
+            <option value="">Sin tutoría</option>
+            <option *ngFor="let grupo of grupos" [value]="grupo">{{ grupo }}</option>
+        </select>
+
+        <!-- Materias que puede impartir -->
+        <select multiple [(ngModel)]="nuevoProfesor.materias" name="materias">
+            <option *ngFor="let materia of materias" [ngValue]="materia">{{ materia }}</option>
+        </select>
+
+        <button class="btn-aceptar" type="submit">{{ editandoId ? 'Guardar' : 'Agregar' }}</button>
+        <button type="button" *ngIf="editandoId" (click)="cancelarEdicion()">Cancelar</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Tutor de grupo</th>
+                <th>Materias</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let profesor of profesores">
+                <td>{{ profesor.nombre }}</td>
+                <td>{{ profesor.correo }}</td>
+                <td>{{ profesor.tutorGrupo || 'Sin tutoría' }}</td>
+                <td>
+                    <span *ngIf="profesor.materias?.length; else sinMaterias">
+                        <span *ngFor="let materia of profesor.materias; let last = last">
+                            {{ materia }}<span *ngIf="!last">, </span>
+                        </span>
+                    </span>
+                    <ng-template #sinMaterias>Sin materias</ng-template>
+                </td>
+                <td>
+                    <button (click)="editarProfesor(profesor)">Editar</button>
+                    <button (click)="eliminarProfesor(profesor.id)">Eliminar</button>
+                </td>
+            </tr>
+            <tr *ngIf="profesores.length === 0">
+                <td colspan="5">No hay profesores registrados.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
