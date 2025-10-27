@@ -1,24 +1,25 @@
-<h2>Horario de {{ datos.grupo_nombre }}</h2>
-<table border="1" style="border-collapse:collapse; width:100%; text-align:center;">
-    <thead>
-        <tr>
-            <th>Hora</th>
-            <th *ngFor="let dia of datos.dias">{{ dia.dia_nombre }}</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let slotIdx of [0,1,2]">
-            <td>
-                {{ datos.dias[0].slots[slotIdx].etiqueta }}
-            </td>
-            <td *ngFor="let dia of datos.dias">
-                <ng-container *ngIf="dia.slots[slotIdx].clase; else vacio">
-                    <div><b>{{ dia.slots[slotIdx].clase.asignatura }}</b></div>
-                    <div>{{ dia.slots[slotIdx].clase.profesor.nombre }}</div>
-                    <div>{{ dia.slots[slotIdx].clase.salon.nombre }}</div>
-                </ng-container>
-                <ng-template #vacio>-</ng-template>
-            </td>
-        </tr>
-    </tbody>
-</table>
+<div *ngFor="let grupo of grupos | keyvalue">
+    <h2>Horario de {{ grupo.key }}</h2>
+    <table border="1" style="border-collapse:collapse; width:100%; text-align:center;">
+        <thead>
+            <tr>
+                <th>Hora</th>
+                <th *ngFor="let dia of diasSemana">{{ dia }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let hora of horas">
+                <td>{{ hora }}</td>
+                <td *ngFor="let dia of diasSemana">
+                    <ng-container *ngIf="getClase(grupo.value, dia, hora) as clase; else vacio">
+                        <div><b>{{ clase.subj }}</b></div>
+                        <div>{{ clase.prof }}</div>
+                        <div>{{ clase.room }}</div>
+                    </ng-container>
+                    <ng-template #vacio>-</ng-template>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <hr>
+</div>
