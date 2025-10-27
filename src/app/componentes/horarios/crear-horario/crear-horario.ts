@@ -17,7 +17,7 @@ export class CrearHorarioComponent implements OnInit {
 
   // inyectamos el servicio como privado (encapsulado)
   constructor(
-    private fb: FormBuilder,
+    private fb:  FormBuilder,
     private horarioService: HorarioFormService
   ) {}
 
@@ -45,7 +45,81 @@ export class CrearHorarioComponent implements OnInit {
               salonNombre: 'B2'
             }
           ]
-        }
+        },
+        {
+          dia: 'Mar',
+          clases: [
+            {
+              horaInicio: '08:00',
+              horaFin: '09:30',
+              profesorNombre: 'Ana',
+              materiaNombre: 'Matemáticas',
+              salonNombre: 'A1'
+            },
+            {
+              horaInicio: '10:00',
+              horaFin: '11:30',
+              profesorNombre: 'Luis',
+              materiaNombre: 'Programación',
+              salonNombre: 'B2'
+            }
+          ]
+        },{
+          dia: 'Mie',
+          clases: [
+            {
+              horaInicio: '08:00',
+              horaFin: '09:30',
+              profesorNombre: 'Ana',
+              materiaNombre: 'Matemáticas',
+              salonNombre: 'A1'
+            },
+            {
+              horaInicio: '10:00',
+              horaFin: '11:30',
+              profesorNombre: 'Luis',
+              materiaNombre: 'Programación',
+              salonNombre: 'B2'
+            }
+          ]
+        },{
+          dia: 'Jue',
+          clases: [
+            {
+              horaInicio: '08:00',
+              horaFin: '09:30',
+              profesorNombre: 'Ana',
+              materiaNombre: 'Matemáticas',
+              salonNombre: 'A1'
+            },
+            {
+              horaInicio: '10:00',
+              horaFin: '11:30',
+              profesorNombre: 'Luis',
+              materiaNombre: 'Programación',
+              salonNombre: 'B2'
+            }
+          ]
+        },{
+          dia: 'Vie',
+          clases: [
+            {
+              horaInicio: '08:00',
+              horaFin: '09:30',
+              profesorNombre: 'Ana',
+              materiaNombre: 'Matemáticas',
+              salonNombre: 'A1'
+            },
+            {
+              horaInicio: '10:00',
+              horaFin: '11:30',
+              profesorNombre: 'Luis',
+              materiaNombre: 'Programación',
+              salonNombre: 'B2'
+            }
+          ]
+        },
+        
       ]
     });
 

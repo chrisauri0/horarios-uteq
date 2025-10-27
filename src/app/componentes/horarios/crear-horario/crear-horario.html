@@ -1,8 +1,12 @@
 <div class="container" [formGroup]="horarioForm">
     <h2>{{ horarioForm.get('nombre')?.value }}</h2>
     <p><strong>Ciclo:</strong> {{ horarioForm.get('ciclo')?.value }}</p>
+    <div class="actions">
+        <button type="button" (click)="addDia()">Agregar día</button>
+        <button type="button" (click)="verConsola()">Ver horario en consola</button>
+    </div>
 
-    <div formArrayName="dias">
+    <div formArrayName="dias" class="dias-grid">
         <div *ngFor="let diaGroup of diasArray.controls; let i = index" [formGroupName]="i" class="dia-card">
             <h3> Día {{ i + 1 }} — {{ diaGroup.get('dia')?.value }}</h3>
 
@@ -57,8 +61,5 @@
     </div>
 
     <!-- botones globales -->
-    <div class="actions">
-        <button type="button" (click)="addDia()">Agregar día</button>
-        <button type="button" (click)="verConsola()">Ver horario en consola</button>
-    </div>
+
 </div>
