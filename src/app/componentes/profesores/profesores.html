@@ -1,6 +1,6 @@
 <div class="main-content">
     <h1>Profesores</h1>
-    <form (submit)="$event.preventDefault(); editandoId ? guardarEdicion() : agregarProfesor()" class="profesor-form">
+    <form (ngSubmit)="editandoId ? guardarEdicion() : agregarProfesor()" class="profesor-form">
         <input type="text" placeholder="Nombre del profesor" [(ngModel)]="nuevoProfesor.nombre" name="nombre"
             required />
         <input type="text" placeholder="Correo" [(ngModel)]="nuevoProfesor.correo" name="correo" required />
@@ -12,9 +12,10 @@
         </select>
 
         <!-- Materias que puede impartir -->
-        <select multiple [(ngModel)]="nuevoProfesor.materias" name="materias">
-            <option *ngFor="let materia of materias" [ngValue]="materia">{{ materia }}</option>
-        </select>
+        <label>Materias que puede impartir:</label>
+        <ng-select [items]="materias" [(ngModel)]="nuevoProfesor.materias" [multiple]="true" [searchable]="true"
+            name="materias">
+        </ng-select>
 
         <button class="btn-aceptar" type="submit">{{ editandoId ? 'Guardar' : 'Agregar' }}</button>
         <button type="button" *ngIf="editandoId" (click)="cancelarEdicion()">Cancelar</button>

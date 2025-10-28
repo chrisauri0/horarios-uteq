@@ -1,3 +1,82 @@
+.profesor-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: flex-end;
+}
+
+
+.profesor-form input,
+.profesor-form select {
+  flex: 1 1 180px;
+  min-width: 180px;
+  margin-bottom: 0;
+}
+
+.profesor-form ng-select {
+  flex: 2 1 320px;
+  min-width: 220px;
+  margin-bottom: 0;
+}
+
+::ng-deep .ng-select {
+  width: 100%;
+  min-width: 220px;
+  margin-bottom: 0;
+}
+
+::ng-deep .ng-select {
+  width: 100%;
+  min-width: 180px;
+  margin-bottom: 0;
+}
+::ng-deep .ng-select .ng-select-container {
+  min-height: 44px;
+  border-radius: 8px;
+  border: 1.5px solid #b2bec3;
+  background: #000000;
+  box-shadow: 0 1px 4px rgba(44, 62, 80, 0.05);
+  transition: border-color 0.2s;
+}
+::ng-deep .ng-select.ng-select-focused .ng-select-container {
+  border-color: #000000;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+}
+::ng-deep .ng-select .ng-select-dropdown {
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.10);
+  background: #000000;
+}
+::ng-deep .ng-select .ng-option {
+  padding: 10px 16px;
+  font-size: 1em;
+}
+::ng-deep .ng-select .ng-option-selected {
+  background: #000000;
+  color: #fff;
+}
+::ng-deep .ng-select .ng-option:hover {
+  background: #eaf6fb;
+  color: #2980b9;
+}
+
+@media (max-width: 700px) {
+  .profesor-form {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .profesor-form input,
+  .profesor-form select,
+  .profesor-form ng-select {
+    min-width: 100px;
+    width: 100%;
+  }
+  ::ng-deep .ng-select {
+    min-width: 100px;
+    font-size: 0.95em;
+  }
+}
 .main-content {
   max-width: 700px;
   margin: 40px auto;
@@ -118,17 +197,22 @@ select[multiple] {
   min-height: 100px;
 }
 ::ng-deep .ng-select .ng-option {
+  //estilos para las opciones es la primera que se ve cuando se abre
   padding: 10px 16px;
   font-size: 1em;
+  background: #000000;
+  color: #fff;
 }
 
 ::ng-deep .ng-select .ng-option-selected {
-  background: #3498db;
+  //estilos para la opción seleccionada
+  background: #b01d1d;
   color: #fff;
 }
 
 ::ng-deep .ng-select .ng-option:hover {
-  background: #eaf6fb;
+  //estilos para la opción al pasar el mouse
+  background: #000000;
   color: #2980b9;
 }
 
