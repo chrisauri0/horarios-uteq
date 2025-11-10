@@ -1,0 +1,54 @@
+<div class="carreras-container">
+    <h2 class="titulo-carreras">Gestión de Carreras</h2>
+    <form class="carrera-form" (ngSubmit)="editandoId ? guardarEdicion() : agregarCarrera()">
+        <div class="inputs-flex">
+            <div class="input-group">
+                <label for="nombreCarrera">Nombre de la carrera</label>
+                <input id="nombreCarrera" type="text" [(ngModel)]="nuevaCarrera.nombre" name="nombre"
+                    placeholder="Nombre de la carrera" required class="input-carrera" />
+            </div>
+            <div class="input-group">
+                <label for="gradoCarrera">Grado/Cuatrimestre</label>
+                <input id="gradoCarrera" type="number" [(ngModel)]="nuevaCarrera.grado" name="grado"
+                    placeholder="Grado/Cuatrimestre" min="1" max="12" required class="input-carrera" />
+            </div>
+            <div class="input-group">
+                <label for="divisionCarrera">División</label>
+                <input id="divisionCarrera" type="text" [(ngModel)]="nuevaCarrera.division" name="division"
+                    placeholder="División" required class="input-carrera" />
+            </div>
+            <div class="input-group" style="align-self: end; display: flex; gap: 8px;">
+                <button type="submit" class="btn-guardar">{{ editandoId ? 'Guardar' : 'Agregar' }}</button>
+                <button type="button" *ngIf="editandoId" (click)="cancelarEdicion()"
+                    class="btn-cancelar">Cancelar</button>
+            </div>
+        </div>
+    </form>
+
+    <table class="tabla-carreras">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Grado</th>
+                <th>División</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let carrera of carreras; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ carrera.nombre }}</td>
+                <td>{{ carrera.grado }}</td>
+                <td>{{ carrera.division }}</td>
+                <td>
+                    <button class="btn-editar" (click)="editarCarrera(carrera)">Editar</button>
+                    <button class="btn-eliminar" (click)="eliminarCarrera(carrera.id)">Eliminar</button>
+                </td>
+            </tr>
+            <tr *ngIf="carreras.length === 0">
+                <td colspan="5">No hay carreras registradas.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,168 @@
+
+// Estilos modernos y escolares para el CRUD de materias
+.materias-container {
+	max-width: 90%;
+	margin: 40px auto;
+	background: linear-gradient(135deg, #e8f5e9 0%, #a5d6a7 100%);
+	border-radius: 18px;
+	box-shadow: 0 4px 16px rgba(60, 120, 60, 0.12);
+	padding: 32px 24px 24px 24px;
+}
+
+.titulo {
+	text-align: center;
+	color: #388e3c;
+	font-size: 2rem;
+	font-weight: 700;
+	margin-bottom: 24px;
+	letter-spacing: 1px;
+}
+
+.materia-form {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 24px;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.input-materia {
+	flex: 1 1 120px;
+	min-width: 100px;
+	max-width: 220px;
+	padding: 10px 14px;
+	border: 1.5px solid #66bb6a;
+	border-radius: 8px;
+	font-size: 1rem;
+	background: #f1f8e9;
+	transition: border-color 0.2s;
+}
+.input-materia:focus {
+	border-color: #388e3c;
+	outline: none;
+}
+
+.btn-agregar, .btn-editar, .btn-eliminar, .btn-cancelar {
+	padding: 8px 16px;
+	border: none;
+	border-radius: 8px;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.2s, color 0.2s;
+}
+.inputs-flex {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 18px 16px;
+	align-items: flex-end;
+	justify-content: flex-start;
+}
+
+.input-group {
+	display: flex;
+	flex-direction: column;
+	min-width: 120px;
+	max-width: 200px;
+	flex: 1 1 120px;
+	height: 68px;
+	justify-content: flex-end;
+}
+.input-group label {
+	font-size: 0.98em;
+	color: #388e3c;
+	font-weight: 600;
+	margin-bottom: 4px;
+	margin-left: 2px;
+	letter-spacing: 0.2px;
+}
+
+@media (max-width: 700px) {
+	.inputs-flex {
+		flex-direction: column;
+		gap: 10px 0;
+	}
+	.input-group {
+		max-width: 100%;
+		min-width: 80px;
+		height: 68px;
+	}
+}
+.btn-agregar {
+	background: #43a047;
+	color: #fff;
+}
+.btn-agregar:hover {
+	background: #388e3c;
+}
+.btn-editar {
+	background: #81c784;
+	color: #1b5e20;
+	margin-right: 6px;
+}
+.btn-editar:hover {
+	background: #388e3c;
+	color: #fff;
+}
+.btn-eliminar {
+	background: #e57373;
+	color: #fff;
+}
+.btn-eliminar:hover {
+	background: #c62828;
+}
+.btn-cancelar {
+	background: #bdbdbd;
+	color: #424242;
+}
+.btn-cancelar:hover {
+	background: #757575;
+	color: #fff;
+}
+
+.tabla-materias {
+	width: 100%;
+	border-collapse: collapse;
+	background: #fff;
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 0 2px 8px rgba(60, 120, 60, 0.08);
+	table-layout: auto;
+}
+.tabla-materias th, .tabla-materias td {
+	padding: 12px 8px;
+	text-align: left;
+	word-break: break-word;
+}
+.tabla-materias th {
+	background: #c8e6c9;
+	color: #388e3c;
+	font-weight: 600;
+	font-size: 1.05em;
+}
+.tabla-materias tr:nth-child(even) {
+	background: #f1f8e9;
+}
+.tabla-materias tr:hover {
+	background: #a5d6a7;
+}
+
+@media (max-width: 700px) {
+	.materias-container {
+		max-width: 99vw;
+		padding: 12px 2px 12px 2px;
+	}
+	.materia-form {
+		flex-direction: column;
+		gap: 8px;
+		align-items: stretch;
+	}
+	.input-materia {
+		min-width: 80px;
+		max-width: 100%;
+	}
+	.tabla-materias th, .tabla-materias td {
+		font-size: 0.97em;
+		padding: 8px 4px;
+	}
+}

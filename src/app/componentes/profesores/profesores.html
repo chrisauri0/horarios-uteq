@@ -1,19 +1,26 @@
 <div class="main-content">
     <h1>Profesores</h1>
     <form (ngSubmit)="editandoId ? guardarEdicion() : agregarProfesor()" class="profesor-form">
-        <input type="text" placeholder="Nombre del profesor" [(ngModel)]="nuevoProfesor.nombre" name="nombre"
+        <input type="text" placeholder="Nombre(s) del profesor" [(ngModel)]="nuevoProfesor.nombre" name="nombre"
             required />
-        <input type="text" placeholder="Correo" [(ngModel)]="nuevoProfesor.correo" name="correo" required />
+        <input type="text" placeholder="Apellidos" [(ngModel)]="nuevoProfesor.apellidos" name="apellidos" required />
+        <input type="email" placeholder="Email" [(ngModel)]="nuevoProfesor.email" name="email" required />
 
-        <!-- Tutor de grupo -->
-        <select [(ngModel)]="nuevoProfesor.tutorGrupo" name="tutorGrupo">
-            <option value="">Sin tutoría</option>
-            <option *ngFor="let grupo of grupos" [value]="grupo">{{ grupo }}</option>
+        <!-- Puede ser tutor -->
+        <label>
+            <input type="checkbox" [(ngModel)]="nuevoProfesor.can_be_tutor" name="can_be_tutor" /> Puede ser tutor
+        </label>
+
+        <!-- Puede ser tutor de grupo -->
+        <label for="canBeTutorSelect">¿Puede ser tutor de grupo?</label>
+        <select id="canBeTutorSelect" [(ngModel)]="nuevoProfesor.can_be_tutor" name="can_be_tutor">
+            <option [ngValue]="false">No</option>
+            <option [ngValue]="true">Sí</option>
         </select>
 
         <!-- Materias que puede impartir -->
         <label>Materias que puede impartir:</label>
-        <ng-select [items]="materias" [(ngModel)]="nuevoProfesor.materias" [multiple]="true" [searchable]="true"
+        <ng-select [items]="materiasOpciones" [(ngModel)]="nuevoProfesor.materias" [multiple]="true" [searchable]="true"
             name="materias">
         </ng-select>
 
@@ -25,7 +32,8 @@
         <thead>
             <tr>
                 <th>Nombre</th>
-                <th>Correo</th>
+                <th>Apellidos</th>
+                <th>Email</th>
                 <th>Tutor de grupo</th>
                 <th>Materias</th>
                 <th>Acciones</th>
@@ -34,10 +42,11 @@
         <tbody>
             <tr *ngFor="let profesor of profesores">
                 <td>{{ profesor.nombre }}</td>
-                <td>{{ profesor.correo }}</td>
-                <td>{{ profesor.tutorGrupo || 'Sin tutoría' }}</td>
+                <td>{{ profesor.apellidos }}</td>
+                <td>{{ profesor.email }}</td>
+                <td>{{ profesor.can_be_tutor ? 'Sí' : 'No' }}</td>
                 <td>
-                    <span *ngIf="profesor.materias?.length; else sinMaterias">
+                    <span *ngIf="profesor.materias && profesor.materias.length; else sinMaterias">
                         <span *ngFor="let materia of profesor.materias; let last = last">
                             {{ materia }}<span *ngIf="!last">, </span>
                         </span>
@@ -50,7 +59,7 @@
                 </td>
             </tr>
             <tr *ngIf="profesores.length === 0">
-                <td colspan="5">No hay profesores registrados.</td>
+                <td colspan="6">No hay profesores registrados.</td>
             </tr>
         </tbody>
     </table>

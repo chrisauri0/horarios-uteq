@@ -1,6 +1,7 @@
     .dashboard-container {
         display: flex;
-        min-height: 100vh;
+       
+        
 
     }
 
@@ -17,15 +18,18 @@
 
     .sidebar {
         background: linear-gradient(180deg, #3498db 0%, #2980b9 100%);
+        border: red 2px solid;
         color: #fff;
-        width: 220px;
-        min-width: 60px;
+        width: 10dvw;
+        max-width: 120px;
         transition: width 0.3s;
         position: relative;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.07);
         display: flex;
         flex-direction: column;
         align-items: stretch;
+         min-height: 80vh;
+        max-height: 80vh;
     }
 
     .sidebar.collapsed {
@@ -90,6 +94,5 @@
 
     .main-content {
         flex: 1;
-        padding: 40px 30px;
-        background: #f4f8fb;
+       
     }

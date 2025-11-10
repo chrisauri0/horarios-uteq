@@ -1,0 +1,302 @@
+// Paleta y estilos modernos para grupos
+.grupos-container {
+	max-width: 800px;
+	margin: 40px auto;
+	background: linear-gradient(135deg, #e3f2fd 0%, #90caf9 100%);
+	border-radius: 18px;
+	box-shadow: 0 4px 16px rgba(33, 150, 243, 0.10);
+	padding: 32px 24px 24px 24px;
+}
+
+.titulo-grupos {
+	text-align: center;
+	color: #1976d2;
+	font-size: 2rem;
+	font-weight: 700;
+	margin-bottom: 24px;
+	letter-spacing: 1px;
+}
+
+.grupo-form {
+	margin-bottom: 28px;
+}
+.inputs-flex {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 18px 16px;
+	align-items: flex-end;
+	justify-content: flex-start;
+}
+.input-group {
+	display: flex;
+	flex-direction: column;
+	min-width: 120px;
+	max-width: 200px;
+	flex: 1 1 120px;
+	height: 68px;
+	justify-content: flex-end;
+}
+.input-group label {
+	font-size: 0.98em;
+	color: #1976d2;
+	font-weight: 600;
+	margin-bottom: 4px;
+	margin-left: 2px;
+	letter-spacing: 0.2px;
+}
+.input-grupo {
+	flex: 1 1 120px;
+	min-width: 100px;
+	max-width: 200px;
+	padding: 10px 14px;
+	border: 1.5px solid #64b5f6;
+	border-radius: 8px;
+	font-size: 1rem;
+	background: #e3f2fd;
+	transition: border-color 0.2s;
+}
+.input-grupo:focus {
+	border-color: #1976d2;
+	outline: none;
+}
+.btn-guardar {
+	padding: 10px 18px;
+	background: #1976d2;
+	color: #fff;
+	border: none;
+	border-radius: 6px;
+	font-size: 1em;
+	cursor: pointer;
+	transition: background 0.2s, box-shadow 0.2s;
+	font-weight: 600;
+	box-shadow: 0 2px 8px 0 rgba(25, 118, 210, 0.08);
+}
+.btn-guardar:hover {
+	background: #1565c0;
+}
+.btn-cancelar {
+	padding: 10px 18px;
+	background: #bdbdbd;
+	color: #424242;
+	border: none;
+	border-radius: 6px;
+	font-size: 1em;
+	cursor: pointer;
+	font-weight: 600;
+	margin-left: 4px;
+	transition: background 0.2s;
+}
+.btn-cancelar:hover {
+	background: #757575;
+	color: #fff;
+}
+.tabla-grupos {
+	width: 100%;
+	border-collapse: collapse;
+	background: #fff;
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 0 2px 8px rgba(33, 150, 243, 0.08);
+	table-layout: auto;
+}
+.tabla-grupos th, .tabla-grupos td {
+	padding: 12px 8px;
+	text-align: left;
+	word-break: break-word;
+}
+.tabla-grupos th {
+	background: #90caf9;
+	color: #1976d2;
+	font-weight: 600;
+	font-size: 1.05em;
+}
+.tabla-grupos tr:nth-child(even) {
+	background: #e3f2fd;
+}
+.tabla-grupos tr:hover {
+	background: #bbdefb;
+}
+.btn-editar {
+	background: #64b5f6;
+	color: #0d47a1;
+	border: none;
+	border-radius: 6px;
+	padding: 7px 14px;
+	font-size: 0.97em;
+	font-weight: 500;
+	margin-right: 6px;
+	cursor: pointer;
+	transition: background 0.2s, color 0.2s;
+}
+.btn-editar:hover {
+	background: #1976d2;
+	color: #fff;
+}
+.btn-eliminar {
+	background: #e57373;
+	color: #fff;
+	border: none;
+	border-radius: 6px;
+	padding: 7px 14px;
+	font-size: 0.97em;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+.btn-eliminar:hover {
+	background: #c62828;
+}
+
+@media (max-width: 900px) {
+	.grupos-container {
+		max-width: 99vw;
+		padding: 12px 2px 12px 2px;
+	}
+	.inputs-flex {
+		flex-direction: column;
+		gap: 10px 0;
+	}
+	.input-group {
+		max-width: 100%;
+		min-width: 80px;
+		height: 68px;
+	}
+	.tabla-grupos th, .tabla-grupos td {
+		font-size: 0.97em;
+		padding: 8px 4px;
+	}
+}
+// Estilos modernos para el CRUD de grupos
+.grupos-container {
+	max-width: 520px;
+	margin: 40px auto;
+	background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+	border-radius: 18px;
+	box-shadow: 0 4px 16px rgba(33, 150, 243, 0.12);
+	padding: 32px 24px 24px 24px;
+}
+
+.grupos-container h2 {
+	text-align: center;
+	color: #1976d2;
+	font-size: 2rem;
+	font-weight: 700;
+	margin-bottom: 24px;
+	letter-spacing: 1px;
+}
+
+.grupo-form {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 24px;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.grupo-form input {
+	flex: 1 1 180px;
+	padding: 10px 14px;
+	border: 1.5px solid #90caf9;
+	border-radius: 8px;
+	font-size: 1rem;
+	background: #e3f2fd;
+	transition: border-color 0.2s;
+}
+.grupo-form input:focus {
+	border-color: #1976d2;
+	outline: none;
+}
+
+.grupo-form button {
+	padding: 8px 16px;
+	border: none;
+	border-radius: 8px;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	background: #1976d2;
+	color: #fff;
+	transition: background 0.2s;
+}
+.grupo-form button:hover {
+	background: #1565c0;
+}
+
+.tabla-grupos {
+	width: 100%;
+	border-collapse: collapse;
+	background: #fff;
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 0 2px 8px rgba(33, 150, 243, 0.08);
+}
+.tabla-grupos th, .tabla-grupos td {
+	padding: 12px 8px;
+	text-align: left;
+}
+.tabla-grupos th {
+	background: #bbdefb;
+	color: #1976d2;
+	font-weight: 600;
+}
+.tabla-grupos tr:nth-child(even) {
+	background: #e3f2fd;
+}
+.tabla-grupos tr:hover {
+	background: #90caf9;
+}
+::ng-deep .ng-select {
+  width: 100%;
+  margin-bottom: 16px;
+  font-size: 1em;
+}
+
+::ng-deep .ng-select .ng-select-container {
+  min-height: 44px;
+  border-radius: 8px;
+  border: 1.5px solid #b2bec3;
+  background: #f4f8fb;
+  box-shadow: 0 1px 4px rgba(44, 62, 80, 0.05);
+  transition: border-color 0.2s;
+}
+
+::ng-deep .ng-select.ng-select-focused .ng-select-container {
+  border-color: #3498db;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+}
+
+::ng-deep .ng-select .ng-select-dropdown {
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.10);
+  background: #fff;
+}
+
+select[multiple] {
+  height: auto;
+  min-height: 100px;
+}
+::ng-deep .ng-select .ng-option {
+  //estilos para las opciones es la primera que se ve cuando se abre
+  padding: 10px 16px;
+  font-size: 1em;
+  background: #000000;
+  color: #fff;
+}
+
+::ng-deep .ng-select .ng-option-selected {
+  //estilos para la opción seleccionada
+  background: #b01d1d;
+  color: #fff;
+}
+
+::ng-deep .ng-select .ng-option:hover {
+  //estilos para la opción al pasar el mouse
+  background: #000000;
+  color: #2980b9;
+}
+
+@media (max-width: 600px) {
+  ::ng-deep .ng-select {
+    font-size: 0.95em;
+  }
+}

@@ -1,0 +1,123 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+export interface Carrera {
+  id: string;
+  nombre: string;
+  grado: number;
+  division: string;
+}
+
+@Component({
+  selector: 'app-carreras',
+  imports: [CommonModule, FormsModule],
+  templateUrl: './carreras.html',
+  styleUrl: './carreras.scss'
+})
+export class Carreras {
+  carreras: Carrera[] = [];
+  nuevaCarrera: Carrera = { id: '', nombre: '', grado: 1, division: '' };
+  editandoId: string | null = null;
+
+  ngOnInit() {
+    this.cargarCarreras();
+  }
+
+  async cargarCarreras() {
+    try {
+      const res = await fetch('http://localhost:3000/carreras');
+      if (!res.ok) throw new Error('Error al obtener carreras');
+      const data = await res.json();
+      this.carreras = Array.isArray(data) ? data.map((c: any) => ({
+        id: c.id,
+        nombre: c.nombre,
+        grado: c.grado,
+        division: c.division
+      })) : [];
+    } catch (err) {
+      alert('No se pudo cargar la lista de carreras: ' + err);
+    }
+  }
+
+  async agregarCarrera() {
+    if (!this.nuevaCarrera.nombre.trim() || !this.nuevaCarrera.division.trim()) return;
+    const body = {
+      nombre: this.nuevaCarrera.nombre,
+      grado: this.nuevaCarrera.grado,
+      division: this.nuevaCarrera.division
+    };
+    try {
+      const res = await fetch('http://localhost:3000/carreras', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) throw new Error('Error al crear la carrera');
+      const data = await res.json();
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+      this.carreras.push({
+        id: data.id || Date.now().toString(),
+        nombre: data.nombre,
+        grado: data.grado,
+        division: data.division
+      });
+      this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: '' };
+    } catch (err) {
+      alert('No se pudo crear la carrera: ' + err);
+    }
+  }
+
+  editarCarrera(carrera: Carrera) {
+    this.editandoId = carrera.id;
+    this.nuevaCarrera = { ...carrera };
+  }
+
+  async guardarEdicion() {
+    if (!this.nuevaCarrera.nombre.trim() || !this.nuevaCarrera.division.trim() || !this.editandoId) return;
+    const body: any = {
+      nombre: this.nuevaCarrera.nombre,
+      grado: this.nuevaCarrera.grado,
+      division: this.nuevaCarrera.division
+    };
+    try {
+      const res = await fetch(`http://localhost:3000/carreras/${this.editandoId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) throw new Error('Error al editar la carrera');
+      const data = await res.json();
+      this.carreras = this.carreras.map(c => c.id === this.editandoId ? {
+        id: this.editandoId!,
+        nombre: body.nombre,
+        grado: body.grado,
+        division: body.division
+      } : c);
+      this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: '' };
+      this.editandoId = null;
+    } catch (err) {
+      alert('No se pudo editar la carrera: ' + err);
+    }
+  }
+
+  cancelarEdicion() {
+    this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: '' };
+    this.editandoId = null;
+  }
+
+  async eliminarCarrera(id: string) {
+    try {
+      const res = await fetch(`http://localhost:3000/carreras/${id}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) throw new Error('Error al eliminar la carrera');
+      this.carreras = this.carreras.filter(c => c.id !== id);
+    } catch (err) {
+      alert('No se pudo eliminar la carrera: ' + err);
+    }
+  }
+}

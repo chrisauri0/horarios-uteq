@@ -1,0 +1,53 @@
+<div class="horarios-container">
+    <div class="header">
+        <h2>📅 Horarios por grupo</h2>
+
+        <div class="controls">
+            <select [(ngModel)]="selectedGroup" class="select-group">
+                <option *ngFor="let g of grupos" [value]="g">{{ g }}</option>
+            </select>
+
+            <button (click)="exportarPDF()" class="btn btn-export">
+                📤 Exportar PDF
+            </button>
+
+            <button (click)="recargarHorarios()" class="btn btn-refresh">
+                🔄 Actualizar
+            </button>
+        </div>
+    </div>
+
+    <div *ngIf="getHorariosPorGrupo().length > 0; else sinDatos" class="table-container">
+        <div class="horario-grid">
+            <table class="horarios-table">
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th *ngFor="let dia of diasSemana">{{ dia }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let hora of horas">
+                        <td class="hora-label">{{ hora }}</td>
+                        <td *ngFor="let dia of diasSemana">
+                            <ng-container *ngIf="getHorarioGrid()[hora][dia]; else vacio">
+                                <div class="clase-celda">
+                                    <div class="materia">{{ getHorarioGrid()[hora][dia].subj }}</div>
+                                    <div class="profesor">{{ getHorarioGrid()[hora][dia].prof }}</div>
+                                    <div class="salon">{{ getHorarioGrid()[hora][dia].room }}</div>
+                                </div>
+                            </ng-container>
+                            <ng-template #vacio>
+                                <div class="clase-celda vacio"></div>
+                            </ng-template>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <ng-template #sinDatos>
+        <p class="no-data">No hay horarios disponibles.</p>
+    </ng-template>
+</div>

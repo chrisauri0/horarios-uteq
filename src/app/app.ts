@@ -1,20 +1,31 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
-
+import { Router, RouterLink, RouterOutlet, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,CommonModule,RouterLink],
+  standalone: true,
+  imports: [RouterOutlet, CommonModule, RouterLink],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
   protected readonly title = signal('horarios-uteq');
 
-   usuarioNombre: string = '';
+  usuarioNombre: string = '';
   usuarioCarrera: string = '';
   sidebarCollapsed = false;
+  esLogin = false; // 👈 nueva propiedad para ocultar el layout
+
+  constructor(private router: Router) {
+    // 👇 Detecta si estás en la ruta /login
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        this.esLogin = event.url.includes('/login');
+      });
+  }
 
   ngOnInit() {
     const usuarioData = localStorage.getItem('usuarioData');

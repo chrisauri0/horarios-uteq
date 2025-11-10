@@ -1,0 +1,13 @@
+<div class="scheduler-container">
+    <h2>Generador de Horarios</h2>
+
+    <button (click)="generateSchedule()" [disabled]="loading" class="generate-btn">
+        {{ loading ? 'Generando...' : 'Generar Horarios' }}
+    </button>
+
+    <div *ngIf="message" class="message" [ngClass]="{ success: isSuccess, error: !isSuccess }">
+        {{ message }}
+    </div>
+
+    <div *ngIf="loading" class="spinner"></div>
+</div>

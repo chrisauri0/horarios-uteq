@@ -1,36 +1,44 @@
-<div class="main-content">
-    <h1>Salones</h1>
-    <p>Bienvenido {{ usuarioNombre }} al panel de control.</p>
-    <p>Tu carrera es: {{ usuarioCarrera }}</p>
-    <p>Aquí puedes gestionar los salones disponibles.</p>
+<div class="salones-container">
+    <h1><svg width="28" height="28" style="vertical-align:middle; margin-right:0.4em;" fill="none" viewBox="0 0 24 24">
+            <rect width="24" height="24" rx="6" fill="#eaf3fb" />
+            <path d="M5 17V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10" stroke="#005baa" stroke-width="1.5" />
+            <rect x="7" y="10" width="10" height="7" rx="1" fill="#fff" stroke="#005baa" stroke-width="1.5" />
+            <rect x="9" y="12" width="2" height="2" rx="0.5" fill="#eaf3fb" stroke="#005baa" stroke-width="1" />
+            <rect x="13" y="12" width="2" height="2" rx="0.5" fill="#eaf3fb" stroke="#005baa" stroke-width="1" />
+        </svg>Salones</h1>
+    <div class="bienvenida">
+        <span>Bienvenido <b>{{ usuarioNombre }}</b> al panel de control.</span>
+        <span>Tu carrera: <b>{{ usuarioCarrera }}</b></span>
+        <span>Aquí puedes gestionar los salones disponibles.</span>
+    </div>
 
     <form (submit)="$event.preventDefault(); editandoId ? guardarEdicion() : agregarSalon()" class="salon-form">
         <input type="text" placeholder="Nombre del salón" [(ngModel)]="nuevoSalon.nombre" name="nombre" required />
-        <input type="text" placeholder="Edificio" [(ngModel)]="nuevoSalon.edificio" name="edificio" required />
-        <button type="submit">{{ editandoId ? 'Guardar' : 'Agregar' }}</button>
-        <button type="button" *ngIf="editandoId" (click)="cancelarEdicion()">Cancelar</button>
+        <button type="submit" [class.edit-mode]="editandoId">{{ editandoId ? 'Guardar' : 'Agregar' }}</button>
+        <button type="button" *ngIf="editandoId" (click)="cancelarEdicion()" class="cancelar">Cancelar</button>
     </form>
 
-    <table border="1" style="width:100%; margin-top:20px; border-collapse:collapse; text-align:center;">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Edificio</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let salon of salones">
-                <td>{{ salon.nombre }}</td>
-                <td>{{ salon.edificio }}</td>
-                <td>
-                    <button (click)="editarSalon(salon)">Editar</button>
-                    <button (click)="eliminarSalon(salon.id)">Eliminar</button>
-                </td>
-            </tr>
-            <tr *ngIf="salones.length === 0">
-                <td colspan="3">No hay salones registrados.</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="tabla-wrapper">
+        <table class="tabla-salones">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Edificio</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let salon of salones">
+                    <td>{{ salon.nombre }}</td>
+                    <td>
+                        <button class="accion editar" (click)="editarSalon(salon)">Editar</button>
+                        <button class="accion eliminar" (click)="eliminarSalon(salon.id)">Eliminar</button>
+                    </td>
+                </tr>
+                <tr *ngIf="salones.length === 0">
+                    <td colspan="3" class="sin-registros">No hay salones registrados.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

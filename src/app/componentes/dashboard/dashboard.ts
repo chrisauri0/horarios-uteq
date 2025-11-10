@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HorariosComponent } from "../horarios/horarios";
-
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, HorariosComponent, ],
+  imports: [CommonModule, RouterLink, ],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss']
 })
@@ -14,6 +13,7 @@ export class DashboardComponent {
   usuarioNombre: string = '';
   usuarioCarrera: string = '';
   sidebarCollapsed = false;
+  
 
   ngOnInit() {
     const usuarioData = localStorage.getItem('usuarioData');

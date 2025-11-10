@@ -3,14 +3,21 @@ import { CommonModule } from '@angular/common';
 import resultado from './resultado.json';
 import { OrderByStartPipe } from './orderPipe';
 
+// datos para los horarios
+import { salonesData } from '../salones/salones';
+
 @Component({
   selector: 'app-horarios',
-  imports: [CommonModule, OrderByStartPipe],
+  imports: [CommonModule, ],
   templateUrl: './horarios.html',
   styleUrls: ['./horarios.scss']
 })
 export class HorariosComponent {
+
+salones: salonesData[] = [];
+
   resultado: any[] = resultado;
+
   grupos: { [key: string]: any[] } = {};
 
   constructor() {
@@ -21,6 +28,23 @@ export class HorariosComponent {
       this.grupos[item.group].push(item);
     }
   }
+
+
+ async cargarSalones() {
+    try {
+      const res = await fetch('http://localhost:3000/salones');
+      if (!res.ok) throw new Error('Error al obtener salones');
+      const data = await res.json();
+      this.salones = Array.isArray(data) ? data.map((s, idx) => ({
+        id: s.id || idx,
+        nombre: s.nombre_salon,
+        edificio: s.nombre_edificio
+      })) : [];
+    } catch (err) {
+      alert('No se pudo cargar la lista de salones: ' + err);
+    }
+  }
+
 
   formatStart(start: string): string {
     // Ejemplo: "Lun17" => "Lunes 17:00"

@@ -1,11 +1,43 @@
-// Estilos para la vista de salones
-.main-content {
+
+// Paleta institucional
+$primary: #005baa;
+$secondary: #f5f7fa;
+$accent: #ffb300;
+$border: #e0e4ea;
+$danger: #e74c3c;
+$success: #27ae60;
+
+.salones-container {
 	max-width: 700px;
 	margin: 40px auto;
-	background: #fff;
-	border-radius: 12px;
-	box-shadow: 0 2px 16px rgba(44, 62, 80, 0.08);
-	padding: 32px 24px;
+	background: $secondary;
+	border-radius: 16px;
+	box-shadow: 0 4px 24px 0 rgba(0, 91, 170, 0.08);
+	padding: 2.5rem 2rem 2rem 2rem;
+	font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+	color: #222;
+	position: relative;
+	overflow: hidden;
+}
+
+.salones-container h1 {
+	color: $primary;
+	font-size: 2rem;
+	margin-bottom: 0.7em;
+	font-weight: 700;
+	letter-spacing: 0.5px;
+	display: flex;
+	align-items: center;
+	gap: 0.4em;
+}
+
+.bienvenida {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2em;
+	margin-bottom: 1.5em;
+	font-size: 1.08rem;
+	color: $primary;
 }
 
 .salon-form {
@@ -13,35 +45,63 @@
 	gap: 16px;
 	margin-bottom: 24px;
 	flex-wrap: wrap;
+	background: #fff;
+	border-radius: 10px;
+	box-shadow: 0 2px 8px 0 rgba(0,91,170,0.04);
+	padding: 1.2em 1em 1em 1em;
+	align-items: flex-end;
 }
-
 .salon-form input {
 	padding: 10px;
-	border: 1px solid #b2bec3;
+	border: 1.5px solid $border;
 	border-radius: 6px;
 	font-size: 1em;
 	width: 180px;
 	transition: border-color 0.2s;
+	background: $secondary;
 }
 .salon-form input:focus {
-	border-color: #3498db;
+	border-color: $primary;
 	outline: none;
 }
 .salon-form button {
 	padding: 10px 18px;
-	background: #3498db;
+	background: $primary;
 	color: #fff;
 	border: none;
 	border-radius: 6px;
 	font-size: 1em;
 	cursor: pointer;
-	transition: background 0.2s;
+	transition: background 0.2s, box-shadow 0.2s;
+	font-weight: 600;
+	box-shadow: 0 2px 8px 0 rgba(0,91,170,0.04);
+}
+.salon-form button.edit-mode {
+	background: $success;
+}
+.salon-form button.cancelar {
+	background: $danger;
+	margin-left: 4px;
 }
 .salon-form button:hover {
-	background: #2980b9;
+	background: darken($primary, 10%);
+}
+.salon-form button.edit-mode:hover {
+	background: darken($success, 10%);
+}
+.salon-form button.cancelar:hover {
+	background: darken($danger, 10%);
 }
 
-table {
+.tabla-wrapper {
+	background: #fff;
+	border-radius: 12px;
+	box-shadow: 0 2px 8px 0 rgba(0,91,170,0.04);
+	padding: 1.2em 0.5em 0.5em 0.5em;
+	margin-top: 1.2em;
+}
+
+.tabla-salones {
 	width: 100%;
 	border-collapse: collapse;
 	background: #f4f8fb;
@@ -49,45 +109,76 @@ table {
 	overflow: hidden;
 	box-shadow: 0 1px 8px rgba(44, 62, 80, 0.05);
 }
-th, td {
+.tabla-salones th, .tabla-salones td {
 	padding: 12px 8px;
-	border-bottom: 1px solid #dfe6e9;
+	border-bottom: 1px solid $border;
 }
-th {
-	background: #3498db;
+.tabla-salones th {
+	background: $primary;
 	color: #fff;
 	font-weight: 600;
+	font-size: 1.08em;
 }
-tr:last-child td {
+.tabla-salones tr:last-child td {
 	border-bottom: none;
 }
-td button {
+.tabla-salones td {
+	font-size: 1.04em;
+}
+.accion {
 	margin: 0 4px;
-	padding: 6px 12px;
-	border-radius: 4px;
+	padding: 7px 14px;
+	border-radius: 5px;
 	border: none;
-	background: #636e72;
+	background: $primary;
 	color: #fff;
 	cursor: pointer;
-	font-size: 0.95em;
-	transition: background 0.2s;
+	font-size: 0.97em;
+	font-weight: 500;
+	transition: background 0.2s, color 0.2s;
 }
-td button:hover {
-	background: #b2bec3;
-	color: #2d3436;
+.accion.editar {
+	background: $accent;
+	color: #222;
 }
+.accion.eliminar {
+	background: $danger;
+}
+.accion:hover {
+	background: darken($primary, 10%);
+	color: #fff;
+}
+.accion.editar:hover {
+	background: darken($accent, 10%);
+	color: #fff;
+}
+.accion.eliminar:hover {
+	background: darken($danger, 10%);
+	color: #fff;
+}
+.sin-registros {
+	color: #888;
+	font-style: italic;
+	background: #f9fafb;
+}
+
 @media (max-width: 600px) {
-	.main-content {
-		padding: 12px 4px;
+	.salones-container {
+		padding: 1.2rem 0.5rem 1.5rem 0.5rem;
+		max-width: 98vw;
 	}
 	.salon-form {
 		flex-direction: column;
 		gap: 8px;
+		padding: 0.7em 0.5em 0.5em 0.5em;
 	}
 	.salon-form input {
 		width: 100%;
 	}
-	table, th, td {
+	.tabla-salones, .tabla-salones th, .tabla-salones td {
 		font-size: 0.95em;
+	}
+	.tabla-wrapper {
+		padding: 0.5em 0.1em 0.1em 0.1em;
 	}
 }

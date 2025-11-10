@@ -1,0 +1,60 @@
+.scheduler-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: #1e1e2f;
+  border-radius: 1rem;
+  color: white;
+  max-width: 400px;
+  margin: 2rem auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.generate-btn {
+  background: #3f51b5;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  color: white;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.generate-btn:hover {
+  background: #5c6bc0;
+}
+
+.generate-btn:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+.message {
+  font-weight: bold;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.message.success {
+  color: #4caf50;
+}
+
+.message.error {
+  color: #f44336;
+}
+
+.spinner {
+  border: 4px solid rgba(255,255,255,0.2);
+  border-top: 4px solid #3f51b5;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

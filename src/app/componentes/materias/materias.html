@@ -1,0 +1,92 @@
+<div class="materias-container">
+    <h2 class="titulo">Gestión de Materias</h2>
+    <form class="materia-form" (ngSubmit)="agregarMateria()" *ngIf="!editandoId">
+        <div class="inputs-flex">
+            <div class="input-group">
+                <label for="nombreMateria">Nombre de la materia</label>
+                <input id="nombreMateria" type="text" [(ngModel)]="nuevaMateria.nombre" name="nombreMateria"
+                    placeholder="Nombre de la materia" required class="input-materia" />
+            </div>
+            <div class="input-group">
+                <label for="gradoMateria">Grado/Cuatrimestre</label>
+                <input id="gradoMateria" type="number" [(ngModel)]="nuevaMateria.grado" name="gradoMateria"
+                    placeholder="Grado/Cuatrimestre" min="1" max="12" required class="input-materia"
+                    style="width:120px;" />
+            </div>
+            <div class="input-group">
+                <label for="carreraMateria">Carrera</label>
+                <select id="carreraMateria" [(ngModel)]="nuevaMateria.carrera" name="carreraMateria" required
+                    class="input-materia" style="width:140px;">
+                    <option value="" disabled selected>Selecciona una carrera</option>
+                    <option *ngFor="let carrera of carreras" [value]="carrera">{{ carrera }}</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="horasSemana">Horas/Semana</label>
+                <input id="horasSemana" type="number" [(ngModel)]="nuevaMateria.horas_semana" name="horasSemana"
+                    placeholder="Horas/Semana" min="1" required class="input-materia" style="width:140px;" />
+            </div>
+            <div class="input-group" style="align-self: end;">
+                <button type="submit" class="btn-agregar">Agregar</button>
+            </div>
+        </div>
+    </form>
+
+    <form class="materia-form" (ngSubmit)="guardarEdicion()" *ngIf="editandoId">
+        <div class="inputs-flex">
+            <div class="input-group">
+                <label for="nombreMateriaEditada">Nombre de la materia</label>
+                <input id="nombreMateriaEditada" type="text" [(ngModel)]="nuevaMateria.nombre"
+                    name="nombreMateriaEditada" placeholder="Editar materia" required class="input-materia" />
+            </div>
+            <div class="input-group">
+                <label for="gradoMateriaEditada">Grado/Cuatrimestre</label>
+                <input id="gradoMateriaEditada" type="number" [(ngModel)]="nuevaMateria.grado"
+                    name="gradoMateriaEditada" placeholder="Grado/Cuatrimestre" min="1" max="12" required
+                    class="input-materia" style="width:120px;" />
+            </div>
+            <div class="input-group">
+                <label for="carreraMateriaEditada">Carrera</label>
+                <select id="carreraMateriaEditada" [(ngModel)]="nuevaMateria.carrera" name="carreraMateriaEditada"
+                    required class="input-materia" style="width:140px;">
+                    <option value="" disabled selected>Selecciona una carrera</option>
+                    <option *ngFor="let carrera of carreras" [value]="carrera">{{ carrera }}</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="horasSemanaEditadas">Horas/Semana</label>
+                <input id="horasSemanaEditadas" type="number" [(ngModel)]="nuevaMateria.horas_semana"
+                    name="horasSemanaEditadas" placeholder="Horas/Semana" min="1" required class="input-materia"
+                    style="width:140px;" />
+            </div>
+            <div class="input-group" style="align-self: end; display: flex; gap: 8px;">
+                <button type="submit" class="btn-editar">Guardar</button>
+                <button type="button" class="btn-cancelar" (click)="cancelarEdicion()">Cancelar</button>
+            </div>
+        </div>
+    </form>
+
+    <table class="tabla-materias">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Grado</th>
+                <th>Carrera</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let materia of materias; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ materia.nombre }}</td>
+                <td>{{ materia.grado }}</td>
+                <td>{{ materia.carrera }}</td>
+                <td>
+                    <button class="btn-editar" (click)="editarMateria(materia)">Editar</button>
+                    <button class="btn-eliminar" (click)="eliminarMateria(materia.id)">Eliminar</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -1,35 +1,31 @@
-<div class="dashboard-container">
-    <div class="sidebar" [class.collapsed]="sidebarCollapsed">
-        <button class="toggle-btn" (click)="sidebarCollapsed = !sidebarCollapsed" aria-label="Toggle sidebar">
-            <span class="caret" *ngIf="!sidebarCollapsed">⏴</span>
-            <span class="caret" *ngIf="sidebarCollapsed">
-                <img src="assets/hamburger-svgrepo-com.svg" alt="menu">
-            </span>
-        </button>
+<div *ngIf="!esLogin; else soloLogin">
+    <div class="dashboard-container">
+        <div class="sidebar" [class.collapsed]="sidebarCollapsed">
+            <button class="toggle-btn" (click)="sidebarCollapsed = !sidebarCollapsed" aria-label="Toggle sidebar">
+                <span class="caret" *ngIf="!sidebarCollapsed">⏴</span>
+                <span class="caret" *ngIf="sidebarCollapsed">
+                    <img src="assets/hamburger-svgrepo-com.svg" alt="menu">
+                </span>
+            </button>
 
-        <a class="sidebar-brand" routerLink="/dashboard">UTEQ Horarios</a>
+            <a class="sidebar-brand" routerLink="/dashboard">UTEQ Horarios</a>
 
-        <ul class="sidebar-nav">
+            <ul class="sidebar-nav">
+                <li><a routerLink="/dashboard">Dashboard</a></li>
+                <li><a routerLink="/horarios/nuevo">Horarios</a></li>
+                <li><a routerLink="/profesores">Profesores</a></li>
+                <li><a routerLink="/grupos">Grupos</a></li>
+                <li><a routerLink="/salones">Salones</a></li>
+                <li><a routerLink="/materias">Materias</a></li>
+            </ul>
+        </div>
 
-            <li><a routerLink="/dashboard">Dashboard</a></li>
-            <li><a routerLink="/horarios/nuevo">Horarios</a></li>
-            <li><a routerLink="/Profesores">Profesores</a></li>
-            <li><a routerLink="/salones">Salones</a></li>
-
-        </ul>
+        <div class="main-content">
+            <router-outlet></router-outlet>
+        </div>
     </div>
-
-
-
-    <div class="main-content">
-            <!-- <h1>Dashboard</h1>
-            <p>Bienvenido {{ usuarioNombre }} al panel de control.</p>
-            <p>Tu carrera es: {{ usuarioCarrera }}</p> -->
-
-
-        <router-outlet></router-outlet>
-    </div>
-
-
-
 </div>
+
+<ng-template #soloLogin>
+    <router-outlet></router-outlet>
+</ng-template>

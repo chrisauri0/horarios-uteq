@@ -1,90 +1,94 @@
-    .dashboard-container {
-        display: flex;
-        min-height: 100vh;
 
-    }
 
-    .caret {
-        font-size: 1.2em;
-        justify-content: center;
-        align-items: center;
-    }
+// Paleta institucional (puedes ajustar los colores a tu preferencia)
+$primary: #005baa;
+$secondary: #f5f7fa;
+$accent: #ffb300;
+$text: #222;
+$border: #e0e4ea;
 
-    .sidebar {
-        background: linear-gradient(180deg, #3498db 0%, #2980b9 100%);
-        color: #fff;
-        width: 220px;
-        min-width: 60px;
-        transition: width 0.3s;
-        position: relative;
-        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.07);
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-    }
+@use "sass:color";
 
-    .sidebar.collapsed {
-        width: 60px;
-    }
+.dashboard-container {
+	max-width: 700px;
+	margin: 40px auto;
+	background: $secondary;
+	border-radius: 18px;
+	box-shadow: 0 4px 24px 0 rgba(0, 91, 170, 0.08);
+	padding: 2.5rem 2rem 2rem 2rem;
+	border: 1.5px solid $border;
+	font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+	color: $text;
+	position: relative;
+	overflow: hidden;
+}
+// Quitar el estilo azul y subrayado de los enlaces en el dashboard
+.dashboard-container a {
+	color: inherit;
+	text-decoration: none;
+	font-weight: inherit;
+	transition: color 0.2s;
+}
 
-    .toggle-btn {
-        background: none;
-        border: none;
-        color: #fff;
-        font-size: 1.5em;
-        padding: 10px 0 10px 10px;
-        cursor: pointer;
-        align-self: flex-end;
-    }
+.dashboard-container a:hover, .dashboard-container a:focus {
+	color: $accent;
+	text-decoration: underline;
+}
 
-    .sidebar-brand {
-        font-size: 1.3em;
-        font-weight: bold;
-        color: #fff;
-        text-decoration: none;
-        margin: 20px 0 30px 20px;
-        transition: opacity 0.3s;
-    }
 
-    .sidebar.collapsed .sidebar-brand {
-        opacity: 0;
-        pointer-events: none;
-    }
+.dashboard-container h1 {
+	color: $primary;
+	font-size: 2rem;
+	margin-bottom: 0.7em;
+	font-weight: 700;
+	letter-spacing: 0.5px;
+	text-shadow: 0 2px 8px rgba(0,91,170,0.07);
+}
 
-    .sidebar-nav {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        flex: 1;
-    }
+.dashboard-container p {
+	font-size: 1.15rem;
+	margin-bottom: 1.5em;
+	color: color.adjust($primary, $lightness: -20%);
+	font-weight: 500;
+}
 
-    .sidebar-nav li {
-        margin: 10px 0;
-    }
+.dashboard-container ol {
+	background: #fff;
+	border-radius: 12px;
+	box-shadow: 0 2px 8px 0 rgba(0,91,170,0.04);
+	padding: 1.5em 1.5em 1.5em 2.2em;
+	margin: 0;
+	font-size: 1.08rem;
+	border: 1px solid $border;
+}
 
-    .sidebar-nav a {
-        color: #fff;
-        text-decoration: none;
-        padding: 12px 20px;
-        display: block;
-        border-radius: 4px 0 0 4px;
-        transition: background 0.2s, padding 0.3s;
-    }
+.dashboard-container ol li {
+	margin-bottom: 1.1em;
+	line-height: 1.6;
+	padding-left: 0.2em;
+	position: relative;
+	transition: background 0.2s;
+	border-left: 4px solid transparent;
+}
 
-    .sidebar-nav a:hover {
-        background: rgba(255, 255, 255, 0.12);
-        padding-left: 28px;
-    }
 
-    .sidebar.collapsed .sidebar-nav a {
-        text-align: center;
-        padding: 12px 0;
-        font-size: 1.2em;
-        opacity: 0;
-    }
 
-    .main-content {
-        flex: 1;
-        padding: 40px 30px;
-        background: #f4f8fb;
-    }
+.dashboard-container ol li::marker {
+	color: $primary;
+	font-weight: bold;
+	font-size: 1.1em;
+}
+
+@media (max-width: 600px) {
+	.dashboard-container {
+		padding: 1.2rem 0.5rem 1.5rem 0.5rem;
+		max-width: 98vw;
+	}
+	.dashboard-container h1 {
+		font-size: 1.3rem;
+	}
+	.dashboard-container ol {
+		padding: 1em 0.7em 1em 1.2em;
+		font-size: 0.98rem;
+	}
+}
