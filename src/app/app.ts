@@ -23,7 +23,7 @@ export class App {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
-        this.esLogin = event.url.includes('/login');
+        this.esLogin = event.url.includes('/login') || event.url === '/';
       });
   }
 
