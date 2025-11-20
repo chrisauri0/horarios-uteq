@@ -17,7 +17,7 @@ export class BienvenidaComponent {
 
   async iniciarSesion() {
   try {
-    const res = await fetch('http://localhost:3000/users/login-admin', {
+    const res = await fetch('https://horarios-backend-58w8.onrender.com/users/login-admin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

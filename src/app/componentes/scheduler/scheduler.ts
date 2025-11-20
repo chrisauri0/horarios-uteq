@@ -47,7 +47,7 @@ export class SchedulerComponent {
 
     async cargarHorariosCreados() {
       try {
-        const res = await fetch('http://localhost:3000/scheduler/allschedules');
+        const res = await fetch('https://horarios-backend-58w8.onrender.com/scheduler/allschedules');
         if (!res.ok) throw new Error('Error al obtener horarios creados');
         const data = await res.json();
         console.log('Horarios creados:', data);
@@ -71,7 +71,7 @@ export class SchedulerComponent {
     this.message = '';
     this.isSuccess = false;
 
-    fetch('http://localhost:3000/scheduler/generate', {
+    fetch('https://horarios-backend-58w8.onrender.com/scheduler/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({})

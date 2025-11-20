@@ -35,7 +35,7 @@ export class Materias {
 
   async cargarSalones() {
     try {
-      const res = await fetch('http://localhost:3000/salones');
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/salones');
       if (!res.ok) throw new Error('Error al obtener salones');
       const data = await res.json();
       this.salones = Array.isArray(data) ? data.map((s: any) => s.nombre) : [];
@@ -46,7 +46,7 @@ export class Materias {
 
   async cargarCarreras() {
     try {
-      const res = await fetch('http://localhost:3000/carreras');
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/carreras');
       if (!res.ok) throw new Error('Error al obtener carreras');
       const data = await res.json();
       this.carreras = Array.isArray(data) ? data.map((c: any) => c.nombre) : [];
@@ -72,7 +72,7 @@ export class Materias {
 
     // Siempre consulta el backend para obtener el hash actual
     try {
-      const res = await fetch('http://localhost:3000/materias/hash');
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/materias/hash');
       if (!res.ok) throw new Error('Error al obtener hash de materias');
       const { hash } = await res.json();
       if (hash === cacheHash && materiasLocal.length > 0) {
@@ -80,7 +80,7 @@ export class Materias {
         return;
       }
       // Si el hash cambió, pide la lista actualizada
-      const resList = await fetch('http://localhost:3000/materias');
+      const resList = await fetch('https://horarios-backend-58w8.onrender.com/materias');
       if (!resList.ok) throw new Error('Error al obtener materias');
       const data = await resList.json();
       this.materias = Array.isArray(data) ? data.map((m: any) => ({
@@ -110,7 +110,7 @@ export class Materias {
       salones: this.nuevaMateria.salones || {}
     };
     try {
-      const res = await fetch('http://localhost:3000/materias', {
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/materias', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -143,7 +143,7 @@ export class Materias {
       salones: this.nuevaMateria.salones || {}
     };
     try {
-      const res = await fetch(`http://localhost:3000/materias/${this.editandoId}`, {
+      const res = await fetch(`https://horarios-backend-58w8.onrender.com/materias/${this.editandoId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -167,7 +167,7 @@ export class Materias {
 
   async eliminarMateria(id: string) {
     try {
-      const res = await fetch(`http://localhost:3000/materias/${id}`, {
+      const res = await fetch(`https://horarios-backend-58w8.onrender.com/materias/${id}`, {
         method: 'DELETE'
       });
       if (!res.ok) throw new Error('Error al eliminar la materia');

@@ -32,7 +32,7 @@ salones: salonesData[] = [];
 
  async cargarSalones() {
     try {
-      const res = await fetch('http://localhost:3000/salones');
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/salones');
       if (!res.ok) throw new Error('Error al obtener salones');
       const data = await res.json();
       this.salones = Array.isArray(data) ? data.map((s, idx) => ({

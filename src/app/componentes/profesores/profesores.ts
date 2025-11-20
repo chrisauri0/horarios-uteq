@@ -61,7 +61,7 @@ export class ProfesoresComponent {
 
     // Siempre consulta el backend para obtener el hash actual
     try {
-      const res = await fetch('http://localhost:3000/materias/hash');
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/materias/hash');
       if (!res.ok) throw new Error('Error al obtener hash de materias');
       const { hash } = await res.json();
       if (hash === cacheHash && materiasLocal.length > 0) {
@@ -69,7 +69,7 @@ export class ProfesoresComponent {
         return;
       }
       // Si el hash cambió, pide la lista actualizada
-      const resList = await fetch('http://localhost:3000/materias');
+      const resList = await fetch('https://horarios-backend-58w8.onrender.com/materias');
       if (!resList.ok) throw new Error('Error al obtener materias');
       const data = await resList.json();
       this.materias = Array.isArray(data) ? data.map((m: any) => ({
@@ -102,7 +102,7 @@ export class ProfesoresComponent {
     }
 
     try {
-      const res = await fetch('http://localhost:3000/profesores');
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/profesores');
       if (!res.ok) throw new Error('Error al obtener profesores');
       const data = await res.json();
       const newJson = JSON.stringify(data);
@@ -148,7 +148,7 @@ export class ProfesoresComponent {
     }
 
     try {
-      const res = await fetch('http://localhost:3000/profesores', {
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/profesores', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -181,7 +181,7 @@ export class ProfesoresComponent {
     };
 
     try {
-      const res = await fetch(`http://localhost:3000/profesores/${this.editandoId}`, {
+      const res = await fetch(`https://horarios-backend-58w8.onrender.com/profesores/${this.editandoId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -198,7 +198,7 @@ export class ProfesoresComponent {
 
   async eliminarProfesor(id: string) {
     try {
-      const res = await fetch(`http://localhost:3000/profesores/${id}`, {
+      const res = await fetch(`https://horarios-backend-58w8.onrender.com/profesores/${id}`, {
         method: 'DELETE'
       });
       if (!res.ok) throw new Error('Error al eliminar el profesor');

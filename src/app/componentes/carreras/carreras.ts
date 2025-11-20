@@ -36,7 +36,7 @@ export class Carreras {
 
   async cargarCarreras() {
     try {
-      const res = await fetch('http://localhost:3000/carreras');
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/carreras');
       if (!res.ok) throw new Error('Error al obtener carreras');
       const data = await res.json();
       this.carreras = Array.isArray(data) ? data.map((c: any) => ({
@@ -58,7 +58,7 @@ export class Carreras {
       division: this.nuevaCarrera.division
     };
     try {
-      const res = await fetch('http://localhost:3000/carreras', {
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/carreras', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -95,7 +95,7 @@ export class Carreras {
       division: this.nuevaCarrera.division
     };
     try {
-      const res = await fetch(`http://localhost:3000/carreras/${this.editandoId}`, {
+      const res = await fetch(`https://horarios-backend-58w8.onrender.com/carreras/${this.editandoId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -123,7 +123,7 @@ export class Carreras {
 
   async eliminarCarrera(id: string) {
     try {
-      const res = await fetch(`http://localhost:3000/carreras/${id}`, {
+      const res = await fetch(`https://horarios-backend-58w8.onrender.com/carreras/${id}`, {
         method: 'DELETE'
       });
       if (!res.ok) throw new Error('Error al eliminar la carrera');

@@ -6,7 +6,7 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class SchedulerService {
-  private apiUrl = 'http://localhost:3000/scheduler'; // Ajusta según tu backend
+  private apiUrl = 'https://horarios-backend-58w8.onrender.com/scheduler'; // Ajusta según tu backend
   private cacheKey = 'horariosCache';
 
 

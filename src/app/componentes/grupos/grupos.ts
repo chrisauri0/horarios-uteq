@@ -55,7 +55,7 @@ export class GruposComponent{
   
   async cargarCarreras() {
     try {
-      const res = await fetch('http://localhost:3000/carreras');
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/carreras');
       if (!res.ok) throw new Error('Error al obtener carreras');
       const data = await res.json();
       this.carreras = Array.isArray(data) ? data.map((c: any) => ({
@@ -79,7 +79,7 @@ getNombreTutor(id?: string): string {
 
   async cargarTutores(): Promise<void> {
     try {
-      const res = await fetch('http://localhost:3000/profesores/tutores');
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/profesores/tutores');
       if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
       const data = await res.json();
 
@@ -103,7 +103,7 @@ getNombreTutor(id?: string): string {
 
   async cargarGrupos() {
     try {
-      const res = await fetch('http://localhost:3000/grupos');
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/grupos');
       if (!res.ok) throw new Error('Error al obtener grupos');
       const data = await res.json();
       this.grupos = Array.isArray(data)
@@ -123,7 +123,7 @@ getNombreTutor(id?: string): string {
 
   async cargarGrupoPorId(id: string) {
     try {
-      const res = await fetch(`http://localhost:3000/grupos/${id}`);
+      const res = await fetch(`https://horarios-backend-58w8.onrender.com/grupos/${id}`);
       if (!res.ok) throw new Error('Error al obtener grupo');
       return await res.json();
     } catch (err) {
@@ -147,7 +147,7 @@ getNombreTutor(id?: string): string {
       data: this.nuevoGrupo.data || {}
     };
     try {
-      const res = await fetch('http://localhost:3000/grupos', {
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/grupos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -189,7 +189,7 @@ getNombreTutor(id?: string): string {
       data: this.nuevoGrupo.data || {}
     };
     try {
-      const res = await fetch(`http://localhost:3000/grupos/${this.grupoEditando.id}`, {
+      const res = await fetch(`https://horarios-backend-58w8.onrender.com/grupos/${this.grupoEditando.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -223,7 +223,7 @@ getNombreTutor(id?: string): string {
   // Eliminar un grupo
   async eliminarGrupo(id: string) {
     try {
-      const res = await fetch(`http://localhost:3000/grupos/${id}`, {
+      const res = await fetch(`https://horarios-backend-58w8.onrender.com/grupos/${id}`, {
         method: 'DELETE'
       });
       if (!res.ok) throw new Error('Error al eliminar el grupo');

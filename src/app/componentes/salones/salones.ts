@@ -47,7 +47,7 @@ export class SalonesComponent {
     }
 
     try {
-      const res = await fetch('http://localhost:3000/salones');
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/salones');
       if (!res.ok) throw new Error('Error al obtener salones');
       const data = await res.json();
       // La nueva API devuelve { id, nombre, data } donde data puede tener edificio
@@ -73,7 +73,7 @@ export class SalonesComponent {
       division: this.nuevoSalon.division
     };
     try {
-      const res = await fetch('http://localhost:3000/salones', {
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/salones', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -98,7 +98,7 @@ export class SalonesComponent {
 
   async eliminarSalon(id: string) {
     try {
-      const res = await fetch(`http://localhost:3000/salones/${id}`, {
+      const res = await fetch(`https://horarios-backend-58w8.onrender.com/salones/${id}`, {
         method: 'DELETE'
       });
       if (!res.ok) throw new Error('Error al eliminar el salón');
@@ -120,7 +120,7 @@ export class SalonesComponent {
       nombre: this.nuevoSalon.nombre
     };
     try {
-      const res = await fetch(`http://localhost:3000/salones/${this.editandoId}`, {
+      const res = await fetch(`https://horarios-backend-58w8.onrender.com/salones/${this.editandoId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
