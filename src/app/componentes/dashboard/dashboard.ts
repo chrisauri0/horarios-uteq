@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -13,6 +14,11 @@ export class DashboardComponent {
   usuarioNombre: string = '';
   usuarioCarrera: string = '';
   sidebarCollapsed = false;
+  constructor(private router: Router) {}
+
+  toggleSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+  }
   
 
   ngOnInit() {
@@ -22,8 +28,7 @@ export class DashboardComponent {
       this.usuarioNombre = full_name;
       this.usuarioCarrera = division + ' - ' + turno;
     } else {
-      this.usuarioNombre = 'Director de la división de Tecnologías de la Información';
-      this.usuarioCarrera = 'N/A';
+      this.router.navigate(['/']);
     }
   }
 }
