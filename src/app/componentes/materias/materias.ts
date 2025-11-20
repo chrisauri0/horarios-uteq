@@ -10,6 +10,7 @@ export interface Materia {
   carrera?: string;
   horas_semana: number;
   data?: object;
+  salones?:object
 }
 
 @Component({
@@ -20,28 +21,42 @@ export interface Materia {
 })
 export class Materias {
   materias: Materia[] = [];
-  nuevaMateria: Materia = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {} };
+  nuevaMateria: Materia = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: {} };
   editandoId: string | null = null;
-    carreras: string[] = [
-      'Tecnologías de la Información',
-      'Ingeniería Industrial',
-      'Ingeniería en Energías Renovables',
-      'Ingeniería en Biotecnología',
-      'Ingeniería en Logística',
-      'Ingeniería en Sistemas Productivos',
-      'Administración',
-      'Contaduría',
-      'Gastronomía',
-      'Turismo',
-      'Otra'
-    ];
+  salones: object[] = [];
+  carreras: object[] = [];
 
   ngOnInit() {
     this.cargarMaterias();
+    this.cargarCarreras();
+    this.cargarSalones();
+    console.log('Salones materias:', this.materias);
+  }
+
+  async cargarSalones() {
+    try {
+      const res = await fetch('http://localhost:3000/salones');
+      if (!res.ok) throw new Error('Error al obtener salones');
+      const data = await res.json();
+      this.salones = Array.isArray(data) ? data.map((s: any) => s.nombre) : [];
+    } catch (err) {
+      alert('No se pudo cargar la lista de salones: ' + err);
+    }
+  }
+
+  async cargarCarreras() {
+    try {
+      const res = await fetch('http://localhost:3000/carreras');
+      if (!res.ok) throw new Error('Error al obtener carreras');
+      const data = await res.json();
+      this.carreras = Array.isArray(data) ? data.map((c: any) => c.nombre) : [];
+    } catch (err) {
+      alert('No se pudo cargar la lista de carreras: ' + err);
+    }
   }
 
   async cargarMaterias() {
-    const localKey = 'materias-cache';
+    const localKey = 'materias-caches';
     const localHashKey = 'materias-cache-hash';
     // Intenta cargar desde localStorage
     const cache = localStorage.getItem(localKey);
@@ -74,7 +89,8 @@ export class Materias {
         grado: m.grado,
         carrera: m.carrera,
         horas_semana: m.horas_semana,
-        data: m.data || {}
+        data: m.data || {},
+        salones: m.salones || {}
       })) : [];
       localStorage.setItem(localKey, JSON.stringify(this.materias));
       localStorage.setItem(localHashKey, hash);
@@ -90,7 +106,8 @@ export class Materias {
       grado: this.nuevaMateria.grado || 1,
       carrera: this.nuevaMateria.carrera || '',
       horas_semana: this.nuevaMateria.horas_semana || 1,
-      data: this.nuevaMateria.data || {}
+      data: this.nuevaMateria.data || {},
+      salones: this.nuevaMateria.salones || {}
     };
     try {
       const res = await fetch('http://localhost:3000/materias', {
@@ -106,8 +123,10 @@ export class Materias {
         grado: data.grado,
         carrera: data.carrera,
         horas_semana: data.horas_semana,
+    
+        salones: data.salones || {}
       });
-      this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {} };
+      this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: {} };
     } catch (err) {
       alert('No se pudo crear la materia: ' + err);
     }
@@ -120,7 +139,8 @@ export class Materias {
       grado: this.nuevaMateria.grado || 1,
       carrera: this.nuevaMateria.carrera || '',
       data: this.nuevaMateria.data || {},
-      horas_semana: this.nuevaMateria.horas_semana || 1
+      horas_semana: this.nuevaMateria.horas_semana || 1,
+      salones: this.nuevaMateria.salones || {}
     };
     try {
       const res = await fetch(`http://localhost:3000/materias/${this.editandoId}`, {

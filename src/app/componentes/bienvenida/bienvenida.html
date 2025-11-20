@@ -1,6 +1,39 @@
-<div>
+<div class="bienvenida-box">
     <h1>Bienvenido a la aplicación de horarios UTEQ</h1>
-    <p>Esta es una aplicación para gestionar los horarios de clases.</p>
-    <input type="text" placeholder="Ingresa tu usuario" [(ngModel)]="usuario" />
-    <button (click)="iniciarSesion()">Iniciar sesión</button>
+    <p class="sub">Esta es una aplicación para gestionar los horarios de clases.</p>
+
+    <div class="form-row">
+        <label for="usuario">Correo Electrónico</label>
+        <input id="usuario" type="text" placeholder="Ingresa tu correo electrónico" [(ngModel)]="email" />
+    </div>
+
+    <div class="form-row">
+        <label for="contrasena">Contraseña</label>
+        <div class="password-row">
+            <input id="contrasena" [type]="showPassword ? 'text' : 'password'" placeholder="Ingresa tu contraseña"
+                [(ngModel)]="contrasena" />
+            <button type="button" class="toggle-password" (click)="togglePassword()"
+                aria-label="Mostrar u ocultar contraseña">
+                <!-- ojo abierto -->
+                <svg class="icon-eye icon-eye-open" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" [style.display]="showPassword ? 'none' : 'inline'">
+                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <!-- ojo tachado -->
+                <svg class="icon-eye icon-eye-closed" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" [style.display]="showPassword ? 'inline' : 'none'">
+                    <path d="M17.94 17A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7 .7-1.2 1.6-2.4 2.7-3.5"></path>
+                    <path d="M1 1l22 22"></path>
+                    <path d="M9.88 9.88A3 3 0 0 0 14.12 14.12"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="btn-login" (click)="iniciarSesion()">Iniciar sesión</button>
+    </div>
 </div>

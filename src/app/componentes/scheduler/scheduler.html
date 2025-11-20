@@ -1,13 +1,69 @@
+<div class="notice" role="alert" aria-live="polite">
+    <svg class="notice-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+    </svg>
+    <div class="notice-content">
+        <h3>Aviso importante: estás a punto de crear los horarios para {{ usuarioCarrera }}</h3>
+        <p>Se están tomando en cuenta los salones creados para {{ usuarioCarrera }} en el cuatrimestre 7.</p>
+        <p>Este proceso tomará unos cuantos segundos. Por favor, no cierres la ventana ni navegues fuera de esta
+            página mientras se generan los horarios.</p>
+    </div>
+</div>
+
 <div class="scheduler-container">
     <h2>Generador de Horarios</h2>
+
+
 
     <button (click)="generateSchedule()" [disabled]="loading" class="generate-btn">
         {{ loading ? 'Generando...' : 'Generar Horarios' }}
     </button>
 
-    <div *ngIf="message" class="message" [ngClass]="{ success: isSuccess, error: !isSuccess }">
+    <div [hidden]="!message" class="message" [ngClass]="{ success: isSuccess, error: !isSuccess }">
         {{ message }}
     </div>
 
-    <div *ngIf="loading" class="spinner"></div>
+    <div [hidden]="!loading" class="spinner"></div>
+
+
+
+
+</div>
+
+<div>
+    <h1> horarios creados :
+        <div *ngIf="groupedSchedules.length" class="schedules-list">
+            <h3>Horarios guardados</h3>
+            <div *ngFor="let group of groupedSchedules" class="schedule-group">
+                <h4 class="group-title">{{ group.nombregrupo }} <span class="count">({{ group.data.length }})</span>
+                </h4>
+                <table class="horario-table">
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th *ngFor="let dia of diasSemana">{{ dia }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let hora of horas">
+                            <td class="hora-label">{{ hora }}:00</td>
+                            <td *ngFor="let dia of diasSemana">
+                                <ng-container *ngIf="getClase(group.data, dia, hora) as clase">
+                                    <div *ngIf="clase">
+                                        <div class="materia">{{ clase.subj }}</div>
+                                        <div class="profesor">{{ clase.prof }}</div>
+                                        <div class="salon">{{ clase.room }}</div>
+                                    </div>
+                                </ng-container>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="export-btn" (click)="exportarPDF(group)">Exportar a PDF</button>
+            </div>
+        </div>
+    </h1>
 </div>

@@ -15,7 +15,7 @@ import { Carreras } from './componentes/carreras/carreras';
 
 
 export const routes: Routes = [
-  {  path: '', redirectTo: '/login', pathMatch: 'full' },
+  {  path: '', component: BienvenidaComponent, title: 'Iniciar Sesión' },
   {  path: 'login', component: BienvenidaComponent, title: 'Iniciar Sesión' },
   { path: 'dashboard', component: DashboardComponent , title: 'Dashboard'},
   { path: 'salones', component: SalonesComponent , title: 'Salones'},

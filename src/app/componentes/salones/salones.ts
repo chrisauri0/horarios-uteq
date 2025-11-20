@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 export interface salonesData {
   id: string;
   nombre: string;
-
+  division: string;
 }
 
 @Component({
@@ -19,18 +19,19 @@ export class SalonesComponent {
   sidebarCollapsed = false;
 
   salones: salonesData[] = [];
-  nuevoSalon: salonesData = { id: '', nombre: '' };
+  nuevoSalon: salonesData = { id: '', nombre: '', division: '' };
   editandoId: string | null = null;
 
   ngOnInit() {
-    const usuarioData = localStorage.getItem('usuarioData');
+    const usuarioData = localStorage.getItem('userData');
     if (usuarioData) {
-      const { nombre, carrera } = JSON.parse(usuarioData);
-      this.usuarioNombre = nombre;
-      this.usuarioCarrera = carrera;
+      const { full_name,metadata: { division , turno } } = JSON.parse(usuarioData);
+      this.usuarioNombre = full_name || 'Usuario';
+      this.usuarioCarrera = `${division || ''} - ${turno || ''}`;
+      
     } else {
-      this.usuarioNombre = 'Director de la división de Tecnologías de la Información';
-      this.usuarioCarrera = 'N/A';
+      this.usuarioNombre = 'Usuario';
+      this.usuarioCarrera = '';
     }
     this.cargarSalones();
   }
@@ -53,6 +54,7 @@ export class SalonesComponent {
       const salonesList = Array.isArray(data) ? data.map((s, idx) => ({
         id: s.id || idx,
         nombre: s.nombre,
+        division: s.division
       })) : [];
       // Solo actualiza si hay cambios
       if (JSON.stringify(salonesList) !== localStorage.getItem('salonesCache')) {
@@ -67,7 +69,8 @@ export class SalonesComponent {
   async agregarSalon() {
     if (!this.nuevoSalon.nombre.trim()) return;
     const body = {
-      nombre: this.nuevoSalon.nombre
+      nombre: this.nuevoSalon.nombre,
+      division: this.nuevoSalon.division
     };
     try {
       const res = await fetch('http://localhost:3000/salones', {
@@ -84,9 +87,10 @@ export class SalonesComponent {
       }
       this.salones.push({
         id: data.id || Date.now(),
-        nombre: data.nombre
+        nombre: data.nombre,
+        division: data.division
       });
-      this.nuevoSalon = { id: '', nombre: '' };
+      this.nuevoSalon = { id: '', nombre: '' , division: '' };
     } catch (err) {
       alert('No se pudo crear el salón: ' + err);
     }
@@ -113,7 +117,7 @@ export class SalonesComponent {
     if (!this.nuevoSalon.nombre.trim()) return;
     if (!this.editandoId) return;
     const body: any = {
-      nombre_salon: this.nuevoSalon.nombre
+      nombre: this.nuevoSalon.nombre
     };
     try {
       const res = await fetch(`http://localhost:3000/salones/${this.editandoId}`, {
@@ -125,9 +129,10 @@ export class SalonesComponent {
       const data = await res.json();
       this.salones = this.salones.map(s => s.id === this.editandoId ? {
         id: this.editandoId!,
-        nombre: body.nombre_salon
+        nombre: body.nombre,
+        division: this.nuevoSalon.division
       } : s);
-      this.nuevoSalon = { id: '', nombre: '' };
+      this.nuevoSalon = { id: '', nombre: '' , division: '' };
       this.editandoId = null;
     } catch (err) {
       alert('No se pudo editar el salón: ' + err);
@@ -135,7 +140,7 @@ export class SalonesComponent {
   }
 
   cancelarEdicion() {
-    this.nuevoSalon = { id: '', nombre: '' };
+    this.nuevoSalon = { id: '', nombre: '' , division: '' };
     this.editandoId = null;
   }
 }

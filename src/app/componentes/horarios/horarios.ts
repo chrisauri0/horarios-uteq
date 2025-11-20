@@ -38,7 +38,8 @@ salones: salonesData[] = [];
       this.salones = Array.isArray(data) ? data.map((s, idx) => ({
         id: s.id || idx,
         nombre: s.nombre_salon,
-        edificio: s.nombre_edificio
+        division: s.division
+        
       })) : [];
     } catch (err) {
       alert('No se pudo cargar la lista de salones: ' + err);

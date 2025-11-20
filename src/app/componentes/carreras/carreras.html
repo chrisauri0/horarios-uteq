@@ -14,8 +14,9 @@
             </div>
             <div class="input-group">
                 <label for="divisionCarrera">División</label>
+                <!-- Usar ngModel para enlazar el valor y deshabilitar con binding -->
                 <input id="divisionCarrera" type="text" [(ngModel)]="nuevaCarrera.division" name="division"
-                    placeholder="División" required class="input-carrera" />
+                    placeholder="División" class="input-carrera" [disabled]="true" />
             </div>
             <div class="input-group" style="align-self: end; display: flex; gap: 8px;">
                 <button type="submit" class="btn-guardar">{{ editandoId ? 'Guardar' : 'Agregar' }}</button>

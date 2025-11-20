@@ -8,15 +8,26 @@
                 </span>
             </button>
 
-            <a class="sidebar-brand" routerLink="/dashboard">UTEQ Horarios</a>
+            <a class="sidebar-brand" routerLink="/dashboard">
+                <span class="icon" aria-hidden="true">
+                    <!-- simple school/book SVG -->
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        focusable="false">
+                        <path d="M4 6l8-4 8 4v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6z" stroke="#fff" stroke-width="1.2"
+                            stroke-linejoin="round" stroke-linecap="round" />
+                        <path d="M12 2v14" stroke="#fff" stroke-width="1.2" stroke-linecap="round" />
+                    </svg>
+                </span>
+                <span>UTEQ Horarios</span>
+            </a>
 
             <ul class="sidebar-nav">
-                <li><a routerLink="/dashboard">Dashboard</a></li>
-                <li><a routerLink="/horarios/nuevo">Horarios</a></li>
-                <li><a routerLink="/profesores">Profesores</a></li>
-                <li><a routerLink="/grupos">Grupos</a></li>
-                <li><a routerLink="/salones">Salones</a></li>
-                <li><a routerLink="/materias">Materias</a></li>
+                <li><a routerLink="/dashboard"><span class="icon">🏠</span><span>Dashboard</span></a></li>
+                <li><a routerLink="/horarios/nuevo"><span class="icon">📅</span><span>Horarios</span></a></li>
+                <li><a routerLink="/profesores"><span class="icon">👩‍🏫</span><span>Profesores</span></a></li>
+                <li><a routerLink="/grupos"><span class="icon">👥</span><span>Grupos</span></a></li>
+                <li><a routerLink="/salones"><span class="icon">🏫</span><span>Salones</span></a></li>
+                <li><a routerLink="/materias"><span class="icon">📚</span><span>Materias</span></a></li>
             </ul>
         </div>
 

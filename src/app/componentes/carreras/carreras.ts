@@ -18,10 +18,20 @@ export interface Carrera {
 export class Carreras {
   carreras: Carrera[] = [];
   nuevaCarrera: Carrera = { id: '', nombre: '', grado: 1, division: '' };
+  defaultDivision: string = '';
   editandoId: string | null = null;
 
   ngOnInit() {
     this.cargarCarreras();
+    const usuarioData = localStorage.getItem('userData');
+    if (usuarioData) {
+      const { metadata: { division , turno } } = JSON.parse(usuarioData);
+      this.defaultDivision = division || '';
+      this.nuevaCarrera.division = this.defaultDivision;
+    } else {
+      this.defaultDivision = '';
+      this.nuevaCarrera.division = '';
+    }
   }
 
   async cargarCarreras() {
@@ -65,7 +75,8 @@ export class Carreras {
         grado: data.grado,
         division: data.division
       });
-      this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: '' };
+      // reset form but preserve default division (from user metadata)
+      this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: this.defaultDivision };
     } catch (err) {
       alert('No se pudo crear la carrera: ' + err);
     }
@@ -97,7 +108,8 @@ export class Carreras {
         grado: body.grado,
         division: body.division
       } : c);
-      this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: '' };
+      // reset form and restore default division
+      this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: this.defaultDivision };
       this.editandoId = null;
     } catch (err) {
       alert('No se pudo editar la carrera: ' + err);
@@ -105,7 +117,7 @@ export class Carreras {
   }
 
   cancelarEdicion() {
-    this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: '' };
+    this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: this.defaultDivision };
     this.editandoId = null;
   }
 

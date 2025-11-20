@@ -9,17 +9,44 @@ import { Router } from '@angular/router';
   styleUrls: ['./bienvenida.scss']
 })
 export class BienvenidaComponent {
-  usuario: string = '';
+  email: string = '';
+  contrasena: string = '';
+  showPassword: boolean = false;
 
   constructor(private router: Router) {}
 
-  iniciarSesion() {
-    // Aquí puedes enviar this.usuario como body en una petición HTTP
-    alert(`Iniciando sesión para: ${this.usuario}`);
-    console.log('Usuario:', this.usuario);
-    
-    //redirigir a otra página o realizar otra acción
-    // Por ejemplo, puedes usar el Router para navegar a otra ruta
-     this.router.navigate(['/dashboard']); // Asegúrate de tener esta ruta configurada
+  async iniciarSesion() {
+  try {
+    const res = await fetch('http://localhost:3000/users/login-admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: this.email,
+        password: this.contrasena
+      })
+    });
+
+    if (!res.ok) {
+      alert('Error al iniciar sesión');
+      return;
+    }
+
+    const data = await res.json();
+    console.log('Respuesta login:', data);
+    if (data.success) {
+      localStorage.setItem('userData', JSON.stringify(data.user));
+      this.router.navigate(['/dashboard']);
+    } else {
+      alert(data.error || 'Credenciales incorrectas');
+    }
+  } catch (error) {
+    console.error('Error al conectar con el servidor:', error);
+    alert('Error al conectar con el servidor');
   }
+}
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
 }

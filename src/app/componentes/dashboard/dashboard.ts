@@ -16,11 +16,11 @@ export class DashboardComponent {
   
 
   ngOnInit() {
-    const usuarioData = localStorage.getItem('usuarioData');
+    const usuarioData = localStorage.getItem('userData');
     if (usuarioData) {
-      const { nombre, carrera } = JSON.parse(usuarioData);
-      this.usuarioNombre = nombre;
-      this.usuarioCarrera = carrera;
+      const { full_name, metadata: { division , turno } } = JSON.parse(usuarioData);
+      this.usuarioNombre = full_name;
+      this.usuarioCarrera = division + ' - ' + turno;
     } else {
       this.usuarioNombre = 'Director de la división de Tecnologías de la Información';
       this.usuarioCarrera = 'N/A';

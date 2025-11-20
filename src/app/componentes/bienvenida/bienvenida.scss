@@ -1,81 +1,128 @@
-body {
-    background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
-    min-height: 100vh;
+
+.bienvenida-box {
+	max-width: 520px;
+	margin: 48px auto;
+	background: linear-gradient(180deg, #e8f4ff 0%, #d5eaff 100%);
+	border-radius: 14px;
+	padding: 28px 24px;
+	box-shadow: 0 6px 24px rgba(23, 105, 170, 0.08);
+	text-align: center;
+	font-family: 'Segoe UI', Roboto, Arial, sans-serif;
 }
 
-div {
-    text-align: center;
-    margin-top: 70px;
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 4px 24px rgba(44, 62, 80, 0.10);
-    padding: 48px 32px;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
+.bienvenida-box h1 {
+	margin: 0 0 8px 0;
+	color: #0d47a1;
+	font-size: 1.6rem;
+}
+.bienvenida-box .sub {
+	color: #244a77;
+	margin-bottom: 18px;
 }
 
-h1 {
-    color: #2c3e50;
-    font-size: 2.2em;
-    margin-bottom: 12px;
-    font-family: 'Segoe UI', 'Arial', sans-serif;
-    letter-spacing: 1px;
-    text-shadow: 1px 2px 8px #d6e6f2;
+.form-row {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	margin-bottom: 12px;
+	text-align: left;
+}
+.form-row label {
+	font-size: 0.9rem;
+	color: #0d47a1;
+	margin-bottom: 6px;
+	font-weight: 600;
+}
+.form-row input {
+	padding: 10px 12px;
+	border-radius: 8px;
+	border: 1px solid #cfe3ff;
+	background: #ffffff;
+	font-size: 1rem;
+	width: 100%;
+	box-sizing: border-box;
+	max-width: 100%;
+	display: block;
+}
+.password-row {
+	position: relative;
+}
+.password-row input {
+	padding-right: 44px;
+	width: 100%;
+	box-sizing: border-box;
+	/* espacio para el botón del ojo */
+}
+.toggle-password {
+	position: absolute;
+	right: 8px;
+	top: 50%;
+	transform: translateY(-50%);
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 4px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: #244a77;
+}
+.toggle-password .icon-eye { stroke: #244a77; }
+
+/* Ocultar iconos nativos de mostrar contraseña en distintos navegadores */
+.password-row input {
+	-webkit-appearance: none; /* chrome/safari */
+	appearance: none;
 }
 
-p {
-    font-size: 1.15em;
-    color: #34495e;
-    margin-bottom: 28px;
-    font-family: 'Segoe UI', 'Arial', sans-serif;
+/* Chrome, Edge, Safari */
+.password-row input::-webkit-textfield-decoration-container,
+.password-row input::-webkit-credentials-auto-fill-button,
+.password-row input::-webkit-clear-button {
+	display: none !important;
 }
 
-input {
-    padding: 12px;
-    margin: 12px 0;
-    width: 90%;
-    border: 1.5px solid #b2bec3;
-    border-radius: 8px;
-    font-size: 1.05em;
-    background: #f4f8fb;
-    transition: border-color 0.2s;
-    box-shadow: 0 1px 4px rgba(44, 62, 80, 0.05);
-}
-input:focus {
-    border-color: #3498db;
-    outline: none;
+/* Edge / IE */
+.password-row input::-ms-clear,
+.password-row input::-ms-reveal {
+	display: none;
+	width: 0;
+	height: 0;
 }
 
-button {
-    padding: 12px 28px;
-    background: linear-gradient(90deg, #3498db 60%, #6dd5fa 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.08em;
-    cursor: pointer;
-    font-weight: 500;
-    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
-    transition: background 0.2s, transform 0.2s;
-}
-button:hover {
-    background: linear-gradient(90deg, #2980b9 60%, #57b6e6 100%);
-    transform: translateY(-2px) scale(1.04);
+/* Firefox: prevenir el icono de vista previa (si aparece) */
+.password-row input[type="password"] {
+	appearance: textfield;
+	-webkit-appearance: textfield;
+	-moz-appearance: textfield;
 }
 
-@media (max-width: 500px) {
-    div {
-        padding: 24px 8px;
-        max-width: 98vw;
-    }
-    h1 {
-        font-size: 1.3em;
-    }
-    input {
-        width: 98%;
-    }
-    button {
-        width: 100%;
-    }
+/* Asegurar que el botón del ojo esté sobre el input */
+.toggle-password {
+	z-index: 2;
 }
+.form-row input:focus {
+	outline: none;
+	border-color: #1976d2;
+	box-shadow: 0 2px 10px rgba(25,118,210,0.06);
+}
+
+.actions {
+	margin-top: 12px;
+}
+.btn-login {
+	background: #1976d2;
+	color: #fff;
+	border: none;
+	padding: 10px 18px;
+	border-radius: 8px;
+	font-weight: 700;
+	cursor: pointer;
+}
+.btn-login:hover { background: #1565c0; }
+
+@media (max-width: 480px) {
+	.bienvenida-box { padding: 18px 12px; margin: 24px 12px; }
+	.bienvenida-box h1 { font-size: 1.2rem; }
+}
+

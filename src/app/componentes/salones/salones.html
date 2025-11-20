@@ -14,6 +14,7 @@
 
     <form (submit)="$event.preventDefault(); editandoId ? guardarEdicion() : agregarSalon()" class="salon-form">
         <input type="text" placeholder="Nombre del salón" [(ngModel)]="nuevoSalon.nombre" name="nombre" required />
+        <input type="text" placeholder="División" [(ngModel)]="nuevoSalon.division" name="division" required />
         <button type="submit" [class.edit-mode]="editandoId">{{ editandoId ? 'Guardar' : 'Agregar' }}</button>
         <button type="button" *ngIf="editandoId" (click)="cancelarEdicion()" class="cancelar">Cancelar</button>
     </form>
@@ -24,6 +25,7 @@
                 <tr>
                     <th>Nombre</th>
                     <th>Edificio</th>
+                    <th>División</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
