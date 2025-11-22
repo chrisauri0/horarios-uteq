@@ -13,6 +13,7 @@
     </div>
 </div>
 
+
 <div class="scheduler-container">
     <h2>Generador de Horarios</h2>
 
@@ -27,43 +28,114 @@
     </div>
 
     <div [hidden]="!loading" class="spinner"></div>
-
-
-
-
 </div>
 
 <div>
-    <h1> horarios creados :
-        <div *ngIf="groupedSchedules.length" class="schedules-list">
-            <h3>Horarios guardados</h3>
-            <div *ngFor="let group of groupedSchedules" class="schedule-group">
-                <h4 class="group-title">{{ group.nombregrupo }} <span class="count">({{ group.data.length }})</span>
-                </h4>
-                <table class="horario-table">
-                    <thead>
-                        <tr>
-                            <th>Hora</th>
-                            <th *ngFor="let dia of diasSemana">{{ dia }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let hora of horas">
-                            <td class="hora-label">{{ hora }}:00</td>
-                            <td *ngFor="let dia of diasSemana">
-                                <ng-container *ngIf="getClase(group.data, dia, hora) as clase">
-                                    <div *ngIf="clase">
-                                        <div class="materia">{{ clase.subj }}</div>
-                                        <div class="profesor">{{ clase.prof }}</div>
-                                        <div class="salon">{{ clase.room }}</div>
-                                    </div>
-                                </ng-container>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <button class="export-btn" (click)="exportarPDF(group)">Exportar a PDF</button>
+    <div>
+        <h1>Horarios creados:</h1>
+        <div class="view-toggle prettier-toggle">
+            <button type="button" class="toggle-btn" [class.active]="vistaHorarios === 'grupo'"
+                (click)="vistaHorarios = 'grupo'">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" viewBox="0 0 24 24">
+                    <path d="M3 7h18M3 12h18M3 17h18" />
+                </svg>
+                <span>Ver por grupos</span>
+            </button>
+            <button type="button" class="toggle-btn" [class.active]="vistaHorarios === 'profesor'"
+                (click)="vistaHorarios = 'profesor'">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" viewBox="0 0 24 24">
+                    <circle cx="12" cy="7" r="4" />
+                    <path d="M5.5 21a7.5 7.5 0 0 1 13 0" />
+                </svg>
+                <span>Ver por profesores</span>
+            </button>
+        </div>
+        <div *ngIf="vistaHorarios === 'grupo' && groupedSchedules.length">
+            <h3>Horarios por grupo</h3>
+            <div class="schedules-list">
+
+
+                <div *ngFor="let group of groupedSchedules" class="schedule-group">
+                    <h4 class="group-title">{{ group.nombregrupo }} <span class="count">({{ group.data.length }})</span>
+                    </h4>
+                    <button class="export-btn" (click)="exportarPDF(group)">
+                        <svg class="export-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 16v-8" />
+                            <path d="M8 12l4 4 4-4" />
+                            <rect x="4" y="20" width="16" height="2" rx="1" />
+                            <rect x="4" y="4" width="16" height="2" rx="1" />
+                        </svg>
+                        <span>Exportar a PDF</span>
+                    </button>
+                    <table class="horario-table">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th *ngFor="let dia of diasSemana">{{ dia }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let hora of horas">
+                                <td class="hora-label">{{ hora }}:00</td>
+                                <td *ngFor="let dia of diasSemana">
+                                    <ng-container *ngIf="getClase(group.data, dia, hora) as clase">
+                                        <div *ngIf="clase">
+                                            <div class="materia">{{ clase.subj }}</div>
+                                            <div class="profesor">{{ clase.prof }}</div>
+                                            <div class="salon">{{ clase.room }}</div>
+                                        </div>
+                                    </ng-container>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </h1>
+        <div *ngIf="vistaHorarios === 'profesor' && groupedSchedules.length">
+            <h3>Horarios por profesor</h3>
+            <div class="schedules-list">
+                <div *ngFor="let prof of profesoresConHorarios" class="schedule-group">
+                    <h4 class="group-title">{{ prof.nombre }} <span class="count">({{ prof.clases.length }})</span></h4>
+                    <button class="export-btn" (click)="exportarPDFProfesor(prof)">
+                        <svg class="export-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 16v-8" />
+                            <path d="M8 12l4 4 4-4" />
+                            <rect x="4" y="20" width="16" height="2" rx="1" />
+                            <rect x="4" y="4" width="16" height="2" rx="1" />
+                        </svg>
+                        <span>Exportar a PDF</span>
+                    </button>
+                    <table class="horario-table">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th *ngFor="let dia of diasSemana">{{ dia }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let hora of horas">
+                                <td class="hora-label">{{ hora }}:00</td>
+                                <td *ngFor="let dia of diasSemana">
+                                    <ng-container *ngIf="getClaseProfesor(prof.clases, dia, hora) as clase">
+                                        <div *ngIf="clase">
+                                            <div class="materia">{{ clase.subj }}</div>
+                                            <div class="grupo">Grupo: {{ clase.group || clase.grupo || '-' }}</div>
+                                            <div class="salon">{{ clase.room }}</div>
+                                        </div>
+                                    </ng-container>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
