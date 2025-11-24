@@ -24,7 +24,7 @@
             <thead>
                 <tr>
                     <th>Nombre</th>
-                    <th>Edificio</th>
+
                     <th>División</th>
                     <th>Acciones</th>
                 </tr>
@@ -32,6 +32,7 @@
             <tbody>
                 <tr *ngFor="let salon of salones">
                     <td>{{ salon.nombre }}</td>
+                    <td>{{ salon.division }}</td>
                     <td>
                         <button class="accion editar" (click)="editarSalon(salon)">Editar</button>
                         <button class="accion eliminar" (click)="eliminarSalon(salon.id)">Eliminar</button>

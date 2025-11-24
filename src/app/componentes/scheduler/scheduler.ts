@@ -125,14 +125,27 @@ export class SchedulerComponent {
 
   exportarPDF(group: { nombregrupo: string; data: any[] }) {
     const doc = new jsPDF();
+    // Título con el nombre del grupo
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Horario del grupo: ${group.nombregrupo}`, 14, 16);
+     doc.setFontSize(12);
+    doc.text(`Horario generado por el sistema: Horari - UTEQ`, 110, 16);
+   
     const head = [['Hora', ...this.diasSemana]];
     const body: any[] = [];
+
     for (const hora of this.horas) {
       const row: any[] = [hora + ':00'];
       for (const dia of this.diasSemana) {
         const clase = this.getClase(group.data, dia, hora);
         if (clase) {
-          row.push(`${clase.subj || ''}\n${clase.prof || ''}\n${clase.room || ''}`);
+          // Materia en negrita, profe normal, salón pequeño
+          row.push([
+            clase.subj ,
+            clase.prof || '',
+            clase.room 
+          ].filter(Boolean).join('\n'));
         } else {
           row.push('');
         }
@@ -142,22 +155,31 @@ export class SchedulerComponent {
     autoTable(doc, {
       head,
       body,
+      theme: 'grid',
       styles: {
         cellPadding: 2,
-        fontSize: 9,
+        fontSize: 10,
         valign: 'middle',
         halign: 'center',
+        textColor: [0, 0, 0],
+        lineColor: [0, 0, 0],
+        lineWidth: 0.4,
+        fillColor: [255, 255, 255],
       },
       headStyles: {
-        fillColor: [14, 23, 42],
-        textColor: [56, 189, 248],
+        fillColor: [255, 255, 255],
+        textColor: [0, 0, 0],
         fontStyle: 'bold',
+        lineColor: [0, 0, 0],
+        lineWidth: 0.6,
       },
       alternateRowStyles: {
-        fillColor: [30, 41, 59],
+        fillColor: [255, 255, 255],
       },
-      margin: { top: 20 },
+      margin: { top: 26 },
+    
     });
+   
     doc.save(`horario_${group.nombregrupo}.pdf`);
   }
 
@@ -166,6 +188,12 @@ export class SchedulerComponent {
 
     exportarPDFProfesor(prof: { nombre: string, clases: any[] }) {
       const doc = new jsPDF();
+      // Título con el nombre del profesor
+      doc.setFontSize(16);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Horario del profesor: ${prof.nombre}`, 14, 16);
+          doc.setFontSize(12);
+    doc.text(`Horario generado por el sistema: Horari - UTEQ`, 110, 16);
       const head = [['Hora', ...this.diasSemana]];
       const body: any[] = [];
       for (const hora of this.horas) {
@@ -173,7 +201,11 @@ export class SchedulerComponent {
         for (const dia of this.diasSemana) {
           const clase = this.getClaseProfesor(prof.clases, dia, hora);
           if (clase) {
-            row.push(`${clase.subj || ''}\nGrupo: ${clase.group || clase.grupo || '-'}\n${clase.room || ''}`);
+            row.push([
+              clase.subj ,
+              `Grupo: ${clase.group || clase.grupo || '-'}`,
+              clase.room 
+            ].filter(Boolean).join('\n'));
           } else {
             row.push('');
           }
@@ -183,21 +215,29 @@ export class SchedulerComponent {
       autoTable(doc, {
         head,
         body,
+        theme: 'grid',
         styles: {
           cellPadding: 2,
-          fontSize: 9,
+          fontSize: 10,
           valign: 'middle',
           halign: 'center',
+          textColor: [0, 0, 0],
+          lineColor: [0, 0, 0],
+          lineWidth: 0.4,
+          fillColor: [255, 255, 255],
         },
         headStyles: {
-          fillColor: [14, 23, 42],
-          textColor: [56, 189, 248],
+          fillColor: [255, 255, 255],
+          textColor: [0, 0, 0],
           fontStyle: 'bold',
+          lineColor: [0, 0, 0],
+          lineWidth: 0.6,
         },
         alternateRowStyles: {
-          fillColor: [30, 41, 59],
+          fillColor: [255, 255, 255],
         },
-        margin: { top: 20 },
+        margin: { top: 26 },
+       
       });
       doc.save(`horario_profesor_${prof.nombre}.pdf`);
     }

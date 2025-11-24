@@ -70,16 +70,8 @@ export class Materias {
       } catch {}
     }
 
-    // Siempre consulta el backend para obtener el hash actual
     try {
-      const res = await fetch('https://horarios-backend-58w8.onrender.com/materias/hash');
-      if (!res.ok) throw new Error('Error al obtener hash de materias');
-      const { hash } = await res.json();
-      if (hash === cacheHash && materiasLocal.length > 0) {
-        // No hay cambios, no hace falta pedir la lista
-        return;
-      }
-      // Si el hash cambió, pide la lista actualizada
+      
       const resList = await fetch('https://horarios-backend-58w8.onrender.com/materias');
       if (!resList.ok) throw new Error('Error al obtener materias');
       const data = await resList.json();
@@ -93,7 +85,6 @@ export class Materias {
         salones: m.salones || {}
       })) : [];
       localStorage.setItem(localKey, JSON.stringify(this.materias));
-      localStorage.setItem(localHashKey, hash);
     } catch (err) {
       alert('No se pudo cargar la lista de materias: ' + err);
     }

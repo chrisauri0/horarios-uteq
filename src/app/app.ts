@@ -17,6 +17,7 @@ export class App {
   usuarioCarrera: string = '';
   sidebarCollapsed = false;
   esLogin = false; // 👈 nueva propiedad para ocultar el layout
+  navbarOpen = false; // para el menú superior responsive
 
   constructor(private router: Router) {
     // 👇 Detecta si estás en la ruta /login

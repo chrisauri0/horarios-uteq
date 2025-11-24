@@ -1,16 +1,9 @@
-<div *ngIf="!esLogin; else soloLogin">
-    <div class="dashboard-container">
-        <div class="sidebar" [class.collapsed]="sidebarCollapsed">
-            <button class="toggle-btn" (click)="sidebarCollapsed = !sidebarCollapsed" aria-label="Toggle sidebar">
-                <span class="caret" *ngIf="!sidebarCollapsed">⏴</span>
-                <span class="caret" *ngIf="sidebarCollapsed">
-                    <img src="assets/hamburger-svgrepo-com.svg" alt="menu">
-                </span>
-            </button>
+<div *ngIf="!esLogin; else soloLogin" class="nav-container">
 
-            <a class="sidebar-brand" routerLink="/dashboard">
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <a routerLink="/dashboard">
                 <span class="icon" aria-hidden="true">
-                    <!-- simple school/book SVG -->
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
                         focusable="false">
                         <path d="M4 6l8-4 8 4v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6z" stroke="#fff" stroke-width="1.2"
@@ -20,22 +13,30 @@
                 </span>
                 <span>UTEQ Horarios</span>
             </a>
-
-            <ul class="sidebar-nav">
-                <li><a routerLink="/dashboard"><span class="icon">🏠</span><span>Dashboard</span></a></li>
-                <li><a routerLink="/horarios/nuevo"><span class="icon">📅</span><span>Horarios</span></a></li>
-                <li><a routerLink="/profesores"><span class="icon">👩‍🏫</span><span>Profesores</span></a></li>
-                <li><a routerLink="/grupos"><span class="icon">👥</span><span>Grupos</span></a></li>
-                <li><a routerLink="/salones"><span class="icon">🏫</span><span>Salones</span></a></li>
-                <li><a routerLink="/materias"><span class="icon">📚</span><span>Materias</span></a></li>
-            </ul>
         </div>
-
-        <div class="main-content">
-            <router-outlet></router-outlet>
+        <div class="navbar-buttons">
+            <button routerLink="/dashboard" routerLinkActive="active"> <img
+                    src="assets/svgs/house-chimney-floor-svgrepo-com.svg" alt="Dashboard"
+                    class="icon" />Dashboard</button>
+            <button routerLink="/horarios/nuevo" routerLinkActive="active"><img
+                    src="/assets/svgs/calendar-alt-svgrepo-com.svg" alt="Horarios" class="icon" />Horarios</button>
+            <button routerLink="/profesores" routerLinkActive="active"><img
+                    src="/assets/svgs/graduation-hat-alt-svgrepo-com.svg" alt="Profesores"
+                    class="icon" />Profesores</button>
+            <button routerLink="/grupos" routerLinkActive="active"><img src="/assets/svgs/grupos-svgrepo-com.svg"
+                    alt="Grupos" class="icon" />Grupos</button>
+            <button routerLink="/salones" routerLinkActive="active"><img src="/assets/svgs/room-svgrepo-com.svg"
+                    alt="Salones" class="icon" />Salones</button>
+            <button routerLink="/materias" routerLinkActive="active"><img src="assets/svgs/books-svgrepo-com.svg"
+                    alt="Materias" class="icon" />Materias</button>
         </div>
+    </nav>
+    <div class="main-content">
+        <router-outlet></router-outlet>
     </div>
+
 </div>
+
 
 <ng-template #soloLogin>
     <router-outlet></router-outlet>

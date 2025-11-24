@@ -6,7 +6,7 @@ import { Materia } from '../materias/materias';
 // ...
 
 export interface ProfesorData {
-  id: string;
+  profesor_id: string;
   nombre: string;
   apellidos: string;
   email: string;
@@ -27,7 +27,7 @@ export class ProfesoresComponent {
  materias: Materia[] = [];
  materiasOpciones: string[] = [];
   nuevoProfesor: ProfesorData = {
-    id: '',
+    profesor_id: '',
     nombre: '',
     apellidos: '',
     email: '',
@@ -91,15 +91,7 @@ export class ProfesoresComponent {
   private lastProfesoresJson: string = '';
 
   async cargarProfesores() {
-    // Intentar cargar desde localStorage primero
-    const cache = localStorage.getItem('profesoresCache');
-    if (cache) {
-      try {
-        const cacheData = JSON.parse(cache);
-        this.profesores = Array.isArray(cacheData) ? cacheData : [];
-        this.lastProfesoresJson = cache;
-      } catch {}
-    }
+    
 
     try {
       const res = await fetch('https://horarios-backend-58w8.onrender.com/profesores');
@@ -155,25 +147,22 @@ export class ProfesoresComponent {
       });
       if (!res.ok) throw new Error('Error al crear el profesor');
       const data = await res.json();
-      this.profesores.push({ ...this.nuevoProfesor });
-      this.nuevoProfesor = { id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {} };
+      // Usar el id real devuelto por el backend
+      this.profesores.push({ ...this.nuevoProfesor, profesor_id: data.profesor_id });
+      this.nuevoProfesor = { profesor_id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {} };
     } catch (err) {
       alert('No se pudo crear el profesor: ' + err);
     }
   }
 
   async guardarEdicion() {
-  if (!this.nuevoProfesor.nombre.trim() || !this.nuevoProfesor.email.trim()) return;
+    if (!this.nuevoProfesor.nombre.trim() || !this.nuevoProfesor.email.trim()) return;
     if (!this.editandoId) return;
 
-    // Separar nombre y apellidos
-    const nombreCompleto = this.nuevoProfesor.nombre.trim().split(' ');
-    const nombre = nombreCompleto[0];
-    const apellidos = nombreCompleto.slice(1).join(' ');
-
+    // Usar los campos tal cual del formulario
     const body: any = {
-      nombre,
-      apellidos,
+      nombre: this.nuevoProfesor.nombre.trim(),
+      apellidos: this.nuevoProfesor.apellidos.trim(),
       email: this.nuevoProfesor.email,
       can_be_tutor: !!this.nuevoProfesor.can_be_tutor,
       materias: this.nuevoProfesor.materias,
@@ -188,34 +177,50 @@ export class ProfesoresComponent {
       });
       if (!res.ok) throw new Error('Error al actualizar el profesor');
       const data = await res.json();
-      this.profesores = this.profesores.map(p => p.id === this.editandoId ? { ...this.nuevoProfesor } : p);
-      this.nuevoProfesor = { id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {} };
+      // Mantener el id al actualizar localmente
+      this.profesores = this.profesores.map(p =>
+        p.profesor_id === this.editandoId ? { ...p, ...body, profesor_id: p.profesor_id } : p
+      );
+      this.nuevoProfesor = { profesor_id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {} };
       this.editandoId = null;
+      //recagar la lista de profesores para asegurar consistencia
+      this.cargarProfesores();
     } catch (err) {
       alert('No se pudo actualizar el profesor: ' + err);
     }
   }
 
-  async eliminarProfesor(id: string) {
+  async eliminarProfesor(profesor_id: string) {
+    const confirmacion = confirm('¿Estás seguro de que deseas eliminar este profesor?');
+    if (!confirmacion) return;
     try {
-      const res = await fetch(`https://horarios-backend-58w8.onrender.com/profesores/${id}`, {
+      const res = await fetch(`https://horarios-backend-58w8.onrender.com/profesores/${profesor_id}`, {
         method: 'DELETE'
       });
       if (!res.ok) throw new Error('Error al eliminar el profesor');
-      this.profesores = this.profesores.filter(p => p.id !== id);
+      this.profesores = this.profesores.filter(p => p.profesor_id !== profesor_id);
     } catch (err) {
       alert('No se pudo eliminar el profesor: ' + err);
-      console.log(id);
+      console.log(profesor_id);
     }
   }
 
-  editarProfesor(profesor: ProfesorData) {
-    this.editandoId = profesor.id;
+  editarProfesor(profesor: any) {
+    this.editandoId = profesor.profesor_id;
     this.nuevoProfesor = { ...profesor };
+    // Mover la vista hacia el formulario de edición, pero con un offset para que se vea completo
+    const formElement = document.getElementById('profesorForm');
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Esperar un poco para que el scroll termine y luego ajustar hacia arriba
+      setTimeout(() => {
+        window.scrollBy({ top: -170, left: 0, behavior: 'smooth' }); // Ajusta el offset según la altura de tu navbar
+      }, 400);
+    }
   }
 
   cancelarEdicion() {
-  this.nuevoProfesor = { id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {} };
+  this.nuevoProfesor = { profesor_id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {} };
     this.editandoId = null;
   }
 }

@@ -1,3 +1,15 @@
+.toggle-btn img.icon {
+  width: 22px;
+  height: 22px;
+  margin-right: 0.4em;
+  vertical-align: middle;
+  transition: filter 0.18s;
+  filter: none;
+}
+.toggle-btn.active img.icon,
+.toggle-btn:hover img.icon {
+  filter: invert(1) brightness(2) grayscale(1);
+}
 /* Toggle view buttons (grupo/profesor) */
 .prettier-toggle {
   display: flex;

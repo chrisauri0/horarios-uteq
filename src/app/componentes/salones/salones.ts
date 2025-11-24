@@ -97,6 +97,8 @@ export class SalonesComponent {
   }
 
   async eliminarSalon(id: string) {
+    const confirmacion = confirm('¿Estás seguro de que deseas eliminar este salón?');
+    if (!confirmacion) return;
     try {
       const res = await fetch(`https://horarios-backend-58w8.onrender.com/salones/${id}`, {
         method: 'DELETE'

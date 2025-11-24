@@ -1,15 +1,10 @@
 <div class="main-content">
     <h1>Profesores</h1>
-    <form (ngSubmit)="editandoId ? guardarEdicion() : agregarProfesor()" class="profesor-form">
+    <form (ngSubmit)="editandoId ? guardarEdicion() : agregarProfesor()" class="profesor-form" id="profesorForm">
         <input type="text" placeholder="Nombre(s) del profesor" [(ngModel)]="nuevoProfesor.nombre" name="nombre"
             required />
         <input type="text" placeholder="Apellidos" [(ngModel)]="nuevoProfesor.apellidos" name="apellidos" required />
         <input type="email" placeholder="Email" [(ngModel)]="nuevoProfesor.email" name="email" required />
-
-        <!-- Puede ser tutor -->
-        <label>
-            <input type="checkbox" [(ngModel)]="nuevoProfesor.can_be_tutor" name="can_be_tutor" /> Puede ser tutor
-        </label>
 
         <!-- Puede ser tutor de grupo -->
         <label for="canBeTutorSelect">¿Puede ser tutor de grupo?</label>
@@ -24,7 +19,9 @@
             name="materias">
         </ng-select>
 
-        <button class="btn-aceptar" type="submit">{{ editandoId ? 'Guardar' : 'Agregar' }}</button>
+        <button class="btn-aceptar" type="submit" [class.edit-mode]="editandoId">{{ editandoId ? 'Guardar' : 'Agregar'
+            }}</button>
+
         <button type="button" *ngIf="editandoId" (click)="cancelarEdicion()">Cancelar</button>
     </form>
 
@@ -55,7 +52,9 @@
                 </td>
                 <td>
                     <button (click)="editarProfesor(profesor)">Editar</button>
-                    <button (click)="eliminarProfesor(profesor.id)">Eliminar</button>
+                    <button (click)="eliminarProfesor(profesor.profesor_id)">Eliminar</button>
+
+
                 </td>
             </tr>
             <tr *ngIf="profesores.length === 0">
