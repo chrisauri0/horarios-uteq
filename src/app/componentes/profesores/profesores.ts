@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Materia } from '../materias/materias';
-// ...
+import { RouterModule } from '@angular/router';
 
 export interface ProfesorData {
   profesor_id: string;
@@ -18,14 +18,14 @@ export interface ProfesorData {
 @Component({
   selector: 'app-profesores',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgSelectModule],
+  imports: [CommonModule, FormsModule, NgSelectModule, RouterModule],
   templateUrl: './profesores.html',
   styleUrls: ['./profesores.scss']
 })
 export class ProfesoresComponent {
   profesores: ProfesorData[] = [];
- materias: Materia[] = [];
- materiasOpciones: string[] = [];
+  materias: Materia[] = [];
+  materiasOpciones: string[] = [];
   nuevoProfesor: ProfesorData = {
     profesor_id: '',
     nombre: '',
@@ -52,11 +52,11 @@ export class ProfesoresComponent {
     let materiasLocal: Materia[] = [];
     if (cache) {
       try {
-  materiasLocal = JSON.parse(cache);
-  this.materias = materiasLocal;
-  this.materiasOpciones = materiasLocal.map(m => m.nombre);
-  console.log('Cargado desde cache localStorage');
-      } catch {}
+        materiasLocal = JSON.parse(cache);
+        this.materias = materiasLocal;
+        this.materiasOpciones = materiasLocal.map(m => m.nombre);
+        console.log('Cargado desde cache localStorage');
+      } catch { }
     }
 
     // Siempre consulta el backend para obtener el hash actual
@@ -91,7 +91,7 @@ export class ProfesoresComponent {
   private lastProfesoresJson: string = '';
 
   async cargarProfesores() {
-    
+
 
     try {
       const res = await fetch('https://horarios-backend-58w8.onrender.com/profesores');
@@ -111,7 +111,7 @@ export class ProfesoresComponent {
   }
 
   async agregarProfesor() {
-    
+
     const nombre = this.nuevoProfesor.nombre.trim();
     const apellidos = this.nuevoProfesor.apellidos.trim();
 
@@ -220,7 +220,7 @@ export class ProfesoresComponent {
   }
 
   cancelarEdicion() {
-  this.nuevoProfesor = { profesor_id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {} };
+    this.nuevoProfesor = { profesor_id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {} };
     this.editandoId = null;
   }
 }

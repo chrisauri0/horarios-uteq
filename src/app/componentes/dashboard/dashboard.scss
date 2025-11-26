@@ -1,95 +1,191 @@
-
-
-// Paleta institucional (puedes ajustar los colores a tu preferencia)
+// Paleta institucional
 $primary: #005baa;
 $secondary: #f5f7fa;
 $accent: #ffb300;
 $text: #222;
 $border: #e0e4ea;
+$white: #ffffff;
+$success-bg: #eaf3fb;
 
 @use "sass:color";
 
 .dashboard-container {
-	max-width: 700px;
+	max-width: 800px;
 	margin: 40px auto;
-	background: $secondary;
-	border-radius: 18px;
-	box-shadow: -4px  4px 12px 0 rgba(0, 0, 0, 0.55);
-
-	padding: 2.5rem 2rem 2rem 2rem;
-	border: 1.5px solid $border;
-	font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+	background: $white;
+	border-radius: 24px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+	padding: 3rem;
+	border: 1px solid $border;
+	font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
 	color: $text;
 	position: relative;
 	overflow: hidden;
-}
-// Quitar el estilo azul y subrayado de los enlaces en el dashboard
-.dashboard-container a {
-	color: inherit;
-	text-decoration: none;
-	font-weight: inherit;
-	transition: color 0.2s;
-}
 
-.dashboard-container a:hover, .dashboard-container a:focus {
-	color: $accent;
-	text-decoration: underline;
+	@media (max-width: 768px) {
+		padding: 1.5rem;
+		margin: 20px 1rem;
+		border-radius: 16px;
+	}
 }
 
+.dashboard-header {
+	display: flex;
+	align-items: flex-start;
+	gap: 1.5rem;
+	margin-bottom: 2.5rem;
 
-.dashboard-container h1 {
-	color: $primary;
-	font-size: 2rem;
-	margin-bottom: 0.7em;
-	font-weight: 700;
-	letter-spacing: 0.5px;
-	text-shadow: 0 2px 8px rgba(0,91,170,0.07);
+	@media (max-width: 600px) {
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		gap: 1rem;
+	}
+
+	.welcome-icon {
+		flex-shrink: 0;
+		width: 64px;
+		height: 64px;
+		background: $success-bg;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: $primary;
+
+		svg {
+			display: block;
+			width: 32px;
+			height: 32px;
+		}
+	}
+
+	.header-content {
+		h1 {
+			color: $primary;
+			font-size: 1.8rem;
+			margin: 0 0 0.5rem 0;
+			font-weight: 700;
+			line-height: 1.2;
+			letter-spacing: -0.5px;
+
+			@media (max-width: 600px) {
+				font-size: 1.5rem;
+			}
+		}
+
+		p {
+			margin: 0;
+			font-size: 1.1rem;
+			color: color.adjust($text, $lightness: 20%);
+			font-weight: 400;
+			line-height: 1.5;
+		}
+	}
 }
 
-.dashboard-container p {
-	font-size: 1.15rem;
-	margin-bottom: 1.5em;
-	color: color.adjust($primary, $lightness: -20%);
-	font-weight: 500;
+.dashboard-steps {
+	margin-bottom: 2.5rem;
+
+	h2 {
+		font-size: 1.4rem;
+		color: $text;
+		margin-bottom: 1rem;
+		font-weight: 600;
+		letter-spacing: -0.3px;
+	}
 }
 
-.dashboard-container ol {
-	background: #fff;
-	border-radius: 12px;
-	box-shadow: 0 2px 8px 0 rgba(0,91,170,0.04);
-	padding: 1.5em 1.5em 1.5em 2.2em;
+.steps-list {
+	background: $secondary;
+	border-radius: 16px;
+	padding: 0;
 	margin: 0;
-	font-size: 1.08rem;
-	border: 1px solid $border;
-}
+	list-style: none;
+	counter-reset: steps;
+	border: 1px solid transparent;
 
-.dashboard-container ol li {
-	margin-bottom: 1.1em;
-	line-height: 1.6;
-	padding-left: 0.2em;
-	position: relative;
-	transition: background 0.2s;
-	border-left: 4px solid transparent;
-}
+	li {
+		position: relative;
+		padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+		border-bottom: 1px solid color.adjust($border, $lightness: 5%);
+		transition: background 0.2s ease;
+		font-size: 1.05rem;
+		line-height: 1.6;
+		color: color.adjust($text, $lightness: 10%);
 
+		&:last-child {
+			border-bottom: none;
+			border-bottom-left-radius: 16px;
+			border-bottom-right-radius: 16px;
+		}
 
+		&:first-child {
+			border-top-left-radius: 16px;
+			border-top-right-radius: 16px;
+		}
 
-.dashboard-container ol li::marker {
-	color: $primary;
-	font-weight: bold;
-	font-size: 1.1em;
-}
+		&::before {
+			counter-increment: steps;
+			content: counter(steps);
+			position: absolute;
+			left: 1.2rem;
+			top: 1.2rem;
+			width: 24px;
+			height: 24px;
+			background: $primary;
+			color: $white;
+			border-radius: 50%;
+			font-size: 0.85rem;
+			font-weight: 700;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
 
-@media (max-width: 600px) {
-	.dashboard-container {
-		padding: 1.2rem 0.5rem 1.5rem 0.5rem;
-		max-width: 98vw;
+		&:hover {
+			background: $white;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+		}
 	}
-	.dashboard-container h1 {
-		font-size: 1.3rem;
+
+	.step-link {
+		color: $primary;
+		text-decoration: none;
+		font-weight: 600;
+		transition: color 0.2s;
+		border-bottom: 1px solid transparent;
+
+		&:hover {
+			color: color.adjust($primary, $lightness: -10%);
+			border-bottom-color: currentColor;
+		}
 	}
-	.dashboard-container ol {
-		padding: 1em 0.7em 1em 1.2em;
-		font-size: 0.98rem;
+
+	.step-highlight {
+		font-weight: 600;
+		color: $primary;
+	}
+}
+
+.info-card {
+	background: $success-bg;
+	border-radius: 16px;
+	padding: 1.2rem 1.5rem;
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+	border: 1px solid color.adjust($primary, $lightness: 45%);
+
+	svg {
+		flex-shrink: 0;
+		margin-top: 2px;
+	}
+
+	span {
+		color: color.adjust($primary, $lightness: -10%);
+		font-size: 0.95rem;
+		line-height: 1.5;
+		font-weight: 500;
 	}
 }

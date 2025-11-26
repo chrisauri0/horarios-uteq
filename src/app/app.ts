@@ -29,7 +29,7 @@ export class App {
   }
 
   ngOnInit() {
-    const usuarioData = localStorage.getItem('usuarioData');
+    const usuarioData = localStorage.getItem('userData');
     if (usuarioData) {
       const { nombre, carrera } = JSON.parse(usuarioData);
       this.usuarioNombre = nombre;
@@ -37,6 +37,16 @@ export class App {
     } else {
       this.usuarioNombre = 'Director de la división de Tecnologías de la Información';
       this.usuarioCarrera = 'N/A';
+    }
+  }
+
+  cerrarSesion() {  
+    //confirmar cierre de sesión
+    if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+
+
+      localStorage.removeItem('userData');
+      this.router.navigate(['/login']);
     }
   }
 }

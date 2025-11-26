@@ -1,10 +1,11 @@
 
 import { CommonModule } from '@angular/common';
-import { Component,  } from '@angular/core';
-import { FormsModule,} from '@angular/forms';
+import { Component, } from '@angular/core';
+import { FormsModule, } from '@angular/forms';
 import { ProfesorData } from '../profesores/profesores';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Carreras } from '../carreras/carreras';
+import { RouterModule } from '@angular/router';
 
 
 export interface Grupo {
@@ -34,14 +35,14 @@ interface Tutor {
 
 @Component({
   selector: 'app-grupos',
-  imports: [CommonModule, FormsModule, NgSelectModule],
+  imports: [CommonModule, FormsModule, NgSelectModule, RouterModule],
   templateUrl: './grupos.html',
   styleUrl: './grupos.scss'
 })
 
 
 
-export class GruposComponent{
+export class GruposComponent {
   grupos: Grupo[] = [];
   carreras: Carrera[] = [];
   grupoEditando: Grupo | null = null;
@@ -52,7 +53,7 @@ export class GruposComponent{
     this.cargarGrupos();
     this.cargarCarreras();
   }
-  
+
   async cargarCarreras() {
     try {
       const res = await fetch('https://horarios-backend-58w8.onrender.com/carreras');
@@ -70,11 +71,11 @@ export class GruposComponent{
   }
 
 
-getNombreTutor(id?: string): string {
-  if (!id) return '-';
-  const tutor = this.tutores.find(t => t.id === id);
-  return tutor ? tutor.fullName : '-';
-}
+  getNombreTutor(id?: string): string {
+    if (!id) return '-';
+    const tutor = this.tutores.find(t => t.id === id);
+    return tutor ? tutor.fullName : '-';
+  }
 
 
   async cargarTutores(): Promise<void> {
@@ -108,13 +109,13 @@ getNombreTutor(id?: string): string {
       const data = await res.json();
       this.grupos = Array.isArray(data)
         ? data.map((g: any) => ({
-            id: g.id,
-            nombre: g.nombre,
-            division: g.division,
-            grado: g.grado,
-            carrera: g.carrera,
-            data: g.data || {}
-          }))
+          id: g.id,
+          nombre: g.nombre,
+          division: g.division,
+          grado: g.grado,
+          carrera: g.carrera,
+          data: g.data || {}
+        }))
         : [];
     } catch (err) {
       alert('No se pudo cargar la lista de grupos: ' + err);
@@ -132,7 +133,7 @@ getNombreTutor(id?: string): string {
     }
   }
 
- 
+
   // Agregar un nuevo grupo
   async agregarGrupo() {
     if (!this.nuevoGrupo.nombre || !this.nuevoGrupo.division || !this.nuevoGrupo.carrera || !this.nuevoGrupo.grado) {

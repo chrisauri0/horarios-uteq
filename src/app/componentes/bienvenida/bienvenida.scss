@@ -1,128 +1,214 @@
+// Paleta institucional
+$primary: #005baa;
+$primary-dark: #004a8f;
+$secondary: #f5f7fa;
+$text: #222;
+$text-light: #666;
+$border: #e0e4ea;
+$white: #ffffff;
+$input-bg: #f8fafc;
 
-.bienvenida-box {
-	max-width: 520px;
-	margin: 48px auto;
-	background: linear-gradient(180deg, #e8f4ff 0%, #d5eaff 100%);
-	border-radius: 14px;
-	padding: 28px 24px;
-	box-shadow: 0 6px 24px rgba(23, 105, 170, 0.08);
-	text-align: center;
-	font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-}
+@use "sass:color";
 
-.bienvenida-box h1 {
-	margin: 0 0 8px 0;
-	color: #0d47a1;
-	font-size: 1.6rem;
-}
-.bienvenida-box .sub {
-	color: #244a77;
-	margin-bottom: 18px;
-}
-
-.form-row {
+.login-container {
+	min-height: 100vh;
 	display: flex;
-	flex-direction: column;
-	align-items: stretch;
-	margin-bottom: 12px;
-	text-align: left;
-}
-.form-row label {
-	font-size: 0.9rem;
-	color: #0d47a1;
-	margin-bottom: 6px;
-	font-weight: 600;
-}
-.form-row input {
-	padding: 10px 12px;
-	border-radius: 8px;
-	border: 1px solid #cfe3ff;
-	background: #ffffff;
-	font-size: 1rem;
-	width: 100%;
-	box-sizing: border-box;
-	max-width: 100%;
-	display: block;
-}
-.password-row {
-	position: relative;
-}
-.password-row input {
-	padding-right: 44px;
-	width: 100%;
-	box-sizing: border-box;
-	/* espacio para el botón del ojo */
-}
-.toggle-password {
-	position: absolute;
-	right: 8px;
-	top: 50%;
-	transform: translateY(-50%);
-	background: transparent;
-	border: none;
-	cursor: pointer;
-	padding: 4px;
-	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	color: #244a77;
-}
-.toggle-password .icon-eye { stroke: #244a77; }
-
-/* Ocultar iconos nativos de mostrar contraseña en distintos navegadores */
-.password-row input {
-	-webkit-appearance: none; /* chrome/safari */
-	appearance: none;
+	background: linear-gradient(135deg, $secondary 0%, #e3f2fd 100%);
+	padding: 1rem;
+	font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
 }
 
-/* Chrome, Edge, Safari */
-.password-row input::-webkit-textfield-decoration-container,
-.password-row input::-webkit-credentials-auto-fill-button,
-.password-row input::-webkit-clear-button {
-	display: none !important;
+.login-card {
+	background: $white;
+	width: 100%;
+	max-width: 420px;
+	border-radius: 20px;
+	box-shadow: 0 10px 40px rgba(0, 91, 170, 0.1);
+	padding: 2.5rem;
+	animation: slideUp 0.5s ease-out;
 }
 
-/* Edge / IE */
-.password-row input::-ms-clear,
-.password-row input::-ms-reveal {
-	display: none;
-	width: 0;
-	height: 0;
+@keyframes slideUp {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
-/* Firefox: prevenir el icono de vista previa (si aparece) */
-.password-row input[type="password"] {
-	appearance: textfield;
-	-webkit-appearance: textfield;
-	-moz-appearance: textfield;
+.login-header {
+	text-align: center;
+	margin-bottom: 2.5rem;
+
+	.logo-placeholder {
+		width: 64px;
+		height: 64px;
+		background: color.adjust($primary, $lightness: 55%);
+		color: $primary;
+		border-radius: 16px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0 auto 1.5rem;
+		transform: rotate(-5deg);
+		transition: transform 0.3s ease;
+
+		&:hover {
+			transform: rotate(0) scale(1.05);
+		}
+	}
+
+	h1 {
+		color: $primary;
+		font-size: 1.75rem;
+		font-weight: 700;
+		margin: 0 0 0.5rem;
+		letter-spacing: -0.5px;
+	}
+
+	.subtitle {
+		color: $text-light;
+		font-size: 0.95rem;
+		margin: 0;
+	}
 }
 
-/* Asegurar que el botón del ojo esté sobre el input */
+.login-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+.form-group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+
+	label {
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: color.adjust($text, $lightness: 10%);
+		margin-left: 4px;
+	}
+}
+
+.input-wrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+
+	.input-icon {
+		position: absolute;
+		left: 1rem;
+		color: color.adjust($text, $lightness: 40%);
+		display: flex;
+		align-items: center;
+		pointer-events: none;
+		transition: color 0.2s;
+	}
+
+	input {
+		width: 100%;
+		padding: 0.9rem 1rem 0.9rem 2.8rem;
+		border: 2px solid transparent;
+		background: $input-bg;
+		border-radius: 12px;
+		font-size: 1rem;
+		color: $text;
+		transition: all 0.2s ease;
+
+		&::placeholder {
+			color: color.adjust($text, $lightness: 50%);
+		}
+
+		&:focus {
+			outline: none;
+			background: $white;
+			border-color: $primary;
+			box-shadow: 0 0 0 4px rgba($primary, 0.1);
+
+			&+.input-icon {
+				color: $primary;
+			}
+		}
+
+		&:focus~.input-icon {
+			color: $primary;
+		}
+	}
+}
+
 .toggle-password {
-	z-index: 2;
-}
-.form-row input:focus {
-	outline: none;
-	border-color: #1976d2;
-	box-shadow: 0 2px 10px rgba(25,118,210,0.06);
+	position: absolute;
+	right: 1rem;
+	background: transparent;
+	border: none;
+	padding: 4px;
+	cursor: pointer;
+	color: color.adjust($text, $lightness: 40%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: color 0.2s;
+	border-radius: 50%;
+
+	&:hover {
+		color: $primary;
+		background: rgba($primary, 0.05);
+	}
 }
 
-.actions {
-	margin-top: 12px;
-}
 .btn-login {
-	background: #1976d2;
-	color: #fff;
+	margin-top: 1rem;
+	background: $primary;
+	color: $white;
 	border: none;
-	padding: 10px 18px;
-	border-radius: 8px;
-	font-weight: 700;
+	padding: 1rem;
+	border-radius: 12px;
+	font-size: 1rem;
+	font-weight: 600;
 	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.8rem;
+	box-shadow: 0 4px 12px rgba($primary, 0.25);
+
+	&:hover {
+		background: $primary-dark;
+		transform: translateY(-2px);
+		box-shadow: 0 6px 16px rgba($primary, 0.35);
+	}
+
+	&:active {
+		transform: translateY(0);
+	}
 }
-.btn-login:hover { background: #1565c0; }
+
+.login-footer {
+	margin-top: 2.5rem;
+	text-align: center;
+
+	p {
+		color: color.adjust($text, $lightness: 50%);
+		font-size: 0.8rem;
+		margin: 0;
+	}
+}
 
 @media (max-width: 480px) {
-	.bienvenida-box { padding: 18px 12px; margin: 24px 12px; }
-	.bienvenida-box h1 { font-size: 1.2rem; }
-}
+	.login-card {
+		padding: 2rem 1.5rem;
+	}
 
+	.login-header h1 {
+		font-size: 1.5rem;
+	}
+}

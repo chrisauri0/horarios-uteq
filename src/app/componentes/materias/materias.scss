@@ -1,168 +1,285 @@
+// Paleta institucional
+$primary: #005baa;
+$secondary: #f5f7fa;
+$accent: #ffb300;
+$text: #222;
+$border: #e0e4ea;
+$white: #ffffff;
+$success-bg: #eaf3fb;
+$danger: #e57373;
+$danger-hover: #c62828;
 
-// Estilos modernos y escolares para el CRUD de materias
+@use "sass:color";
+
 .materias-container {
-	max-width: 90%;
+	max-width: 900px;
 	margin: 40px auto;
-	background: linear-gradient(135deg, #e8f5e9 0%, #a5d6a7 100%);
-	border-radius: 18px;
-	box-shadow: 0 4px 16px rgba(60, 120, 60, 0.12);
-	padding: 32px 24px 24px 24px;
+	padding: 0 1rem;
+	font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+	color: $text;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+	padding: 2rem;
+	margin-bottom: 2rem;
+	border: 1px solid $border;
+
+	@media (max-width: 600px) {
+		padding: 1.5rem;
+	}
 }
 
-.titulo {
-	text-align: center;
-	color: #388e3c;
-	font-size: 2rem;
-	font-weight: 700;
-	margin-bottom: 24px;
-	letter-spacing: 1px;
-}
-
-.materia-form {
+.header-section {
 	display: flex;
-	gap: 12px;
-	margin-bottom: 24px;
+	align-items: center;
 	justify-content: center;
-	flex-wrap: wrap;
+	position: relative;
+	margin-bottom: 2.5rem;
+
+	.btn-back {
+		position: absolute;
+		left: 0;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		background: $white;
+		border: 1px solid $border;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: $primary;
+		transition: all 0.2s ease;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+		z-index: 10;
+		cursor: pointer;
+
+		&:hover {
+			background: $primary;
+			color: $white;
+			transform: translateY(-50%) scale(1.1);
+			box-shadow: 0 4px 12px rgba(0, 91, 170, 0.2);
+		}
+	}
+
+	.header-text {
+		text-align: center;
+	}
+
+	.titulo-materias {
+		color: $primary;
+		font-size: 2rem;
+		font-weight: 700;
+		margin: 0 0 0.5rem 0;
+		letter-spacing: -0.5px;
+	}
+
+	.subtitle {
+		color: color.adjust($text, $lightness: 20%);
+		font-size: 1.1rem;
+		margin: 0;
+	}
 }
 
-.input-materia {
-	flex: 1 1 120px;
-	min-width: 100px;
-	max-width: 220px;
-	padding: 10px 14px;
-	border: 1.5px solid #66bb6a;
-	border-radius: 8px;
-	font-size: 1rem;
-	background: #f1f8e9;
-	transition: border-color 0.2s;
-}
-.input-materia:focus {
-	border-color: #388e3c;
-	outline: none;
+.card-form {
+	background: $white;
+	border-radius: 16px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+	padding: 2rem;
+	margin-bottom: 2rem;
+	border: 1px solid $border;
+
+	@media (max-width: 600px) {
+		padding: 1.5rem;
+	}
 }
 
-.btn-agregar, .btn-editar, .btn-eliminar, .btn-cancelar {
-	padding: 8px 16px;
-	border: none;
-	border-radius: 8px;
-	font-size: 1rem;
-	font-weight: 600;
-	cursor: pointer;
-	transition: background 0.2s, color 0.2s;
-}
-.inputs-flex {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 18px 16px;
-	align-items: flex-end;
-	justify-content: flex-start;
+.inputs-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 1.5rem;
+	align-items: end;
 }
 
 .input-group {
 	display: flex;
 	flex-direction: column;
-	min-width: 120px;
-	max-width: 200px;
-	flex: 1 1 120px;
-	height: 68px;
-	justify-content: flex-end;
-}
-.input-group label {
-	font-size: 0.98em;
-	color: #388e3c;
-	font-weight: 600;
-	margin-bottom: 4px;
-	margin-left: 2px;
-	letter-spacing: 0.2px;
+	gap: 0.5rem;
+
+	label {
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: color.adjust($text, $lightness: 10%);
+		margin-left: 2px;
+	}
+
+	.input-materia {
+		padding: 0.8rem 1rem;
+		border: 1px solid $border;
+		border-radius: 8px;
+		font-size: 1rem;
+		background: $secondary;
+		transition: all 0.2s ease;
+		color: $text;
+
+		&:focus {
+			outline: none;
+			border-color: $primary;
+			background: $white;
+			box-shadow: 0 0 0 3px rgba($primary, 0.1);
+		}
+	}
 }
 
-@media (max-width: 700px) {
-	.inputs-flex {
+.form-actions {
+	display: flex;
+	gap: 1rem;
+
+	@media (max-width: 600px) {
 		flex-direction: column;
-		gap: 10px 0;
+		width: 100%;
+
+		button {
+			width: 100%;
+		}
 	}
-	.input-group {
-		max-width: 100%;
-		min-width: 80px;
-		height: 68px;
+}
+
+.btn-guardar {
+	background: $primary;
+	color: $white;
+	border: none;
+	padding: 0.8rem 1.5rem;
+	border-radius: 8px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.2s;
+	font-size: 0.95rem;
+
+	&:hover {
+		background: color.adjust($primary, $lightness: -10%);
 	}
 }
-.btn-agregar {
-	background: #43a047;
-	color: #fff;
-}
-.btn-agregar:hover {
-	background: #388e3c;
-}
-.btn-editar {
-	background: #81c784;
-	color: #1b5e20;
-	margin-right: 6px;
-}
-.btn-editar:hover {
-	background: #388e3c;
-	color: #fff;
-}
-.btn-eliminar {
-	background: #e57373;
-	color: #fff;
-}
-.btn-eliminar:hover {
-	background: #c62828;
-}
+
 .btn-cancelar {
-	background: #bdbdbd;
-	color: #424242;
+	background: transparent;
+	color: color.adjust($text, $lightness: 20%);
+	border: 1px solid $border;
+	padding: 0.8rem 1.5rem;
+	border-radius: 8px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s;
+	font-size: 0.95rem;
+
+	&:hover {
+		background: $secondary;
+		color: $text;
+	}
 }
-.btn-cancelar:hover {
-	background: #757575;
-	color: #fff;
+
+.card-table {
+	background: $white;
+	border-radius: 16px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+	border: 1px solid $border;
+	overflow: hidden;
 }
 
 .tabla-materias {
 	width: 100%;
 	border-collapse: collapse;
-	background: #fff;
-	border-radius: 10px;
-	overflow: hidden;
-	box-shadow: 0 2px 8px rgba(60, 120, 60, 0.08);
-	table-layout: auto;
-}
-.tabla-materias th, .tabla-materias td {
-	padding: 12px 8px;
-	text-align: left;
-	word-break: break-word;
-}
-.tabla-materias th {
-	background: #c8e6c9;
-	color: #388e3c;
-	font-weight: 600;
-	font-size: 1.05em;
-}
-.tabla-materias tr:nth-child(even) {
-	background: #f1f8e9;
-}
-.tabla-materias tr:hover {
-	background: #a5d6a7;
+
+	th,
+	td {
+		padding: 1.2rem 1.5rem;
+		text-align: left;
+	}
+
+	th {
+		background: $secondary;
+		color: $primary;
+		font-weight: 600;
+		font-size: 0.9rem;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		border-bottom: 1px solid $border;
+	}
+
+	td {
+		border-bottom: 1px solid $border;
+		color: $text;
+		font-size: 0.95rem;
+	}
+
+	tr:last-child td {
+		border-bottom: none;
+	}
+
+	tbody tr {
+		transition: background 0.2s;
+
+		&:hover {
+			background: color.adjust($secondary, $lightness: 2%);
+		}
+	}
+
+	.th-id,
+	.td-id {
+		width: 60px;
+		text-align: center;
+		color: color.adjust($text, $lightness: 40%);
+	}
+
+	.td-nombre {
+		font-weight: 500;
+		color: $primary;
+	}
+
+	.th-actions,
+	.td-actions {
+		text-align: right;
+		width: 120px;
+	}
+
+	.empty-state {
+		text-align: center;
+		padding: 3rem;
+		color: color.adjust($text, $lightness: 30%);
+		font-style: italic;
+	}
 }
 
-@media (max-width: 700px) {
-	.materias-container {
-		max-width: 99vw;
-		padding: 12px 2px 12px 2px;
+.btn-icon {
+	background: transparent;
+	border: none;
+	padding: 6px;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s;
+	color: color.adjust($text, $lightness: 30%);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	&:hover {
+		background: $secondary;
 	}
-	.materia-form {
-		flex-direction: column;
-		gap: 8px;
-		align-items: stretch;
+
+	&.btn-editar:hover {
+		color: $primary;
+		background: color.adjust($primary, $alpha: -0.9);
 	}
-	.input-materia {
-		min-width: 80px;
-		max-width: 100%;
+
+	&.btn-eliminar:hover {
+		color: $danger;
+		background: color.adjust($danger, $alpha: -0.9);
 	}
-	.tabla-materias th, .tabla-materias td {
-		font-size: 0.97em;
-		padding: 8px 4px;
+}
+
+@media (max-width: 768px) {
+	.tabla-materias {
+		display: block;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
 	}
 }

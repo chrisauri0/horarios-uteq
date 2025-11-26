@@ -1,42 +1,89 @@
-<div *ngIf="!esLogin; else soloLogin" class="nav-container">
-
-    <nav class="navbar">
-        <div class="navbar-brand">
-            <a routerLink="/dashboard">
-                <span class="icon" aria-hidden="true">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                        focusable="false">
-                        <path d="M4 6l8-4 8 4v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6z" stroke="#fff" stroke-width="1.2"
-                            stroke-linejoin="round" stroke-linecap="round" />
-                        <path d="M12 2v14" stroke="#fff" stroke-width="1.2" stroke-linecap="round" />
-                    </svg>
-                </span>
-                <span>UTEQ Horarios</span>
+<div *ngIf="!esLogin; else soloLogin" class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a routerLink="/dashboard" class="brand-link">
+                <div class="brand-icon">
+                    <img src="/logo-horari-uteq.jpg" alt="UTEQ Logo" width="50" height="50" />
+                </div>
+                <span class="brand-text">UTEQ Horarios</span>
             </a>
         </div>
-        <div class="navbar-buttons">
-            <button routerLink="/dashboard" routerLinkActive="active"> <img
-                    src="assets/svgs/house-chimney-floor-svgrepo-com.svg" alt="Dashboard"
-                    class="icon" />Dashboard</button>
-            <button routerLink="/horarios/nuevo" routerLinkActive="active"><img
-                    src="/assets/svgs/calendar-alt-svgrepo-com.svg" alt="Horarios" class="icon" />Horarios</button>
-            <button routerLink="/profesores" routerLinkActive="active"><img
-                    src="/assets/svgs/graduation-hat-alt-svgrepo-com.svg" alt="Profesores"
-                    class="icon" />Profesores</button>
-            <button routerLink="/grupos" routerLinkActive="active"><img src="/assets/svgs/grupos-svgrepo-com.svg"
-                    alt="Grupos" class="icon" />Grupos</button>
-            <button routerLink="/salones" routerLinkActive="active"><img src="/assets/svgs/room-svgrepo-com.svg"
-                    alt="Salones" class="icon" />Salones</button>
-            <button routerLink="/materias" routerLinkActive="active"><img src="assets/svgs/books-svgrepo-com.svg"
-                    alt="Materias" class="icon" />Materias</button>
-        </div>
-    </nav>
-    <div class="main-content">
+
+        <nav class="sidebar-nav">
+            <ul class="nav-list">
+                <li>
+                    <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+                        <span class="nav-icon">
+                            <img src="assets/svgs/house-chimney-floor-svgrepo-com.svg" alt="Dashboard" />
+                        </span>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/carreras" routerLinkActive="active" class="nav-link">
+                        <span class="nav-icon">
+                            <img src="assets/svgs/education-bag-learning-svgrepo-com.svg" alt="Carreras" />
+                        </span>
+                        <span class="nav-text">Carreras</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/salones" routerLinkActive="active" class="nav-link">
+                        <span class="nav-icon">
+                            <img src="/assets/svgs/room-svgrepo-com.svg" alt="Salones" />
+                        </span>
+                        <span class="nav-text">Salones</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/materias" routerLinkActive="active" class="nav-link">
+                        <span class="nav-icon">
+                            <img src="assets/svgs/books-svgrepo-com.svg" alt="Materias" />
+                        </span>
+                        <span class="nav-text">Materias</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/profesores" routerLinkActive="active" class="nav-link">
+                        <span class="nav-icon">
+                            <img src="/assets/svgs/graduation-hat-alt-svgrepo-com.svg" alt="Profesores" />
+                        </span>
+                        <span class="nav-text">Profesores</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/grupos" routerLinkActive="active" class="nav-link">
+                        <span class="nav-icon">
+                            <img src="/assets/svgs/grupos-svgrepo-com.svg" alt="Grupos" />
+                        </span>
+                        <span class="nav-text">Grupos</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/horarios/nuevo" routerLinkActive="active" class="nav-link">
+                        <span class="nav-icon">
+                            <img src="/assets/svgs/calendar-alt-svgrepo-com.svg" alt="Horarios" />
+                        </span>
+                        <span class="nav-text">Horarios</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <button (click)="cerrarSesion()" class="btn-logout">
+                    <span class="nav-icon">
+                        <img src="/assets/svgs/logout-white-svgrepo-com.svg" alt="Cerrar sesión" />
+                    </span>
+                    <span class="nav-text">Cerrar sesión</span>
+                </button>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main-content">
         <router-outlet></router-outlet>
-    </div>
-
+    </main>
 </div>
-
 
 <ng-template #soloLogin>
     <router-outlet></router-outlet>

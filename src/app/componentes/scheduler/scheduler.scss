@@ -1,272 +1,453 @@
-.toggle-btn img.icon {
-  width: 22px;
-  height: 22px;
-  margin-right: 0.4em;
-  vertical-align: middle;
-  transition: filter 0.18s;
-  filter: none;
+// Paleta institucional
+$primary: #005baa;
+$secondary: #f5f7fa;
+$accent: #ffb300;
+$text: #222;
+$border: #e0e4ea;
+$white: #ffffff;
+$success-bg: #eaf3fb;
+$danger: #e57373;
+$danger-hover: #c62828;
+$success: #27ae60;
+$warning-bg: #fff8e1;
+$warning-text: #5d4037;
+$warning-border: #ffecb3;
+
+@use "sass:color";
+
+.scheduler-layout {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 1rem;
+  font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+  color: $text;
 }
-.toggle-btn.active img.icon,
-.toggle-btn:hover img.icon {
-  filter: invert(1) brightness(2) grayscale(1);
-}
-/* Toggle view buttons (grupo/profesor) */
-.prettier-toggle {
-  display: flex;
-  gap: 1.2rem;
-  justify-content: flex-start;
-  margin: 1.5rem 0 2.2rem 0;
-}
-.toggle-btn {
+
+.header-section {
   display: flex;
   align-items: center;
-  gap: 0.5em;
-  background: #e3f2fd;
-  color: #1976d2;
-  border: 2.5px solid #90caf9;
-  border-radius: 2.2em;
-  font-weight: 600;
-  font-size: 1rem;
-  padding: 0.55em 1.5em;
-  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.07);
-  cursor: pointer;
-  transition: background 0.18s, color 0.18s, border 0.18s, box-shadow 0.18s, transform 0.12s;
-  outline: none;
+  justify-content: center;
   position: relative;
+  margin-bottom: 2rem;
+
+  .btn-back {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: $white;
+    border: 1px solid $border;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $primary;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+    cursor: pointer;
+
+    &:hover {
+      background: $primary;
+      color: $white;
+      transform: translateY(-50%) scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 91, 170, 0.2);
+    }
+  }
+
+  .header-text {
+    text-align: center;
+  }
+
+  .titulo-scheduler {
+    color: $primary;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    color: color.adjust($text, $lightness: 20%);
+    font-size: 1.1rem;
+    margin: 0;
+  }
 }
-.toggle-btn svg {
-  margin-right: 0.3em;
-  stroke: #1976d2;
+
+.notice-card {
+  display: flex;
+  gap: 1rem;
+  background: $warning-bg;
+  border: 1px solid $warning-border;
+  border-radius: 12px;
+  padding: 1.2rem;
+  margin-bottom: 2rem;
+  align-items: flex-start;
+
+  .notice-icon-wrapper {
+    background: $white;
+    padding: 8px;
+    border-radius: 50%;
+    color: $accent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .notice-content {
+    h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+      color: $warning-text;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: color.adjust($warning-text, $lightness: 10%);
+      line-height: 1.5;
+    }
+  }
 }
-.toggle-btn.active {
-  background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
-  color: #fff;
-  border-color: #1976d2;
-  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.18);
-  transform: scale(1.06);
-}
-.toggle-btn.active svg {
-  stroke: #fff;
-}
-.toggle-btn:focus {
-  border-color: #1565c0;
-  box-shadow: 0 0 0 2px #90caf9;
-}
-.toggle-btn:not(:last-child) {
-  margin-right: 0.7rem;
-}
-.export-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5em;
-  background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 1rem;
-  padding: 0.55em 1.2em;
-  margin: 1.1em 0 0.5em 0;
-  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.13);
-  cursor: pointer;
-  transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
-  outline: none;
-}
-.export-btn:hover, .export-btn:focus {
-  background: linear-gradient(90deg, #1565c0 0%, #90caf9 100%);
-  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.18);
-  transform: translateY(-2px) scale(1.03);
-}
-.export-btn:active {
-  background: linear-gradient(90deg, #0d47a1 0%, #bbdefb 100%);
-  transform: scale(0.98);
-}
-.export-icon {
-  width: 1.2em;
-  height: 1.2em;
-  stroke: #fff;
-  margin-right: 0.2em;
-  vertical-align: middle;
-}
-.scheduler-container {
+
+.controls-card {
+  background: $white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid $border;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 2rem;
-  background: #1e1e2f;
-  border-radius: 1rem;
-  color: white;
-  max-width: 400px;
-  margin: 2rem auto;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-}
+  gap: 1.5rem;
 
-/* Horario table styles */
-.schedules-list {
-  margin: 2rem auto;
-  max-width: 1100px;
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2.5rem 2.2rem;
-}
-.schedule-group {
-  background: #f7fafc;
-  border-radius: 0.7rem;
-  box-shadow: 0 2px 8px rgba(30,41,59,0.08);
-  padding: 1.2rem 1rem 2rem 1rem;
-}
-.group-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 1rem;
-}
-.horario-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  box-shadow: 0 1px 4px rgba(30,41,59,0.07);
-  table-layout: fixed;
-}
-.horario-table th, .horario-table td {
-  border: 1px solid #e2e8f0;
-  padding: 0.5rem 0.3rem;
-  text-align: center;
-  font-size: 0.97rem;
-  min-width: 90px;
-  word-break: break-word;
-}
-.horario-table th {
-  background: #e3f2fd;
-  color: #1565c0;
-  font-weight: 600;
-}
-.horario-table .hora-label {
-  background: #f1f5f9;
-  color: #374151;
-  font-weight: 500;
-}
-.materia {
-  font-weight: 600;
-  color: #1976d2;
-  margin-bottom: 2px;
-}
-.profesor {
-  font-size: 0.92rem;
-  color: #374151;
-}
-.salon {
-  font-size: 0.9rem;
-  color: #6d28d9;
-}
-.horario-table td {
-  vertical-align: middle;
-  height: 56px;
-}
-.horario-table td:empty {
-  background: #f8fafc;
-}
-
-@media (max-width: 900px) {
-  .schedules-list {
-    max-width: 100vw;
-    padding: 0 2vw;
-    grid-template-columns: 1fr;
+  .actions-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
   }
-  .horario-table th, .horario-table td { min-width: 60px; font-size: 0.92rem; }
-}
-@media (max-width: 600px) {
-  .schedule-group { padding: 0.7rem 0.2rem 1.2rem 0.2rem; }
-  .group-title { font-size: 1rem; }
-  .horario-table th, .horario-table td { padding: 0.3rem 0.1rem; font-size: 0.88rem; }
+
+  .btn-generate {
+    background: $primary;
+    color: $white;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 91, 170, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    &:hover:not(:disabled) {
+      background: color.adjust($primary, $lightness: -5%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 91, 170, 0.3);
+    }
+
+    &:disabled {
+      background: color.adjust($text, $lightness: 40%);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    &.loading {
+      padding-right: 3.5rem;
+      position: relative;
+    }
+  }
+
+  .status-message {
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+
+    &.success {
+      background: $success-bg;
+      color: darken($success, 10%);
+      border: 1px solid color.adjust($success, $lightness: 30%);
+    }
+
+    &.error {
+      background: color.adjust($danger, $lightness: 35%);
+      color: $danger-hover;
+      border: 1px solid color.adjust($danger, $lightness: 20%);
+    }
+  }
 }
 
-/* Notice / alert styles */
-.notice {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  background: linear-gradient(90deg, #fff8e1 0%, #fff3cc 100%);
-  color: #3b2f00;
-  border-left: 6px solid #ffb300;
-  padding: 0.9rem 1rem;
-  border-radius: 0.6rem;
-  width: 100%;
-  box-sizing: border-box;
-}
-.notice-icon {
-  flex: 0 0 auto;
-  color: #e65100;
-  margin-top: 4px;
-}
-.notice-content h3 {
-  margin: 0 0 6px 0;
-  font-size: 1rem;
-  color: #3b2f00;
-}
-.notice-content p {
-  margin: 0 0 6px 0;
-  font-size: 0.92rem;
-  line-height: 1.3;
-  color: #4a3f00;
-}
-
-/* Responsive adjustments */
-@media (max-width: 480px) {
-  .scheduler-container { padding: 1rem; max-width: 95%; }
-  .notice { gap: 0.75rem; padding: 0.8rem; }
-  .notice-icon { width: 22px; height: 22px; }
-  .notice-content h3 { font-size: 0.95rem; }
-  .notice-content p { font-size: 0.88rem; }
-}
-
-.generate-btn {
-  background: #3f51b5;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  color: white;
-  font-size: 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.generate-btn:hover {
-  background: #5c6bc0;
-}
-
-.generate-btn:disabled {
-  background: #555;
-  cursor: not-allowed;
-}
-
-.message {
-  font-weight: bold;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-}
-
-.message.success {
-  color: #4caf50;
-}
-
-.message.error {
-  color: #f44336;
-}
-
-.spinner {
-  border: 4px solid rgba(255,255,255,0.2);
-  border-top: 4px solid #3f51b5;
+.spinner-mini {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  animation: spin 1s linear infinite;
+  border-top-color: $white;
+  animation: spin 1s ease-in-out infinite;
+  position: absolute;
+  right: 1.2rem;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.results-section {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.view-toggles {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  .toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    background: $white;
+    border: 1px solid $border;
+    border-radius: 50px;
+    color: color.adjust($text, $lightness: 20%);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $secondary;
+      color: $primary;
+    }
+
+    &.active {
+      background: $primary;
+      color: $white;
+      border-color: $primary;
+      box-shadow: 0 4px 12px rgba(0, 91, 170, 0.2);
+    }
+  }
+}
+
+.schedules-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.schedule-card {
+  background: $white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid $border;
+  overflow: hidden;
+
+  .card-header {
+    padding: 1.5rem;
+    background: $secondary;
+    border-bottom: 1px solid $border;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .group-title {
+      margin: 0;
+      font-size: 1.2rem;
+      color: $primary;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .badge-count {
+      background: $white;
+      color: $text;
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid $border;
+      font-weight: 500;
+    }
+
+    .btn-export {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: $white;
+      border: 1px solid $border;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      color: $text;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        border-color: $primary;
+        color: $primary;
+        background: color.adjust($primary, $lightness: 55%);
+      }
+    }
+  }
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.horario-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 800px;
+
+  th,
+  td {
+    border: 1px solid $border;
+    padding: 0.5rem;
+    text-align: center;
+    vertical-align: top;
+  }
+
+  th {
+    background: $secondary;
+    color: $text;
+    font-weight: 600;
+    padding: 1rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &.th-hora {
+      width: 80px;
+      background: color.adjust($secondary, $lightness: -2%);
+    }
+  }
+
+  .hora-cell {
+    background: $secondary;
+    font-weight: 600;
+    color: color.adjust($text, $lightness: 20%);
+    vertical-align: middle;
+    font-size: 0.9rem;
+  }
+
+  .clase-item {
+    background: color.adjust($primary, $lightness: 55%);
+    border-left: 3px solid $primary;
+    padding: 6px;
+    border-radius: 4px;
+    text-align: left;
+    font-size: 0.85rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: scale(1.02);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .materia {
+      font-weight: 700;
+      color: $primary;
+      line-height: 1.2;
+    }
+
+    .profesor,
+    .grupo-badge {
+      color: $text;
+      font-size: 0.8rem;
+    }
+
+    .grupo-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .salon {
+      color: color.adjust($text, $lightness: 30%);
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      &::before {
+        content: '';
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background: $accent;
+        border-radius: 50%;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .header-section {
+    flex-direction: column;
+    gap: 1rem;
+
+    .btn-back {
+      position: static;
+      transform: none;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .view-toggles {
+    flex-direction: column;
+    align-items: stretch;
+
+    .toggle-btn {
+      justify-content: center;
+    }
+  }
+
+  .card-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+
+    .btn-export {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 }

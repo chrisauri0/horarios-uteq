@@ -9,9 +9,11 @@ export interface Carrera {
   division: string;
 }
 
+import { RouterModule } from '@angular/router';
+
 @Component({
   selector: 'app-carreras',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './carreras.html',
   styleUrl: './carreras.scss'
 })
@@ -25,7 +27,7 @@ export class Carreras {
     this.cargarCarreras();
     const usuarioData = localStorage.getItem('userData');
     if (usuarioData) {
-      const { metadata: { division , turno } } = JSON.parse(usuarioData);
+      const { metadata: { division, turno } } = JSON.parse(usuarioData);
       this.defaultDivision = division || '';
       this.nuevaCarrera.division = this.defaultDivision;
     } else {
@@ -122,6 +124,10 @@ export class Carreras {
   }
 
   async eliminarCarrera(id: string) {
+
+
+    const confirmacion = window.confirm('¿Estás seguro de eliminar esta carrera?');
+    if (!confirmacion) return;
     try {
       const res = await fetch(`https://horarios-backend-58w8.onrender.com/carreras/${id}`, {
         method: 'DELETE'

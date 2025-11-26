@@ -2,6 +2,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 export interface Materia {
   id: string;
@@ -10,12 +11,12 @@ export interface Materia {
   carrera?: string;
   horas_semana: number;
   data?: object;
-  salones?:object
+  salones?: object
 }
 
 @Component({
   selector: 'app-materias',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './materias.html',
   styleUrl: './materias.scss'
 })
@@ -67,11 +68,11 @@ export class Materias {
         materiasLocal = JSON.parse(cache);
         this.materias = materiasLocal;
         console.log('Cargado desde cache localStorage');
-      } catch {}
+      } catch { }
     }
 
     try {
-      
+
       const resList = await fetch('https://horarios-backend-58w8.onrender.com/materias');
       if (!resList.ok) throw new Error('Error al obtener materias');
       const data = await resList.json();
@@ -114,7 +115,7 @@ export class Materias {
         grado: data.grado,
         carrera: data.carrera,
         horas_semana: data.horas_semana,
-    
+
         salones: data.salones || {}
       });
       this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: {} };
@@ -157,6 +158,10 @@ export class Materias {
   }
 
   async eliminarMateria(id: string) {
+
+    const confirmacion = confirm('¿Estás seguro de eliminar esta materia?');
+    if (!confirmacion) return;
+
     try {
       const res = await fetch(`https://horarios-backend-58w8.onrender.com/materias/${id}`, {
         method: 'DELETE'

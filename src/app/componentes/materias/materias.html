@@ -1,104 +1,102 @@
 <div class="materias-container">
-    <h2 class="titulo">Gestión de Materias</h2>
-    <form class="materia-form" (ngSubmit)="agregarMateria()" *ngIf="!editandoId">
-        <div class="inputs-flex">
-            <div class="input-group">
-                <label for="nombreMateria">Nombre de la materia</label>
-                <input id="nombreMateria" type="text" [(ngModel)]="nuevaMateria.nombre" name="nombreMateria"
-                    placeholder="Nombre de la materia" required class="input-materia" />
-            </div>
-
-            <div class="input-group">
-                <label for="carreraMateria">Carrera</label>
-                <select id="carreraMateria" [(ngModel)]="nuevaMateria.carrera" name="carreraMateria" required
-                    class="input-materia" style="width:140px;">
-                    <option value="" disabled selected>Selecciona una carrera</option>
-                    <option *ngFor="let carrera of carreras" [value]="carrera">{{ carrera }}</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="salonMateria">Salon</label>
-                <select id="salonMateria" [(ngModel)]="nuevaMateria.salones" name="salonMateria" required
-                    class="input-materia" style="width:140px;">
-                    <option value="" disabled selected>Selecciona un salon</option>
-                    <option *ngFor="let salon of salones" [value]="salon">{{ salon }}</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="horasSemana">Horas/Semana</label>
-                <input id="horasSemana" type="number" [(ngModel)]="nuevaMateria.horas_semana" name="horasSemana"
-                    placeholder="Horas/Semana" min="1" required class="input-materia" style="width:140px;" />
-            </div>
-            <div class="input-group" style="align-self: end;">
-                <button type="submit" class="btn-agregar">Agregar</button>
-            </div>
+    <div class="header-section">
+        <a routerLink="/dashboard" class="btn-back" title="Volver al Dashboard">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+        </a>
+        <div class="header-text">
+            <h2 class="titulo-materias">Gestión de Materias</h2>
+            <p class="subtitle">Administra las asignaturas y sus detalles</p>
         </div>
-    </form>
+    </div>
 
-    <form class="materia-form" (ngSubmit)="guardarEdicion()" *ngIf="editandoId">
-        <div class="inputs-flex">
-            <div class="input-group">
-                <label for="nombreMateriaEditada">Nombre de la materia</label>
-                <input id="nombreMateriaEditada" type="text" [(ngModel)]="nuevaMateria.nombre"
-                    name="nombreMateriaEditada" placeholder="Editar materia" required class="input-materia" />
+    <div class="card-form">
+        <form (ngSubmit)="editandoId ? guardarEdicion() : agregarMateria()" class="materia-form">
+            <div class="inputs-grid">
+                <div class="input-group">
+                    <label for="nombreMateria">Nombre de la materia</label>
+                    <input id="nombreMateria" type="text" [(ngModel)]="nuevaMateria.nombre" name="nombre"
+                        placeholder="Ej. Matemáticas I" required class="input-materia" />
+                </div>
+
+                <div class="input-group">
+                    <label for="carreraMateria">Carrera</label>
+                    <select id="carreraMateria" [(ngModel)]="nuevaMateria.carrera" name="carrera" required
+                        class="input-materia">
+                        <option value="" disabled selected>Selecciona una carrera</option>
+                        <option *ngFor="let carrera of carreras" [value]="carrera">{{ carrera }}</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="salonMateria">Salón</label>
+                    <select id="salonMateria" [(ngModel)]="nuevaMateria.salones" name="salones" required
+                        class="input-materia">
+                        <option value="" disabled selected>Selecciona un salón</option>
+                        <option *ngFor="let salon of salones" [value]="salon">{{ salon }}</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="horasSemana">Horas/Semana</label>
+                    <input id="horasSemana" type="number" [(ngModel)]="nuevaMateria.horas_semana" name="horas_semana"
+                        placeholder="Ej. 4" min="1" required class="input-materia" />
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-guardar">
+                        {{ editandoId ? 'Guardar Cambios' : 'Agregar Materia' }}
+                    </button>
+                    <button type="button" *ngIf="editandoId" (click)="cancelarEdicion()" class="btn-cancelar">
+                        Cancelar
+                    </button>
+                </div>
             </div>
+        </form>
+    </div>
 
-            <div class="input-group">
-                <label for="carreraMateriaEditada">Carrera</label>
-                <select id="carreraMateriaEditada" [(ngModel)]="nuevaMateria.carrera" name="carreraMateriaEditada"
-                    required class="input-materia" style="width:140px;">
-                    <option value="" disabled selected>Selecciona una carrera</option>
-                    <option *ngFor="let carrera of carreras" [value]="carrera">{{ carrera }}</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="salonMateriaEditada">Salon</label>
-                <select id="salonMateriaEditada" [(ngModel)]="nuevaMateria.salones" name="salonMateriaEditada" required
-                    class="input-materia" style="width:140px;">
-                    <option value="" disabled selected>Selecciona un salon</option>
-                    <option *ngFor="let salon of salones" [value]="salon">{{ salon }}</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label for="horasSemanaEditadas">Horas/Semana</label>
-                <input id="horasSemanaEditadas" type="number" [(ngModel)]="nuevaMateria.horas_semana"
-                    name="horasSemanaEditadas" placeholder="Horas/Semana" min="1" required class="input-materia"
-                    style="width:140px;" />
-            </div>
-            <div class="input-group" style="align-self: end; display: flex; gap: 8px;">
-                <button type="submit" class="btn-editar">Guardar</button>
-                <button type="button" class="btn-cancelar" (click)="cancelarEdicion()">Cancelar</button>
-            </div>
-        </div>
-    </form>
-
-    <table class="tabla-materias">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Nombre</th>
-
-                <th>Carrera</th>
-                <th>Horas/Semana</th>
-                <th>Salones</th>
-                <th>Acciones</th>
-
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let materia of materias; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ materia.nombre }}</td>
-
-                <td>{{ materia.carrera }}</td>
-                <td>{{ materia.horas_semana }}</td>
-                <td>{{ materia.salones }}</td>
-                <td>
-                    <button class="btn-editar" (click)="editarMateria(materia)">Editar</button>
-                    <button class="btn-eliminar" (click)="eliminarMateria(materia.id)">Eliminar</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="card-table">
+        <table class="tabla-materias">
+            <thead>
+                <tr>
+                    <th class="th-id">#</th>
+                    <th>Nombre</th>
+                    <th>Carrera</th>
+                    <th>Horas/Semana</th>
+                    <th>Salones</th>
+                    <th class="th-actions">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let materia of materias; let i = index">
+                    <td class="td-id">{{ i + 1 }}</td>
+                    <td class="td-nombre">{{ materia.nombre }}</td>
+                    <td>{{ materia.carrera }}</td>
+                    <td>{{ materia.horas_semana }}</td>
+                    <td>{{ materia.salones }}</td>
+                    <td class="td-actions">
+                        <button class="btn-icon btn-editar" (click)="editarMateria(materia)" title="Editar">
+                            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </button>
+                        <button class="btn-icon btn-eliminar" (click)="eliminarMateria(materia.id)" title="Eliminar">
+                            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="materias.length === 0">
+                    <td colspan="6" class="empty-state">
+                        No hay materias registradas. ¡Agrega una nueva arriba!
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

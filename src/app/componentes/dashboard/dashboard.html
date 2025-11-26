@@ -1,57 +1,57 @@
 <div class="dashboard-container">
-    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2em;">
-        <span
-            style="font-size:2.2rem; color:#005baa; background:#eaf3fb; border-radius:50%; padding:0.3em 0.5em; display:flex; align-items:center; justify-content:center;">
-            <svg width="32" height="32" fill="none" viewBox="0 0 32 32" style="display:block;">
+    <div class="dashboard-header">
+        <span class="welcome-icon">
+            <svg width="32" height="32" fill="none" viewBox="0 0 32 32">
                 <rect width="32" height="32" rx="8" fill="#eaf3fb" />
                 <path d="M10 24v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="#005baa" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" />
                 <circle cx="16" cy="13" r="4" stroke="#005baa" stroke-width="2" />
             </svg>
         </span>
-        <div>
-            <h1 style="margin:0;">Bienvenido JUCA {{ usuarioNombre }} al Generador de Horarios para {{ usuarioCarrera }}
-            </h1>
-            <p style="margin:0.2em 0 0 0; font-size:1.08rem; color:#005baa; font-weight:500;">Organiza y visualiza los
-                horarios de tu división de manera eficiente.</p>
+        <div class="header-content">
+            <h1>Bienvenido JUCA {{ usuarioNombre }} al Generador de Horarios para {{ usuarioCarrera }}</h1>
+            <p>Organiza y visualiza los horarios de tu división de manera eficiente.</p>
         </div>
     </div>
-    <div style="margin-bottom:1.5em;">
-        <h2 style="font-size:1.25rem; color:#222; margin-bottom:0.5em; font-weight:600; letter-spacing:0.2px;">¿Cómo
-            empezar?</h2>
-        <ol>
+
+    <div class="dashboard-steps">
+        <h2>¿Cómo empezar?</h2>
+        <ol class="steps-list">
             <li>
-                <span style="font-weight:600; color:#005baa;"><a routerLink="/carreras">Carreras:</a></span> Añade las
-                carreras de tu division.
+                <a routerLink="/carreras" class="step-link">Carreras:</a> Añade las carreras de tu division.
             </li>
-            <li><span style="font-weight:600; color:#005baa;"><a routerLink="/salones">Gestión de Salones:</a></span>
-                Añade todos los salones
-                disponibles en la división.</li>
-            <li><span style="font-weight:600; color:#005baa;"><a routerLink="/materias">Gestión de Materias:</a></span>
-                Agrega todas las materias que
-                deseas incluir en el horario.</li>
-            <li><span style="font-weight:600; color:#005baa;"><a routerLink="/profesores">Profesores:</a></span> Asigna
-                correctamente los profesores a
-                las materias correspondientes.</li>
-            <li><span style="font-weight:600; color:#005baa;"><a routerLink="/grupos">Gestión de Grupos:</a></span> Crea
-                los grupos correspondientes
-                para tu división.</li>
-            <li><span style="font-weight:600; color:#005baa;"><a routerLink="/horarios/nuevo">Generar
-                        Horarios:</a></span> Selecciona los
-                grados/cuatrimestres y haz clic en <b>Generar Horario</b> para crear el horario automáticamente.</li>
-            <li><span style="font-weight:600; color:#005baa;"></span>
-                Visualiza o exporta los horarios
-                generados en PDF.</li>
+            <li>
+                <a routerLink="/salones" class="step-link">Gestión de Salones:</a> Añade todos los salones disponibles
+                en la división.
+            </li>
+            <li>
+                <a routerLink="/materias" class="step-link">Gestión de Materias:</a> Agrega todas las materias que
+                deseas incluir en el horario.
+            </li>
+            <li>
+                <a routerLink="/profesores" class="step-link">Profesores:</a> Asigna correctamente los profesores a las
+                materias correspondientes.
+            </li>
+            <li>
+                <a routerLink="/grupos" class="step-link">Gestión de Grupos:</a> Crea los grupos correspondientes para
+                tu división.
+            </li>
+            <li>
+                <a routerLink="/horarios/nuevo" class="step-link">Generar Horarios:</a> Selecciona los
+                grados/cuatrimestres y haz clic en <b>Generar Horario</b> para crear el horario automáticamente.
+            </li>
+            <li>
+                <span class="step-highlight">Visualizar:</span> Visualiza o exporta los horarios generados en PDF.
+            </li>
         </ol>
     </div>
 
-    <div
-        style="background:#eaf3fb; border-radius:10px; padding:1em 1.2em; display:flex; align-items:center; gap:0.7em; margin-top:2em;">
+    <div class="info-card">
         <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="12" fill="#ffb300" />
             <path d="M12 7v5l3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-        <span style="color:#444; font-size:1.04rem;">Recuerda: Puedes modificar la información en cualquier momento
-            desde las secciones correspondientes.</span>
+        <span>Recuerda: Puedes modificar la información en cualquier momento desde las secciones
+            correspondientes.</span>
     </div>
 </div>

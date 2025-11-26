@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 export interface salonesData {
   id: string;
   nombre: string;
@@ -9,7 +10,7 @@ export interface salonesData {
 
 @Component({
   selector: 'app-salones',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './salones.html',
   styleUrls: ['./salones.scss']
 })
@@ -18,17 +19,19 @@ export class SalonesComponent {
   usuarioCarrera: string = '';
   sidebarCollapsed = false;
 
+
   salones: salonesData[] = [];
   nuevoSalon: salonesData = { id: '', nombre: '', division: '' };
   editandoId: string | null = null;
 
   ngOnInit() {
     const usuarioData = localStorage.getItem('userData');
+    const token = localStorage.getItem('token') || '';
     if (usuarioData) {
-      const { full_name,metadata: { division , turno } } = JSON.parse(usuarioData);
+      const { full_name, metadata: { division, turno } } = JSON.parse(usuarioData);
       this.usuarioNombre = full_name || 'Usuario';
       this.usuarioCarrera = `${division || ''} - ${turno || ''}`;
-      
+
     } else {
       this.usuarioNombre = 'Usuario';
       this.usuarioCarrera = '';
@@ -39,15 +42,20 @@ export class SalonesComponent {
   async cargarSalones() {
     // Intentar cargar desde localStorage primero
     const cache = localStorage.getItem('salonesCache');
+    const token = localStorage.getItem('token') || '';
     if (cache) {
       try {
         const cacheData = JSON.parse(cache);
         this.salones = Array.isArray(cacheData) ? cacheData : [];
-      } catch {}
+      } catch { }
     }
 
     try {
-      const res = await fetch('https://horarios-backend-58w8.onrender.com/salones');
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/salones', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (!res.ok) throw new Error('Error al obtener salones');
       const data = await res.json();
       // La nueva API devuelve { id, nombre, data } donde data puede tener edificio
@@ -90,7 +98,7 @@ export class SalonesComponent {
         nombre: data.nombre,
         division: data.division
       });
-      this.nuevoSalon = { id: '', nombre: '' , division: '' };
+      this.nuevoSalon = { id: '', nombre: '', division: '' };
     } catch (err) {
       alert('No se pudo crear el salón: ' + err);
     }
@@ -134,7 +142,7 @@ export class SalonesComponent {
         nombre: body.nombre,
         division: this.nuevoSalon.division
       } : s);
-      this.nuevoSalon = { id: '', nombre: '' , division: '' };
+      this.nuevoSalon = { id: '', nombre: '', division: '' };
       this.editandoId = null;
     } catch (err) {
       alert('No se pudo editar el salón: ' + err);
@@ -142,7 +150,7 @@ export class SalonesComponent {
   }
 
   cancelarEdicion() {
-    this.nuevoSalon = { id: '', nombre: '' , division: '' };
+    this.nuevoSalon = { id: '', nombre: '', division: '' };
     this.editandoId = null;
   }
 }

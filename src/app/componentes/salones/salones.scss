@@ -1,184 +1,285 @@
-
 // Paleta institucional
 $primary: #005baa;
 $secondary: #f5f7fa;
 $accent: #ffb300;
+$text: #222;
 $border: #e0e4ea;
-$danger: #e74c3c;
-$success: #27ae60;
+$white: #ffffff;
+$success-bg: #eaf3fb;
+$danger: #e57373;
+$danger-hover: #c62828;
+
+@use "sass:color";
 
 .salones-container {
-	max-width: 700px;
+	max-width: 900px;
 	margin: 40px auto;
-	background: $secondary;
-	border-radius: 16px;
-	box-shadow: 0 4px 24px 0 rgba(0, 91, 170, 0.08);
-	padding: 2.5rem 2rem 2rem 2rem;
-	font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-	color: #222;
-	position: relative;
-	overflow: hidden;
+	padding: 0 1rem;
+	font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+	color: $text;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+	padding: 2rem;
+	margin-bottom: 2rem;
+	border: 1px solid $border;
+
+	@media (max-width: 600px) {
+		padding: 1.5rem;
+	}
 }
 
-.salones-container h1 {
-	color: $primary;
-	font-size: 2rem;
-	margin-bottom: 0.7em;
-	font-weight: 700;
-	letter-spacing: 0.5px;
+.header-section {
 	display: flex;
 	align-items: center;
-	gap: 0.4em;
+	justify-content: center;
+	position: relative;
+	margin-bottom: 2.5rem;
+
+	.btn-back {
+		position: absolute;
+		left: 0;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		background: $white;
+		border: 1px solid $border;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: $primary;
+		transition: all 0.2s ease;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+		z-index: 10;
+		cursor: pointer;
+
+		&:hover {
+			background: $primary;
+			color: $white;
+			transform: translateY(-50%) scale(1.1);
+			box-shadow: 0 4px 12px rgba(0, 91, 170, 0.2);
+		}
+	}
+
+	.header-text {
+		text-align: center;
+	}
+
+	.titulo-salones {
+		color: $primary;
+		font-size: 2rem;
+		font-weight: 700;
+		margin: 0 0 0.5rem 0;
+		letter-spacing: -0.5px;
+	}
+
+	.subtitle {
+		color: color.adjust($text, $lightness: 20%);
+		font-size: 1.1rem;
+		margin: 0;
+	}
 }
 
-.bienvenida {
+.card-form {
+	background: $white;
+	border-radius: 16px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+	padding: 2rem;
+	margin-bottom: 2rem;
+	border: 1px solid $border;
+
+	@media (max-width: 600px) {
+		padding: 1.5rem;
+	}
+}
+
+.inputs-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 1.5rem;
+	align-items: end;
+}
+
+.input-group {
 	display: flex;
 	flex-direction: column;
-	gap: 0.2em;
-	margin-bottom: 1.5em;
-	font-size: 1.08rem;
-	color: $primary;
+	gap: 0.5rem;
+
+	label {
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: color.adjust($text, $lightness: 10%);
+		margin-left: 2px;
+	}
+
+	.input-salon {
+		padding: 0.8rem 1rem;
+		border: 1px solid $border;
+		border-radius: 8px;
+		font-size: 1rem;
+		background: $secondary;
+		transition: all 0.2s ease;
+		color: $text;
+
+		&:focus {
+			outline: none;
+			border-color: $primary;
+			background: $white;
+			box-shadow: 0 0 0 3px rgba($primary, 0.1);
+		}
+	}
 }
 
-.salon-form {
+.form-actions {
 	display: flex;
-	gap: 16px;
-	margin-bottom: 24px;
-	flex-wrap: wrap;
-	background: #fff;
-	border-radius: 10px;
-	box-shadow: 0 2px 8px 0 rgba(0,91,170,0.04);
-	padding: 1.2em 1em 1em 1em;
-	align-items: flex-end;
-}
-.salon-form input {
-	padding: 10px;
-	border: 1.5px solid $border;
-	border-radius: 6px;
-	font-size: 1em;
-	width: 180px;
-	transition: border-color 0.2s;
-	background: $secondary;
-}
-.salon-form input:focus {
-	border-color: $primary;
-	outline: none;
-}
-.salon-form button {
-	padding: 10px 18px;
-	background: $primary;
-	color: #fff;
-	border: none;
-	border-radius: 6px;
-	font-size: 1em;
-	cursor: pointer;
-	transition: background 0.2s, box-shadow 0.2s;
-	font-weight: 600;
-	box-shadow: 0 2px 8px 0 rgba(0,91,170,0.04);
-}
-.salon-form button.edit-mode {
-	background: $success;
-}
-.salon-form button.cancelar {
-	background: $danger;
-	margin-left: 4px;
-}
-.salon-form button:hover {
-	background: darken($primary, 10%);
-}
-.salon-form button.edit-mode:hover {
-	background: darken($success, 10%);
-}
-.salon-form button.cancelar:hover {
-	background: darken($danger, 10%);
+	gap: 1rem;
+
+	@media (max-width: 600px) {
+		flex-direction: column;
+		width: 100%;
+
+		button {
+			width: 100%;
+		}
+	}
 }
 
-.tabla-wrapper {
-	background: #fff;
-	border-radius: 12px;
-	box-shadow: 0 2px 8px 0 rgba(0,91,170,0.04);
-	padding: 1.2em 0.5em 0.5em 0.5em;
-	margin-top: 1.2em;
+.btn-guardar {
+	background: $primary;
+	color: $white;
+	border: none;
+	padding: 0.8rem 1.5rem;
+	border-radius: 8px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.2s;
+	font-size: 0.95rem;
+
+	&:hover {
+		background: color.adjust($primary, $lightness: -10%);
+	}
+}
+
+.btn-cancelar {
+	background: transparent;
+	color: color.adjust($text, $lightness: 20%);
+	border: 1px solid $border;
+	padding: 0.8rem 1.5rem;
+	border-radius: 8px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s;
+	font-size: 0.95rem;
+
+	&:hover {
+		background: $secondary;
+		color: $text;
+	}
+}
+
+.card-table {
+	background: $white;
+	border-radius: 16px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+	border: 1px solid $border;
+	overflow: hidden;
 }
 
 .tabla-salones {
 	width: 100%;
 	border-collapse: collapse;
-	background: #f4f8fb;
-	border-radius: 8px;
-	overflow: hidden;
-	box-shadow: 0 1px 8px rgba(44, 62, 80, 0.05);
-}
-.tabla-salones th, .tabla-salones td {
-	padding: 12px 8px;
-	border-bottom: 1px solid $border;
-}
-.tabla-salones th {
-	background: $primary;
-	color: #fff;
-	font-weight: 600;
-	font-size: 1.08em;
-}
-.tabla-salones tr:last-child td {
-	border-bottom: none;
-}
-.tabla-salones td {
-	font-size: 1.04em;
-}
-.accion {
-	margin: 0 4px;
-	padding: 7px 14px;
-	border-radius: 5px;
-	border: none;
-	background: $primary;
-	color: #fff;
-	cursor: pointer;
-	font-size: 0.97em;
-	font-weight: 500;
-	transition: background 0.2s, color 0.2s;
-}
-.accion.editar {
-	background: $accent;
-	color: #222;
-}
-.accion.eliminar {
-	background: $danger;
-}
-.accion:hover {
-	background: darken($primary, 10%);
-	color: #fff;
-}
-.accion.editar:hover {
-	background: darken($accent, 10%);
-	color: #fff;
-}
-.accion.eliminar:hover {
-	background: darken($danger, 10%);
-	color: #fff;
-}
-.sin-registros {
-	color: #888;
-	font-style: italic;
-	background: #f9fafb;
+
+	th,
+	td {
+		padding: 1.2rem 1.5rem;
+		text-align: left;
+	}
+
+	th {
+		background: $secondary;
+		color: $primary;
+		font-weight: 600;
+		font-size: 0.9rem;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		border-bottom: 1px solid $border;
+	}
+
+	td {
+		border-bottom: 1px solid $border;
+		color: $text;
+		font-size: 0.95rem;
+	}
+
+	tr:last-child td {
+		border-bottom: none;
+	}
+
+	tbody tr {
+		transition: background 0.2s;
+
+		&:hover {
+			background: color.adjust($secondary, $lightness: 2%);
+		}
+	}
+
+	.th-id,
+	.td-id {
+		width: 60px;
+		text-align: center;
+		color: color.adjust($text, $lightness: 40%);
+	}
+
+	.td-nombre {
+		font-weight: 500;
+		color: $primary;
+	}
+
+	.th-actions,
+	.td-actions {
+		text-align: right;
+		width: 120px;
+	}
+
+	.empty-state {
+		text-align: center;
+		padding: 3rem;
+		color: color.adjust($text, $lightness: 30%);
+		font-style: italic;
+	}
 }
 
-@media (max-width: 600px) {
-	.salones-container {
-		padding: 1.2rem 0.5rem 1.5rem 0.5rem;
-		max-width: 98vw;
+.btn-icon {
+	background: transparent;
+	border: none;
+	padding: 6px;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s;
+	color: color.adjust($text, $lightness: 30%);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	&:hover {
+		background: $secondary;
 	}
-	.salon-form {
-		flex-direction: column;
-		gap: 8px;
-		padding: 0.7em 0.5em 0.5em 0.5em;
+
+	&.btn-editar:hover {
+		color: $primary;
+		background: color.adjust($primary, $alpha: -0.9);
 	}
-	.salon-form input {
-		width: 100%;
+
+	&.btn-eliminar:hover {
+		color: $danger;
+		background: color.adjust($danger, $alpha: -0.9);
 	}
-	.tabla-salones, .tabla-salones th, .tabla-salones td {
-		font-size: 0.95em;
-	}
-	.tabla-wrapper {
-		padding: 0.5em 0.1em 0.1em 0.1em;
+}
+
+@media (max-width: 768px) {
+	.tabla-salones {
+		display: block;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
 	}
 }

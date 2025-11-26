@@ -1,223 +1,379 @@
-.profesor-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 24px;
-  align-items: flex-end;
-}
+// Paleta institucional
+$primary: #005baa;
+$secondary: #f5f7fa;
+$accent: #ffb300;
+$text: #222;
+$border: #e0e4ea;
+$white: #ffffff;
+$success-bg: #eaf3fb;
+$danger: #e57373;
+$danger-hover: #c62828;
+$success: #27ae60;
 
+@use "sass:color";
 
-.profesor-form input,
-.profesor-form select {
-  flex: 1 1 180px;
-  min-width: 180px;
-  margin-bottom: 0;
-}
-
-.profesor-form ng-select {
-  flex: 2 1 320px;
-  min-width: 220px;
-  margin-bottom: 0;
-}
-
-::ng-deep .ng-select {
-  width: 100%;
-  min-width: 220px;
-  margin-bottom: 0;
-}
-
-::ng-deep .ng-select {
-  width: 100%;
-  min-width: 180px;
-  margin-bottom: 0;
-}
-::ng-deep .ng-select .ng-select-container {
-  min-height: 44px;
-  border-radius: 8px;
-  border: 1.5px solid #b2bec3;
-  background: #000000;
-  box-shadow: 0 1px 4px rgba(44, 62, 80, 0.05);
-  transition: border-color 0.2s;
-}
-::ng-deep .ng-select.ng-select-focused .ng-select-container {
-  border-color: #000000;
-  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
-}
-::ng-deep .ng-select .ng-select-dropdown {
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.10);
-  background: #000000;
-}
-::ng-deep .ng-select .ng-option {
-  padding: 10px 16px;
-  font-size: 1em;
-}
-::ng-deep .ng-select .ng-option-selected {
-  background: #000000;
-  color: #fff;
-}
-::ng-deep .ng-select .ng-option:hover {
-  background: #eaf6fb;
-  color: #2980b9;
-}
-
-@media (max-width: 700px) {
-  .profesor-form {
-    flex-direction: column;
-    gap: 8px;
-  }
-  .profesor-form input,
-  .profesor-form select,
-  .profesor-form ng-select {
-    min-width: 100px;
-    width: 100%;
-  }
-  ::ng-deep .ng-select {
-    min-width: 100px;
-    font-size: 0.95em;
-  }
-}
-.main-content {
-  max-width: 700px;
+.profesores-container {
+  max-width: 900px;
   margin: 40px auto;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 16px rgba(44, 62, 80, 0.08);
-  padding: 32px 24px;
+  padding: 0 1rem;
+  font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+  color: $text;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid $border;
+
+  @media (max-width: 600px) {
+    padding: 1.5rem;
+  }
 }
 
-.profesor-form {
+.header-section {
   display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.profesor-form input {
-  padding: 10px;
-  border: 1px solid #b2bec3;
-  border-radius: 6px;
-  font-size: 1em;
-  width: 180px;
-  transition: border-color 0.2s;
-}
-.profesor-form input:focus {
-  border-color: #3498db;
-  outline: none;
-}
-.profesor-form button {
-  padding: 10px 18px;
-  background: #3498db;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-/* más específico: botón dentro del formulario con la clase */
-.profesor-form .btn-aceptar {
-  display: inline-block;
-  padding: 10px 18px;
-  background: var(--verde-oscuro, #6b8e23); /* fallback por si falla la variable */
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background 0.2s;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  z-index: 1;
+  margin-bottom: 2.5rem;
+
+  .btn-back {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: $white;
+    border: 1px solid $border;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $primary;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+    cursor: pointer;
+
+    &:hover {
+      background: $primary;
+      color: $white;
+      transform: translateY(-50%) scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 91, 170, 0.2);
+    }
+  }
+
+  .header-text {
+    text-align: center;
+  }
+
+  .titulo-profesores {
+    color: $primary;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    color: color.adjust($text, $lightness: 20%);
+    font-size: 1.1rem;
+    margin: 0;
+  }
 }
 
-.profesor-form .btn-aceptar:hover {
-  background: var(--verde-olivo);
+.card-form {
+  background: $white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid $border;
+
+  @media (max-width: 600px) {
+    padding: 1.5rem;
+  }
 }
 
-.profesor-form button:hover {
-  background: #2980b9;
+.inputs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  align-items: end;
 }
 
-table {
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: color.adjust($text, $lightness: 10%);
+    margin-left: 2px;
+  }
+
+  .input-profesor {
+    padding: 0.8rem 1rem;
+    border: 1px solid $border;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: $secondary;
+    transition: all 0.2s ease;
+    color: $text;
+    width: 100%;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      background: $white;
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  grid-column: 1 / -1;
+  margin-top: 1rem;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    width: 100%;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+.btn-guardar {
+  background: $primary;
+  color: $white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 0.95rem;
+
+  &:hover {
+    background: color.adjust($primary, $lightness: -10%);
+  }
+}
+
+.btn-cancelar {
+  background: transparent;
+  color: color.adjust($text, $lightness: 20%);
+  border: 1px solid $border;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+
+  &:hover {
+    background: $secondary;
+    color: $text;
+  }
+}
+
+.card-table {
+  background: $white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid $border;
+  overflow: hidden;
+}
+
+.tabla-profesores {
   width: 100%;
   border-collapse: collapse;
-  background: #f4f8fb;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 8px rgba(44, 62, 80, 0.05);
+
+  th,
+  td {
+    padding: 1.2rem 1.5rem;
+    text-align: left;
+  }
+
+  th {
+    background: $secondary;
+    color: $primary;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid $border;
+  }
+
+  td {
+    border-bottom: 1px solid $border;
+    color: $text;
+    font-size: 0.95rem;
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr {
+    transition: background 0.2s;
+
+    &:hover {
+      background: color.adjust($secondary, $lightness: 2%);
+    }
+  }
+
+  .td-nombre {
+    font-weight: 500;
+    color: $primary;
+  }
+
+  .th-actions,
+  .td-actions {
+    text-align: right;
+    width: 120px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: color.adjust($text, $lightness: 30%);
+    font-style: italic;
+  }
 }
-th, td {
-  padding: 12px 8px;
-  border-bottom: 1px solid #dfe6e9;
-}
-th {
-  background: #3498db;
-  color: #fff;
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
   font-weight: 600;
+  display: inline-block;
+
+  &.badge-tutor {
+    background: color.adjust($success, $lightness: 40%);
+    color: darken($success, 10%);
+  }
+
+  &.badge-no-tutor {
+    background: $secondary;
+    color: color.adjust($text, $lightness: 20%);
+  }
 }
-tr:last-child td {
-  border-bottom: none;
+
+.materias-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  .materia-tag {
+    background: $secondary;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: color.adjust($text, $lightness: 10%);
+    border: 1px solid color.adjust($border, $lightness: 5%);
+  }
+
+  .text-muted {
+    color: color.adjust($text, $lightness: 40%);
+    font-style: italic;
+    font-size: 0.9rem;
+  }
 }
-td button {
-  margin: 0 4px;
-  padding: 6px 12px;
-  border-radius: 4px;
+
+.btn-icon {
+  background: transparent;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: color.adjust($text, $lightness: 30%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: $secondary;
+  }
+
+  &.btn-editar:hover {
+    color: $primary;
+    background: color.adjust($primary, $alpha: -0.9);
+  }
+
+  &.btn-eliminar:hover {
+    color: $danger;
+    background: color.adjust($danger, $alpha: -0.9);
+  }
 }
-td button:hover {
-  background: #dfe6e9;
-}
+
+// ng-select overrides to match theme
 ::ng-deep .ng-select {
-  width: 100%;
-  margin-bottom: 16px;
-  font-size: 1em;
+  &.custom-select .ng-select-container {
+    min-height: 45px;
+    border-radius: 8px;
+    border: 1px solid $border;
+    background: $secondary;
+    transition: all 0.2s ease;
+  }
+
+  &.ng-select-focused .ng-select-container {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    background: $white;
+  }
+
+  .ng-dropdown-panel {
+    border-radius: 8px;
+    border: 1px solid $border;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+    .ng-dropdown-panel-items .ng-option {
+      padding: 10px 16px;
+
+      &.ng-option-marked {
+        background: $secondary;
+        color: $text;
+      }
+
+      &.ng-option-selected {
+        background: $primary;
+        color: $white;
+      }
+    }
+  }
+
+  .ng-value-container .ng-value {
+    background: $primary;
+    color: $white;
+    border-radius: 4px;
+    margin-right: 5px;
+
+    .ng-value-icon {
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
 }
 
-::ng-deep .ng-select .ng-select-container {
-  min-height: 44px;
-  border-radius: 8px;
-  border: 1.5px solid #b2bec3;
-  background: #f4f8fb;
-  box-shadow: 0 1px 4px rgba(44, 62, 80, 0.05);
-  transition: border-color 0.2s;
-}
-
-::ng-deep .ng-select.ng-select-focused .ng-select-container {
-  border-color: #3498db;
-  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
-}
-
-::ng-deep .ng-select .ng-select-dropdown {
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.10);
-  background: #fff;
-}
-
-select[multiple] {
-  height: auto;
-  min-height: 100px;
-}
-::ng-deep .ng-select .ng-option {
-  //estilos para las opciones es la primera que se ve cuando se abre
-  padding: 10px 16px;
-  font-size: 1em;
-  background: #000000;
-  color: #fff;
-}
-
-::ng-deep .ng-select .ng-option-selected {
-  //estilos para la opción seleccionada
-  background: #b01d1d;
-  color: #fff;
-}
-
-::ng-deep .ng-select .ng-option:hover {
-  //estilos para la opción al pasar el mouse
-  background: #000000;
-  color: #2980b9;
-}
-
-@media (max-width: 600px) {
-  ::ng-deep .ng-select {
-    font-size: 0.95em;
+@media (max-width: 768px) {
+  .tabla-profesores {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }

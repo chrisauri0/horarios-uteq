@@ -1,16 +1,17 @@
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
- 
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VerHorarios } from './ver-horarios/ver-horarios';
+import { RouterModule } from '@angular/router';
 
 
 @Component({
   selector: 'app-scheduler',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './scheduler.html',
   styleUrls: ['./scheduler.scss']
 })
@@ -46,53 +47,53 @@ export class SchedulerComponent {
     }) || null;
   }
 
-    ngOnInit() {
-      const usuarioData = localStorage.getItem('userData');
-      if (usuarioData) {
-      const { full_name,metadata: { division , turno } } = JSON.parse(usuarioData);
+  ngOnInit() {
+    const usuarioData = localStorage.getItem('userData');
+    if (usuarioData) {
+      const { full_name, metadata: { division, turno } } = JSON.parse(usuarioData);
       this.usuarioNombre = full_name || 'Usuario';
       this.usuarioCarrera = `${division || ''} - ${turno || ''}`;
-      
+
     } else {
       this.usuarioNombre = 'Usuario';
       this.usuarioCarrera = '';
     }
     this.cargarHorariosCreados();
-    }
+  }
 
-    async cargarHorariosCreados() {
-      try {
-        const res = await fetch('https://horarios-backend-58w8.onrender.com/scheduler/allschedules');
-        if (!res.ok) throw new Error('Error al obtener horarios creados');
-        const data = await res.json();
-        console.log('Horarios creados:', data);
-        // El backend puede devolver { schedules: [...] } o directamente un array
-        const schedulesArray = Array.isArray(data) ? data : (data?.schedules ?? []);
-        if (Array.isArray(schedulesArray)) {
-          this.groupedSchedules = schedulesArray.map((s: any) => ({
-            nombregrupo: s.nombregrupo ?? s.groupName ?? 'Sin nombre',
-            data: Array.isArray(s.data) ? s.data : []
-          }));
-          // Generar lista de profesores con sus clases
-          const clasesTodas: any[] = schedulesArray.flatMap((g: any) => Array.isArray(g.data) ? g.data : []);
-          const profesoresMap: { [nombre: string]: any[] } = {};
-          for (const clase of clasesTodas) {
-            if (clase.prof) {
-              if (!profesoresMap[clase.prof]) profesoresMap[clase.prof] = [];
-              profesoresMap[clase.prof].push(clase);
-            }
+  async cargarHorariosCreados() {
+    try {
+      const res = await fetch('https://horarios-backend-58w8.onrender.com/scheduler/allschedules');
+      if (!res.ok) throw new Error('Error al obtener horarios creados');
+      const data = await res.json();
+      console.log('Horarios creados:', data);
+      // El backend puede devolver { schedules: [...] } o directamente un array
+      const schedulesArray = Array.isArray(data) ? data : (data?.schedules ?? []);
+      if (Array.isArray(schedulesArray)) {
+        this.groupedSchedules = schedulesArray.map((s: any) => ({
+          nombregrupo: s.nombregrupo ?? s.groupName ?? 'Sin nombre',
+          data: Array.isArray(s.data) ? s.data : []
+        }));
+        // Generar lista de profesores con sus clases
+        const clasesTodas: any[] = schedulesArray.flatMap((g: any) => Array.isArray(g.data) ? g.data : []);
+        const profesoresMap: { [nombre: string]: any[] } = {};
+        for (const clase of clasesTodas) {
+          if (clase.prof) {
+            if (!profesoresMap[clase.prof]) profesoresMap[clase.prof] = [];
+            profesoresMap[clase.prof].push(clase);
           }
-          this.profesoresConHorarios = Object.entries(profesoresMap).map(([nombre, clases]) => ({ nombre, clases }));
-        } else {
-          this.groupedSchedules = [];
-          this.profesoresConHorarios = [];
         }
-
-
-      } catch (err) {
-        alert('No se pudo cargar la lista de horarios creados: ' + err);
+        this.profesoresConHorarios = Object.entries(profesoresMap).map(([nombre, clases]) => ({ nombre, clases }));
+      } else {
+        this.groupedSchedules = [];
+        this.profesoresConHorarios = [];
       }
+
+
+    } catch (err) {
+      alert('No se pudo cargar la lista de horarios creados: ' + err);
     }
+  }
 
   generateSchedule() {
     this.loading = true;
@@ -121,17 +122,35 @@ export class SchedulerComponent {
   }
 
 
-  
+
 
   exportarPDF(group: { nombregrupo: string; data: any[] }) {
     const doc = new jsPDF();
-    // Título con el nombre del grupo
-    doc.setFontSize(16);
+
+    // Colores institucionales
+    const primaryColor = [0, 91, 170] as [number, number, number]; // #005baa
+    const secondaryColor = [245, 247, 250] as [number, number, number]; // #f5f7fa
+
+    // Encabezado del documento
+    doc.setFillColor(...primaryColor);
+    doc.rect(0, 0, 210, 20, 'F');
+
+    doc.setFontSize(18);
+    doc.setTextColor(255, 255, 255);
+    doc.text(`Horario de Grupo`, 14, 13);
+
+    doc.setFontSize(10);
+    doc.text(`Horari - UTEQ`, 180, 13, { align: 'right' });
+
+    // Información del grupo
     doc.setTextColor(0, 0, 0);
-    doc.text(`Horario del grupo: ${group.nombregrupo}`, 14, 16);
-     doc.setFontSize(12);
-    doc.text(`Horario generado por el sistema: Horari - UTEQ`, 110, 16);
-   
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Grupo: ${group.nombregrupo}`, 14, 30);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text(`Generado el: ${new Date().toLocaleDateString()}`, 14, 36);
+
     const head = [['Hora', ...this.diasSemana]];
     const body: any[] = [];
 
@@ -140,11 +159,10 @@ export class SchedulerComponent {
       for (const dia of this.diasSemana) {
         const clase = this.getClase(group.data, dia, hora);
         if (clase) {
-          // Materia en negrita, profe normal, salón pequeño
           row.push([
-            clase.subj ,
-            clase.prof || '',
-            clase.room 
+            clase.subj,
+            clase.prof || 'Sin profesor',
+            clase.room || 'Sin salón'
           ].filter(Boolean).join('\n'));
         } else {
           row.push('');
@@ -152,93 +170,133 @@ export class SchedulerComponent {
       }
       body.push(row);
     }
+
     autoTable(doc, {
       head,
       body,
+      startY: 45,
       theme: 'grid',
       styles: {
-        cellPadding: 2,
-        fontSize: 10,
+        fontSize: 9,
+        cellPadding: 3,
         valign: 'middle',
         halign: 'center',
-        textColor: [0, 0, 0],
-        lineColor: [0, 0, 0],
-        lineWidth: 0.4,
-        fillColor: [255, 255, 255],
+        lineColor: [224, 228, 234],
+        lineWidth: 0.1,
       },
       headStyles: {
-        fillColor: [255, 255, 255],
-        textColor: [0, 0, 0],
+        fillColor: primaryColor,
+        textColor: [255, 255, 255],
         fontStyle: 'bold',
-        lineColor: [0, 0, 0],
-        lineWidth: 0.6,
+        halign: 'center',
       },
-      alternateRowStyles: {
-        fillColor: [255, 255, 255],
-      },
-      margin: { top: 26 },
-    
     });
-   
+
+    // Pie de página
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150);
+      doc.text('Documento generado automáticamente por el sistema de horarios UTEQ', 105, 290, { align: 'center' });
+    }
+
     doc.save(`horario_${group.nombregrupo}.pdf`);
   }
 
-  
+
   // ...mantener el resto del código igual...
 
-    exportarPDFProfesor(prof: { nombre: string, clases: any[] }) {
-      const doc = new jsPDF();
-      // Título con el nombre del profesor
-      doc.setFontSize(16);
-      doc.setTextColor(0, 0, 0);
-      doc.text(`Horario del profesor: ${prof.nombre}`, 14, 16);
-          doc.setFontSize(12);
-    doc.text(`Horario generado por el sistema: Horari - UTEQ`, 110, 16);
-      const head = [['Hora', ...this.diasSemana]];
-      const body: any[] = [];
-      for (const hora of this.horas) {
-        const row: any[] = [hora + ':00'];
-        for (const dia of this.diasSemana) {
-          const clase = this.getClaseProfesor(prof.clases, dia, hora);
-          if (clase) {
-            row.push([
-              clase.subj ,
-              `Grupo: ${clase.group || clase.grupo || '-'}`,
-              clase.room 
-            ].filter(Boolean).join('\n'));
-          } else {
-            row.push('');
-          }
+  exportarPDFProfesor(prof: { nombre: string, clases: any[] }) {
+    const doc = new jsPDF();
+
+    // Colores institucionales
+    const primaryColor = [0, 91, 170] as [number, number, number];
+    const secondaryColor = [245, 247, 250] as [number, number, number];
+
+    // Encabezado
+    doc.setFillColor(...primaryColor);
+    doc.rect(0, 0, 210, 20, 'F');
+
+    doc.setFontSize(18);
+    doc.setTextColor(255, 255, 255);
+    doc.text(`Horario de Profesor`, 14, 13);
+
+    doc.setFontSize(10);
+    doc.text(`Horari - UTEQ`, 180, 13, { align: 'right' });
+
+    // Información del profesor
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Profesor: ${prof.nombre}`, 14, 30);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text(`Generado el: ${new Date().toLocaleDateString()}`, 14, 36);
+
+    const head = [['Hora', ...this.diasSemana]];
+    const body: any[] = [];
+
+    for (const hora of this.horas) {
+      const row: any[] = [hora + ':00'];
+      for (const dia of this.diasSemana) {
+        const clase = this.getClaseProfesor(prof.clases, dia, hora);
+        if (clase) {
+          row.push([
+            clase.subj,
+            `Grupo: ${clase.group || clase.grupo || '-'}`,
+            clase.room
+          ].filter(Boolean).join('\n'));
+        } else {
+          row.push('');
         }
-        body.push(row);
       }
-      autoTable(doc, {
-        head,
-        body,
-        theme: 'grid',
-        styles: {
-          cellPadding: 2,
-          fontSize: 10,
-          valign: 'middle',
-          halign: 'center',
-          textColor: [0, 0, 0],
-          lineColor: [0, 0, 0],
-          lineWidth: 0.4,
-          fillColor: [255, 255, 255],
-        },
-        headStyles: {
-          fillColor: [255, 255, 255],
-          textColor: [0, 0, 0],
-          fontStyle: 'bold',
-          lineColor: [0, 0, 0],
-          lineWidth: 0.6,
-        },
-        alternateRowStyles: {
-          fillColor: [255, 255, 255],
-        },
-        margin: { top: 26 },
-       
-      });
-      doc.save(`horario_profesor_${prof.nombre}.pdf`);
+      body.push(row);
     }
+
+    autoTable(doc, {
+      head,
+      body,
+      startY: 45,
+      theme: 'grid',
+      styles: {
+        fontSize: 9,
+        cellPadding: 3,
+        valign: 'middle',
+        halign: 'center',
+        lineColor: [224, 228, 234],
+        lineWidth: 0.1,
+      },
+      headStyles: {
+        fillColor: primaryColor,
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        halign: 'center',
+      },
+      columnStyles: {
+        0: { fontStyle: 'bold', cellWidth: 20, fillColor: secondaryColor },
+      },
+      alternateRowStyles: {
+        fillColor: [250, 250, 250],
+      },
+      didParseCell: (data: any) => {
+        if (data.section === 'body' && data.column.index > 0 && data.cell.raw) {
+          data.cell.styles.fillColor = [234, 243, 251];
+          data.cell.styles.textColor = [0, 91, 170];
+          data.cell.styles.fontStyle = 'bold';
+        }
+      }
+    });
+
+    // Pie de página
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150);
+      doc.text('Documento generado automáticamente por el sistema de horarios UTEQ', 105, 290, { align: 'center' });
+    }
+
+    doc.save(`horario_profesor_${prof.nombre}.pdf`);
+  }
 }
