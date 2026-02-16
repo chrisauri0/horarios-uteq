@@ -11,7 +11,7 @@ import { GruposComponent } from './componentes/grupos/grupos';
 import { SchedulerComponent } from './componentes/scheduler/scheduler';
 import { VerHorarios } from './componentes/scheduler/ver-horarios/ver-horarios';
 import { Carreras } from './componentes/carreras/carreras';
-
+import { Psicologos } from './componentes/psicologos/psicologos';
 
 
 export const routes: Routes = [
@@ -23,6 +23,7 @@ export const routes: Routes = [
   { path: 'materias', component: Materias , title: 'Materias'},
   { path: 'grupos', component: GruposComponent , title: 'Grupos'},
   { path: 'carreras', component: Carreras , title: 'Carreras'},
+  {path: 'psicologos', component: Psicologos , title: 'Psicólogos'},
   {
     path: 'horarios',
     children: [
