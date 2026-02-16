@@ -317,58 +317,74 @@ $success: #27ae60;
     background: color.adjust($danger, $alpha: -0.9);
   }
 }
-
-// ng-select overrides to match theme
-::ng-deep .ng-select {
-  &.custom-select .ng-select-container {
-    min-height: 45px;
-    border-radius: 8px;
-    border: 1px solid $border;
-    background: $secondary;
-    transition: all 0.2s ease;
-  }
-
-  &.ng-select-focused .ng-select-container {
-    border-color: $primary;
-    box-shadow: 0 0 0 3px rgba($primary, 0.1);
-    background: $white;
-  }
-
-  .ng-dropdown-panel {
-    border-radius: 8px;
-    border: 1px solid $border;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-
-    .ng-dropdown-panel-items .ng-option {
-      padding: 10px 16px;
-
-      &.ng-option-marked {
-        background: $secondary;
-        color: $text;
-      }
-
-      &.ng-option-selected {
-        background: $primary;
-        color: $white;
-      }
-    }
-  }
-
-  .ng-value-container .ng-value {
-    background: $primary;
-    color: $white;
-    border-radius: 4px;
-    margin-right: 5px;
-
-    .ng-value-icon {
-      border-right: 1px solid rgba(255, 255, 255, 0.2);
-
-      &:hover {
-        background: rgba(0, 0, 0, 0.1);
-      }
-    }
-  }
+/* CONTENEDOR PRINCIPAL */
+::ng-deep ng-select.custom-select > .ng-select-container {
+  min-height: 45px;
+  border-radius: 8px;
+  border: 1px solid $border;
+  background-color: $white !important; // 🔥 fuerza fondo sólido
+  transition: all 0.2s ease;
 }
+
+/* CUANDO ESTÁ ENFOCADO */
+::ng-deep ng-select.custom-select.ng-select-focused > .ng-select-container {
+  border-color: $primary;
+  box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  background-color: $white !important;
+}
+
+::ng-deep ng-select.custom-select.ng-select-multiple
+  .ng-value-container:has(.ng-value)
+  .ng-placeholder {
+  display: none;
+}
+
+/* CUANDO ESTÁ ABIERTO */
+::ng-deep ng-select.custom-select.ng-select-opened > .ng-select-container {
+  background-color: $white !important;
+}
+
+/* DROPDOWN */
+::ng-deep ng-select.custom-select .ng-dropdown-panel {
+  background-color: $white;
+  border-radius: 8px;
+  border: 1px solid $border;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* OPCIONES */
+::ng-deep ng-select.custom-select .ng-dropdown-panel .ng-option {
+  padding: 10px 16px;
+}
+
+::ng-deep ng-select.custom-select .ng-option-marked {
+  background: $secondary;
+  color: $text;
+}
+
+::ng-deep ng-select.custom-select .ng-option-selected {
+  background: $primary;
+  color: $white;
+}
+
+/* TAGS EN MULTIPLE */
+::ng-deep ng-select.custom-select .ng-value {
+  background: $primary;
+  color: $white;
+  border-radius: 4px;
+  margin-right: 5px;
+}
+
+::ng-deep ng-select.custom-select .ng-value-icon {
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+::ng-deep ng-select.custom-select .ng-value-icon:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+
+
 
 @media (max-width: 768px) {
   .tabla-profesores {
