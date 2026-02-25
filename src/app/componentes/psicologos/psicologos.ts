@@ -31,24 +31,31 @@ export class Psicologos {
   private API_DEPLOY = 'https://horarios-backend-58w8.onrender.com/psicologos';
   private API_LOCAL = 'http://localhost:3000/psicologos';
 
+
+  // interfaz para representar un psicólogo
+
   psicologos: PsicologoData[] = [];
   editandoId: string | null = null;
- dias: string[] = [
+  b = 1;
+  dias: string[] = [
   'Lunes',
   'Martes',
   'Miércoles',
   'Jueves',
   'Viernes',
   'Sábado'
-];
+  ];
 
-bloques = [
+  bloques = [
   {
     dias: [] as string[],
     hora_inicio: '',
     hora_fin: ''
   }
-];
+  ];
+
+
+
   nuevoPsicologo: PsicologoData = {
     nombre: '',
     apellidos: '',
@@ -57,11 +64,21 @@ bloques = [
     area_id: 1
   };
 
+
+
+// Logica para cargar psicólogos al iniciar el componente
+
+
   ngOnInit() {
     this.cargarPsicologos();  
   }
 
-   private lastPsicologosJson: string = '';
+  private lastPsicologosJson: string = '';
+
+
+
+
+  // Funciones para manejar bloques de disponibilidad
 
   async agregarBloque() {
     this.bloques.push({
@@ -70,18 +87,19 @@ bloques = [
       hora_fin: ''
     });
   }
-
-  toggleDia(bloqueIndex: number, dia: string) {
-  const dias = this.bloques[bloqueIndex].dias;
-
-  if (dias.includes(dia)) {
-    this.bloques[bloqueIndex].dias =
-      dias.filter(d => d !== dia);
-  } else {
-    this.bloques[bloqueIndex].dias.push(dia);
+  async eliminarBloque(index: number) {
+      this.bloques.splice(index, 1);
   }
-}
+  async toggleDia(bloqueIndex: number, dia: string) {
+    const dias = this.bloques[bloqueIndex].dias;
 
+    if (dias.includes(dia)) {
+      this.bloques[bloqueIndex].dias =
+        dias.filter(d => d !== dia);
+    } else {
+      this.bloques[bloqueIndex].dias.push(dia);
+    }
+  }
   async cargarPsicologos() {
        try {
       const res = await fetch(this.API_LOCAL);
@@ -92,7 +110,23 @@ bloques = [
         // No hay cambios, no actualiza la lista
         return;
       }
-      this.psicologos = Array.isArray(data) ? data : [];
+     this.psicologos = (Array.isArray(data) ? data : []).map(p => {
+
+        let disponibilidadNormalizada = [];
+
+        if (Array.isArray(p.disponibilidad)) {
+          disponibilidadNormalizada = p.disponibilidad;
+        } 
+        else if (p.disponibilidad && typeof p.disponibilidad === 'object') {
+          disponibilidadNormalizada = [p.disponibilidad]; // 👈 lo convertimos en array
+        }
+
+        return {
+          ...p,
+          disponibilidad: disponibilidadNormalizada
+        };
+      });
+      console.log('Psicólogos cargados:', this.psicologos);
       this.lastPsicologosJson = newJson;
       localStorage.setItem('psicologosCache', newJson);
     } catch (err) {
@@ -100,6 +134,11 @@ bloques = [
     }
   }
 
+  diaSeleccionadoEnOtroBloque(dia: string, bloqueActual: number): boolean {
+  return this.bloques.some((bloque, idx) =>
+    idx !== bloqueActual && bloque.dias.includes(dia)
+  );
+  }
 
   async crearPsicologo() {
 
@@ -111,7 +150,7 @@ bloques = [
       return;
     }
 
-    // 🔥 2️⃣ Filtrar bloques válidos
+    
     const bloquesValidos = this.bloques.filter(
       b => b.dias.length > 0 && b.hora_inicio && b.hora_fin
     );
@@ -121,7 +160,6 @@ bloques = [
       return;
     }
 
-    // 🔥 3️⃣ Crear payload limpio
     const payload = {
       ...this.nuevoPsicologo,
       disponibilidad: bloquesValidos
@@ -145,13 +183,38 @@ bloques = [
         disponibilidad: this.bloques,
         area_id:1
       };
+      this.bloques = [
+        {
+          dias: [] as string[],
+          hora_inicio: '',
+          hora_fin: ''
+        }
+      ];
+      
     } catch (err) {
       alert('Error al crear psicólogo: ' + err);
     }
   }
 
-  async editarPsicologo(psicologo: PsicologoData) {
-  }
+async editarPsicologo(psicologo: PsicologoData) {
+  this.editandoId = psicologo.psicologo_id || null;
+
+  this.nuevoPsicologo = {
+    nombre: psicologo.nombre,
+    apellidos: psicologo.apellidos,
+    email: psicologo.email,
+    disponibilidad: psicologo.disponibilidad,
+    area_id: psicologo.area_id
+  };
+
+  this.bloques = Array.isArray(psicologo.disponibilidad)
+    ? psicologo.disponibilidad.map(b => ({
+        dias: b.dias || [],
+        hora_inicio: b.hora_inicio || '',
+        hora_fin: b.hora_fin || ''
+      }))
+    : [];
+}
   
 
 
@@ -159,8 +222,27 @@ bloques = [
 
   async guardarEdicion() {}
 
-  async cancelarEdicion() {}
+  async cancelarEdicion() {
+    this.editandoId = null;
+    this.nuevoPsicologo = {
+      nombre: '',
+      apellidos: '',
+      email: '',
+      disponibilidad: this.bloques,
+      area_id:1
+    };
+    this.bloques = [
+      {
+        dias: [] as string[],
+        hora_inicio: '',
+        hora_fin: ''
+      }
+    ];
+  }
 
 
   async eliminarPsicologo(id: string) {}
+
+
+
 }

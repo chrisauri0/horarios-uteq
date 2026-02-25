@@ -14,7 +14,7 @@ $success: #27ae60;
 
 .profesores-container {
   max-width: 900px;
-  margin: 40px auto;
+  margin:  auto;
   padding: 0 1rem;
   font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
   color: $text;
@@ -27,6 +27,13 @@ $success: #27ae60;
     padding: 1.5rem;
   }
 }
+
+.separador {
+  // height: 1px;
+  // max-width: 900px;
+ 
+}
+
 
 .header-section {
   display: flex;
@@ -393,7 +400,53 @@ $success: #27ae60;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
-.algo{}
+.btn-eliminar-bloque{
+    margin-top: 1rem;
+    margin-right: 1rem;
+    background: $danger;
+    border: none;
+    color: $white;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px; ;
+    transition: color 0.2s;
+
+    &:hover {
+        background: color.adjust($danger, $lightness: -10%);
+    }
+}
+.bloque-times input[type="time"] {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  margin-right: 1rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.bloque-times input[type="time"]:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.15);
+}
+.btn-agregar-bloque{
+    margin-top: 1rem;
+    background: $success;
+    border: none;
+    color: $white;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px; ;
+    transition: color 0.2s;
+
+    &:hover {
+        background: color.adjust($success, $lightness: -10%);
+    }
+}
 
 .form-dias {
     margin: 1rem;
@@ -413,7 +466,6 @@ $success: #27ae60;
   display: grid;
   grid-template-columns: repeat(3, max-content); /* 🔥 columnas según contenido */
   gap: 8px;
-  margin-bottom: 15px;
 }
 
 .day-item {
