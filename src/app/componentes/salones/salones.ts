@@ -20,21 +20,28 @@ export class SalonesComponent {
   sidebarCollapsed = false;
 
 
+
   salones: salonesData[] = [];
   nuevoSalon: salonesData = { id: '', nombre: '', division: '' };
   editandoId: string | null = null;
+  defaultDivision: string = '';
+
+  modalAbierto = false;
+
 
   ngOnInit() {
     const usuarioData = localStorage.getItem('userData');
-    const token = localStorage.getItem('token') || '';
     if (usuarioData) {
       const { full_name, metadata: { division, turno } } = JSON.parse(usuarioData);
       this.usuarioNombre = full_name || 'Usuario';
       this.usuarioCarrera = `${division || ''} - ${turno || ''}`;
-
+      this.defaultDivision = division || '';
+      this.nuevoSalon.division = this.defaultDivision;
     } else {
       this.usuarioNombre = 'Usuario';
       this.usuarioCarrera = '';
+      this.defaultDivision = '';
+      this.nuevoSalon.division = '';
     }
     this.cargarSalones();
   }
@@ -98,7 +105,8 @@ export class SalonesComponent {
         nombre: data.nombre,
         division: data.division
       });
-      this.nuevoSalon = { id: '', nombre: '', division: '' };
+      this.nuevoSalon = { id: '', nombre: '', division: this.defaultDivision };
+      this.modalAbierto = false;
     } catch (err) {
       alert('No se pudo crear el salón: ' + err);
     }
@@ -121,6 +129,7 @@ export class SalonesComponent {
   editarSalon(salon: salonesData) {
     this.editandoId = salon.id;
     this.nuevoSalon = { ...salon };
+    this.modalAbierto = true;
   }
 
   async guardarEdicion() {
@@ -142,16 +151,28 @@ export class SalonesComponent {
         nombre: body.nombre,
         division: this.nuevoSalon.division
       } : s);
-      this.nuevoSalon = { id: '', nombre: '', division: '' };
+      this.nuevoSalon = { id: '', nombre: '', division: this.defaultDivision };
       this.editandoId = null;
+      this.modalAbierto = false;
     } catch (err) {
       alert('No se pudo editar el salón: ' + err);
     }
   }
 
   cancelarEdicion() {
-    this.nuevoSalon = { id: '', nombre: '', division: '' };
+    this.nuevoSalon = { id: '', nombre: '', division: this.defaultDivision };
     this.editandoId = null;
+  }
+
+  abrirModalNuevoSalon() {
+    this.editandoId = null;
+    this.nuevoSalon = { id: '', nombre: '', division: this.defaultDivision };
+    this.modalAbierto = true;
+  }
+
+  cerrarModal() {
+    this.cancelarEdicion();
+    this.modalAbierto = false;
   }
 }
 

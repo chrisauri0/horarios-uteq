@@ -22,6 +22,7 @@ export class Carreras {
   nuevaCarrera: Carrera = { id: '', nombre: '', grado: 1, division: '' };
   defaultDivision: string = '';
   editandoId: string | null = null;
+  modalAbierto = false;
 
   ngOnInit() {
     this.cargarCarreras();
@@ -79,6 +80,7 @@ export class Carreras {
       });
       // reset form but preserve default division (from user metadata)
       this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: this.defaultDivision };
+      this.modalAbierto = false;
     } catch (err) {
       alert('No se pudo crear la carrera: ' + err);
     }
@@ -87,6 +89,7 @@ export class Carreras {
   editarCarrera(carrera: Carrera) {
     this.editandoId = carrera.id;
     this.nuevaCarrera = { ...carrera };
+    this.modalAbierto = true;
   }
 
   async guardarEdicion() {
@@ -113,6 +116,7 @@ export class Carreras {
       // reset form and restore default division
       this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: this.defaultDivision };
       this.editandoId = null;
+      this.modalAbierto = false;
     } catch (err) {
       alert('No se pudo editar la carrera: ' + err);
     }
@@ -121,6 +125,17 @@ export class Carreras {
   cancelarEdicion() {
     this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: this.defaultDivision };
     this.editandoId = null;
+  }
+
+  abrirModalNuevaCarrera() {
+    this.editandoId = null;
+    this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: this.defaultDivision };
+    this.modalAbierto = true;
+  }
+
+  cerrarModal() {
+    this.cancelarEdicion();
+    this.modalAbierto = false;
   }
 
   async eliminarCarrera(id: string) {

@@ -12,29 +12,10 @@
         </div>
     </div>
 
-    <div class="card-form">
-        <form (submit)="$event.preventDefault(); editandoId ? guardarEdicion() : agregarSalon()" class="salon-form">
-            <div class="inputs-grid">
-                <div class="input-group">
-                    <label for="nombreSalon">Nombre del salón</label>
-                    <input id="nombreSalon" type="text" placeholder="Ej. Laboratorio 1" [(ngModel)]="nuevoSalon.nombre"
-                        name="nombre" required class="input-salon" />
-                </div>
-                <div class="input-group">
-                    <label for="divisionSalon">División</label>
-                    <input id="divisionSalon" type="text" placeholder="División" [(ngModel)]="nuevoSalon.division"
-                        name="division" required class="input-salon" />
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn-guardar">
-                        {{ editandoId ? 'Guardar Cambios' : 'Agregar Salón' }}
-                    </button>
-                    <button type="button" *ngIf="editandoId" (click)="cancelarEdicion()" class="btn-cancelar">
-                        Cancelar
-                    </button>
-                </div>
-            </div>
-        </form>
+    <div class="toolbar-actions">
+        <button type="button" class="btn-guardar" (click)="abrirModalNuevoSalon()">
+            Agregar salón
+        </button>
     </div>
 
     <div class="card-table">
@@ -74,5 +55,42 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <div class="modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+        <div class="card-form" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3>{{ editandoId ? 'Editar salón' : 'Nuevo salón' }}</h3>
+                <button type="button" class="btn-icon btn-cerrar" (click)="cerrarModal()" title="Cerrar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" color="red">
+                        <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form (submit)="$event.preventDefault(); editandoId ? guardarEdicion() : agregarSalon()" class="salon-form">
+                <div class="inputs-grid">
+                    <div class="input-group">
+                        <label for="nombreSalon">Nombre del salón</label>
+                        <input id="nombreSalon" type="text" placeholder="Ej. Laboratorio 1"
+                            [(ngModel)]="nuevoSalon.nombre" name="nombre" required class="input-salon" />
+                    </div>
+                    <div class="input-group">
+                        <label for="divisionSalon">División</label>
+                        <input id="divisionSalon" type="text" placeholder="División" [(ngModel)]="nuevoSalon.division"
+                            name="division" class="input-salon" [disabled]="true" />
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-guardar">
+                            {{ editandoId ? 'Guardar Cambios' : 'Agregar Salón' }}
+                        </button>
+                        <button type="button" (click)="cerrarModal()" class="btn-cancelar">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>

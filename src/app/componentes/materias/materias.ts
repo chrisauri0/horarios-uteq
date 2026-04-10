@@ -12,6 +12,7 @@ export interface Materia {
   horas_semana: number;
   data?: object;
   salones?: object
+  
 }
 
 @Component({
@@ -22,10 +23,11 @@ export interface Materia {
 })
 export class Materias {
   materias: Materia[] = [];
-  nuevaMateria: Materia = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: {} };
+  nuevaMateria: Materia = { id: '', nombre: '', grado: NaN, carrera: '', horas_semana: NaN, data: {}, salones: {} , };
   editandoId: string | null = null;
   salones: object[] = [];
-  carreras: object[] = [];
+  carreras: object[] = []
+  modalAbierto = false;
 
   ngOnInit() {
     this.cargarMaterias();
@@ -119,6 +121,7 @@ export class Materias {
         salones: data.salones || {}
       });
       this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: {} };
+      this.modalAbierto = false;
     } catch (err) {
       alert('No se pudo crear la materia: ' + err);
     }
@@ -150,8 +153,9 @@ export class Materias {
         horas_semana: body.horas_semana,
         data: body.data
       } : m);
-      this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {} };
+      this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: {} };
       this.editandoId = null;
+      this.modalAbierto = false;
     } catch (err) {
       alert('No se pudo editar la materia: ' + err);
     }
@@ -176,10 +180,22 @@ export class Materias {
   editarMateria(materia: Materia) {
     this.editandoId = materia.id;
     this.nuevaMateria = { ...materia };
+    this.modalAbierto = true;
   }
 
   cancelarEdicion() {
-    this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {} };
+    this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: {} };
     this.editandoId = null;
+  }
+
+  abrirModalNuevaMateria() {
+    this.editandoId = null;
+    this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: {} };
+    this.modalAbierto = true;
+  }
+
+  cerrarModal() {
+    this.cancelarEdicion();
+    this.modalAbierto = false;
   }
 }

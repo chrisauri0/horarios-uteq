@@ -9,275 +9,316 @@ $success-bg: #eaf3fb;
 $danger: #e57373;
 $danger-hover: #c62828;
 
-@use "sass:color";
+@use 'sass:color';
 
 .carreras-container {
-	max-width: 900px;
-	margin: 40px auto;
-	padding: 0 1rem;
-	font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
-	color: $text;
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-	padding: 2rem;
-	margin-bottom: 2rem;
-	border: 1px solid $border;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 1rem;
+  font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+  color: $text;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid $border;
 
-	@media (max-width: 600px) {
-		padding: 1.5rem;
-	}
+  @media (max-width: 600px) {
+    padding: 1.5rem;
+  }
 }
 
 .header-section {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	position: relative;
-	margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 2.5rem;
 
-	.btn-back {
-		position: absolute;
-		left: 0;
-		top: 50%;
-		transform: translateY(-50%);
-		width: 40px;
-		height: 40px;
-		border-radius: 50%;
-		background: $white;
-		border: 1px solid $border;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: $primary;
-		transition: all 0.2s ease;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-		z-index: 10;
-		cursor: pointer;
+  .btn-back {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: $white;
+    border: 1px solid $border;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $primary;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+    cursor: pointer;
 
-		&:hover {
-			background: $primary;
-			color: $white;
-			transform: translateY(-50%) scale(1.1);
-			box-shadow: 0 4px 12px rgba(0, 91, 170, 0.2);
-		}
-	}
+    &:hover {
+      background: $primary;
+      color: $white;
+      transform: translateY(-50%) scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 91, 170, 0.2);
+    }
+  }
 
-	.header-text {
-		text-align: center;
-	}
+  .header-text {
+    text-align: center;
+  }
 
-	.titulo-grupos {
-		color: $primary;
-		font-size: 2rem;
-		font-weight: 700;
-		margin: 0 0 0.5rem 0;
-		letter-spacing: -0.5px;
-	}
+  .titulo-grupos {
+    color: $primary;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.5px;
+  }
 
-	.subtitle {
-		color: color.adjust($text, $lightness: 20%);
-		font-size: 1.1rem;
-		margin: 0;
-	}
+  .subtitle {
+    color: color.adjust($text, $lightness: 20%);
+    font-size: 1.1rem;
+    margin: 0;
+  }
 }
 
 .card-form {
-	background: $white;
-	border-radius: 16px;
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-	padding: 2rem;
-	margin-bottom: 2rem;
-	border: 1px solid $border;
+  background: $white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid $border;
 
-	@media (max-width: 600px) {
-		padding: 1.5rem;
-	}
+  @media (max-width: 600px) {
+    padding: 1.5rem;
+  }
+}
+
+.toolbar-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.25rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1000;
+
+  .card-form {
+    width: min(860px, 100%);
+    margin: 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+
+  h3 {
+    margin: 0;
+    color: $primary;
+    font-size: 1.2rem;
+  }
+
+  .btn-cerrar {
+    border: 1px solid $border;
+  }
 }
 
 .inputs-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-	gap: 1.5rem;
-	align-items: end;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  align-items: end;
 }
 
 .input-group {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 
-	label {
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: color.adjust($text, $lightness: 10%);
-		margin-left: 2px;
-	}
+  label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: color.adjust($text, $lightness: 10%);
+    margin-left: 2px;
+  }
 
-	.input-carrera {
-		padding: 0.8rem 1rem;
-		border: 1px solid $border;
-		border-radius: 8px;
-		font-size: 1rem;
-		background: $secondary;
-		transition: all 0.2s ease;
-		color: $text;
+  .input-carrera {
+    padding: 0.8rem 1rem;
+    border: 1px solid $border;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: $secondary;
+    transition: all 0.2s ease;
+    color: $text;
 
-		&:focus {
-			outline: none;
-			border-color: $primary;
-			background: $white;
-			box-shadow: 0 0 0 3px rgba($primary, 0.1);
-		}
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      background: $white;
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
 
-		&:disabled {
-			background: color.adjust($secondary, $lightness: -2%);
-			color: color.adjust($text, $lightness: 40%);
-			cursor: not-allowed;
-		}
-	}
+    &:disabled {
+      background: color.adjust($secondary, $lightness: -2%);
+      color: color.adjust($text, $lightness: 40%);
+      cursor: not-allowed;
+    }
+  }
 }
 
 .form-actions {
-	display: flex;
-	gap: 1rem;
-	grid-column: 1 / -1;
-	margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  grid-column: 1 / -1;
+  margin-top: 1rem;
 
-	@media (max-width: 600px) {
-		flex-direction: column;
-		width: 100%;
+  @media (max-width: 600px) {
+    flex-direction: column;
+    width: 100%;
 
-		button {
-			width: 100%;
-		}
-	}
+    button {
+      width: 100%;
+    }
+  }
 }
 
 .btn-guardar {
-	background: $primary;
-	color: $white;
-	border: none;
-	padding: 0.8rem 1.5rem;
-	border-radius: 8px;
-	font-weight: 600;
-	cursor: pointer;
-	transition: background 0.2s;
-	font-size: 0.95rem;
+  background: $primary;
+  color: $white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 0.95rem;
 
-	&:hover {
-		background: color.adjust($primary, $lightness: -10%);
-	}
+  &:hover {
+    background: color.adjust($primary, $lightness: -10%);
+  }
 }
 
 .btn-cancelar {
-	background: transparent;
-	color: color.adjust($text, $lightness: 20%);
-	border: 1px solid $border;
-	padding: 0.8rem 1.5rem;
-	border-radius: 8px;
-	font-weight: 600;
-	cursor: pointer;
-	transition: all 0.2s;
-	font-size: 0.95rem;
+  background: transparent;
+  color: color.adjust($text, $lightness: 20%);
+  border: 1px solid $border;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
 
-	&:hover {
-		background: $secondary;
-		color: $text;
-	}
+  &:hover {
+    background: $secondary;
+    color: $text;
+  }
 }
 
 .card-table {
-	background: $white;
-	border-radius: 16px;
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-	border: 1px solid $border;
-	overflow: hidden;
+  background: $white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid $border;
+  overflow: hidden;
 }
 
 .tabla-carreras {
-	width: 100%;
-	border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 
-	th,
-	td {
-		padding: 1.2rem 1.5rem;
-		text-align: left;
-	}
+  th,
+  td {
+    padding: 1.2rem 1.5rem;
+    text-align: left;
+  }
 
-	th {
-		background: $secondary;
-		color: $primary;
-		font-weight: 600;
-		font-size: 0.9rem;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		border-bottom: 1px solid $border;
-	}
+  th {
+    background: $secondary;
+    color: $primary;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid $border;
+  }
 
-	td {
-		border-bottom: 1px solid $border;
-		color: $text;
-		font-size: 0.95rem;
-	}
+  td {
+    border-bottom: 1px solid $border;
+    color: $text;
+    font-size: 0.95rem;
+  }
 
-	tr:last-child td {
-		border-bottom: none;
-	}
+  tr:last-child td {
+    border-bottom: none;
+  }
 
-	tbody tr {
-		transition: background 0.2s;
+  tbody tr {
+    transition: background 0.2s;
 
-		&:hover {
-			background: color.adjust($secondary, $lightness: 2%);
-		}
-	}
+    &:hover {
+      background: color.adjust($secondary, $lightness: 2%);
+    }
+  }
 
-	.th-id,
-	.td-id {
-		width: 60px;
-		text-align: center;
-		color: color.adjust($text, $lightness: 40%);
-	}
+  .th-id,
+  .td-id {
+    width: 60px;
+    text-align: center;
+    color: color.adjust($text, $lightness: 40%);
+  }
 
-	.td-nombre {
-		font-weight: 500;
-		color: $primary;
-	}
+  .td-nombre {
+    font-weight: 500;
+    color: $primary;
+  }
 
-	.th-actions,
-	.td-actions {
-		text-align: right;
-		width: 120px;
-	}
+  .th-actions,
+  .td-actions {
+    text-align: right;
+    width: 120px;
+  }
 
-	.empty-state {
-		text-align: center;
-		-webkit-overflow-scrolling: touch;
-	}
+  .empty-state {
+    text-align: center;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .btn-icon {
-	background: transparent;
-	border: none;
-	padding: 6px;
-	border-radius: 6px;
-	cursor: pointer;
-	transition: all 0.2s;
-	color: color.adjust($text, $lightness: 30%);
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: color.adjust($text, $lightness: 30%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-	&:hover {
-		background: $secondary;
-	}
+  &:hover {
+    background: $secondary;
+  }
 
-	&.btn-editar:hover {
-		color: $primary;
-		background: color.adjust($primary, $alpha: -0.9);
-	}
+  &.btn-editar:hover {
+    color: $primary;
+    background: color.adjust($primary, $alpha: -0.9);
+  }
 
-	&.btn-eliminar:hover {
-		color: $danger;
-		background: color.adjust($danger, $alpha: -0.9);
-	}
+  &.btn-eliminar:hover {
+    color: $danger;
+    background: color.adjust($danger, $alpha: -0.9);
+  }
 }

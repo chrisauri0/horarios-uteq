@@ -12,7 +12,14 @@ export interface ProfesorData {
   email: string;
   can_be_tutor?: boolean;
   materias?: string[];
-  metadata?: object;
+  disponibilidad?: BloqueHorario[];
+  metadata?: any;
+}
+
+interface BloqueHorario {
+  dias: string[];
+  hora_inicio: string;
+  hora_fin: string;
 }
 
 @Component({
@@ -26,6 +33,9 @@ export class ProfesoresComponent {
   profesores: ProfesorData[] = [];
   materias: Materia[] = [];
   materiasOpciones: string[] = [];
+  busquedaProfesor = '';
+  dias: string[] = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+  bloques: BloqueHorario[] = [this.crearBloqueVacio()];
   nuevoProfesor: ProfesorData = {
     profesor_id: '',
     nombre: '',
@@ -33,13 +43,79 @@ export class ProfesoresComponent {
     email: '',
     can_be_tutor: false,
     materias: [],
-    metadata: {}
+    disponibilidad: [],
+    // metadata: {}
   };
   editandoId: string | null = null;
+  modalAbierto = false;
+
+  get profesoresFiltrados(): ProfesorData[] {
+    const query = this.busquedaProfesor.trim().toLowerCase();
+    if (!query) {
+      return this.profesores;
+    }
+
+    return this.profesores.filter((profesor) => {
+      const materias = (profesor.materias || []).join(' ').toLowerCase();
+      const texto = `${profesor.nombre} ${profesor.apellidos} ${profesor.email} ${materias}`.toLowerCase();
+      return texto.includes(query);
+    });
+  }
 
   ngOnInit() {
     this.cargarProfesores();
     this.cargarMaterias();
+  }
+
+  private crearBloqueVacio(): BloqueHorario {
+    return {
+      dias: [],
+      hora_inicio: '',
+      hora_fin: ''
+    };
+  }
+
+  private resetBloques() {
+    this.bloques = [this.crearBloqueVacio()];
+  }
+
+  private bloquesValidos(): BloqueHorario[] {
+    return this.bloques
+      .filter((bloque) => bloque.dias.length > 0 && bloque.hora_inicio && bloque.hora_fin)
+      .map((bloque) => ({
+        dias: [...bloque.dias],
+        hora_inicio: bloque.hora_inicio,
+        hora_fin: bloque.hora_fin
+      }));
+  }
+
+  agregarBloque() {
+    this.bloques.push(this.crearBloqueVacio());
+  }
+
+  eliminarBloque(index: number) {
+    if (this.bloques.length === 1) {
+      this.resetBloques();
+      return;
+    }
+    this.bloques.splice(index, 1);
+  }
+
+  toggleDia(bloqueIndex: number, dia: string) {
+    if (this.esDiaBloqueado(bloqueIndex, dia)) {
+      return;
+    }
+
+    const dias = this.bloques[bloqueIndex].dias;
+    if (dias.includes(dia)) {
+      this.bloques[bloqueIndex].dias = dias.filter((d) => d !== dia);
+      return;
+    }
+    dias.push(dia);
+  }
+
+  esDiaBloqueado(bloqueIndex: number, dia: string): boolean {
+    return this.bloques.some((bloque, index) => index !== bloqueIndex && bloque.dias.includes(dia));
   }
 
 
@@ -94,7 +170,7 @@ export class ProfesoresComponent {
 
 
     try {
-      const res = await fetch('https://horarios-backend-58w8.onrender.com/profesores');
+      const res = await fetch('http://localhost:3000/profesores');
       if (!res.ok) throw new Error('Error al obtener profesores');
       const data = await res.json();
       const newJson = JSON.stringify(data);
@@ -115,6 +191,11 @@ export class ProfesoresComponent {
     const nombre = this.nuevoProfesor.nombre.trim();
     const apellidos = this.nuevoProfesor.apellidos.trim();
 
+    const metadata = {
+      ...(this.nuevoProfesor.metadata || {}),
+      disponibilidad: this.bloquesValidos()
+    };
+
     // Construir el body para el endpoint
     const body = {
       nombre,
@@ -122,7 +203,8 @@ export class ProfesoresComponent {
       email: this.nuevoProfesor.email,
       can_be_tutor: !!this.nuevoProfesor.can_be_tutor,
       materias: this.nuevoProfesor.materias,
-      metadata: this.nuevoProfesor.metadata
+      disponibilidad: this.bloquesValidos(),
+      metadata
     };
 
     // Verificar si ya existe un profesor con los mismos datos
@@ -132,7 +214,7 @@ export class ProfesoresComponent {
       p.email === this.nuevoProfesor.email &&
       p.can_be_tutor === this.nuevoProfesor.can_be_tutor &&
       JSON.stringify(p.materias) === JSON.stringify(this.nuevoProfesor.materias) &&
-      JSON.stringify(p.metadata) === JSON.stringify(this.nuevoProfesor.metadata)
+      JSON.stringify(p.metadata) === JSON.stringify(metadata)
     );
     if (existe) {
       alert('No hay cambios en los datos del profesor. No se enviará la petición.');
@@ -140,7 +222,10 @@ export class ProfesoresComponent {
     }
 
     try {
-      const res = await fetch('https://horarios-backend-58w8.onrender.com/profesores', {
+      console.log('Enviando nuevo profesor al backend:', body);
+      console.log('Bloques de disponibilidad enviados:', body.disponibilidad);
+      // const res = await fetch('https://horarios-backend-58w8.onrender.com/profesores', {
+      const res = await fetch('http://localhost:3000/profesores', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -148,8 +233,10 @@ export class ProfesoresComponent {
       if (!res.ok) throw new Error('Error al crear el profesor');
       const data = await res.json();
       // Usar el id real devuelto por el backend
-      this.profesores.push({ ...this.nuevoProfesor, profesor_id: data.profesor_id });
+      this.profesores.push({ ...this.nuevoProfesor, metadata, profesor_id: data.profesor_id });
       this.nuevoProfesor = { profesor_id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {} };
+      this.resetBloques();
+      this.modalAbierto = false;
     } catch (err) {
       alert('No se pudo crear el profesor: ' + err);
     }
@@ -159,18 +246,23 @@ export class ProfesoresComponent {
     if (!this.nuevoProfesor.nombre.trim() || !this.nuevoProfesor.email.trim()) return;
     if (!this.editandoId) return;
 
-    // Usar los campos tal cual del formulario
+    const disponibilidad = this.bloquesValidos();
+    const metadata = {
+      ...(this.nuevoProfesor.metadata || {})
+    };
+
     const body: any = {
       nombre: this.nuevoProfesor.nombre.trim(),
       apellidos: this.nuevoProfesor.apellidos.trim(),
       email: this.nuevoProfesor.email,
       can_be_tutor: !!this.nuevoProfesor.can_be_tutor,
       materias: this.nuevoProfesor.materias,
-      metadata: this.nuevoProfesor.metadata
+      disponibilidad,
+      metadata
     };
 
     try {
-      const res = await fetch(`https://horarios-backend-58w8.onrender.com/profesores/${this.editandoId}`, {
+      const res = await fetch(`http://localhost:3000/profesores/${this.editandoId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -181,8 +273,10 @@ export class ProfesoresComponent {
       this.profesores = this.profesores.map(p =>
         p.profesor_id === this.editandoId ? { ...p, ...body, profesor_id: p.profesor_id } : p
       );
-      this.nuevoProfesor = { profesor_id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {} };
+      this.nuevoProfesor = { profesor_id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {},disponibilidad: [] };
+      this.resetBloques();
       this.editandoId = null;
+      this.modalAbierto = false;
       //recagar la lista de profesores para asegurar consistencia
       this.cargarProfesores();
     } catch (err) {
@@ -208,19 +302,31 @@ export class ProfesoresComponent {
   editarProfesor(profesor: any) {
     this.editandoId = profesor.profesor_id;
     this.nuevoProfesor = { ...profesor };
-    // Mover la vista hacia el formulario de edición, pero con un offset para que se vea completo
-    const formElement = document.getElementById('profesorForm');
-    if (formElement) {
-      formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // Esperar un poco para que el scroll termine y luego ajustar hacia arriba
-      setTimeout(() => {
-        window.scrollBy({ top: -170, left: 0, behavior: 'smooth' }); // Ajusta el offset según la altura de tu navbar
-      }, 400);
-    }
+    const disponibilidad = (profesor?.metadata?.disponibilidad || profesor?.disponibilidad || []) as BloqueHorario[];
+    this.bloques = disponibilidad.length > 0
+      ? disponibilidad.map((bloque) => ({
+          dias: Array.isArray(bloque.dias) ? [...bloque.dias] : [],
+          hora_inicio: bloque.hora_inicio || '',
+          hora_fin: bloque.hora_fin || ''
+        }))
+      : [this.crearBloqueVacio()];
+    this.modalAbierto = true;
   }
 
   cancelarEdicion() {
     this.nuevoProfesor = { profesor_id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {} };
+    this.resetBloques();
     this.editandoId = null;
+  }
+
+  abrirModalNuevoProfesor() {
+    this.editandoId = null;
+    this.nuevoProfesor = { profesor_id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {} };
+    this.modalAbierto = true;
+  }
+
+  cerrarModal() {
+    this.cancelarEdicion();
+    this.modalAbierto = false;
   }
 }

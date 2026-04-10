@@ -24,8 +24,8 @@ export class DashboardComponent {
   ngOnInit() {
     const usuarioData = localStorage.getItem('userData');
     if (usuarioData) {
-      const { full_name, metadata: { division , turno } } = JSON.parse(usuarioData);
-      this.usuarioNombre = full_name;
+      const { nombre, metadata: { division , turno } } = JSON.parse(usuarioData);
+      this.usuarioNombre = nombre;
       this.usuarioCarrera = division + ' - ' + turno;
     } else {
       this.router.navigate(['/']);

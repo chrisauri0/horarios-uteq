@@ -25,6 +25,110 @@
             <h3>Aviso importante</h3>
             <p>Se generarán horarios para <strong>{{ usuarioCarrera }}</strong> basados en los salones del cuatrimestre
                 7. Este proceso puede tardar unos segundos.</p>
+            <p>
+                Preview actual: <strong>{{ totalGruposSeleccionados }}</strong> grupos,
+                <strong>{{ totalProfesoresSeleccionados }}</strong> profesores y
+                <strong>{{ totalSalonesSeleccionados }}</strong> salones,
+                <strong>{{ totalMateriasSeleccionadas }}</strong> materias seleccionadas.
+            </p>
+        </div>
+    </div>
+
+    <div class="preview-card">
+        <div class="preview-header">
+            <h3>Preview de datos a procesar</h3>
+            <p>Ajusta aqui exactamente que grupos, profesores y salones entran al generador.</p>
+        </div>
+
+        <div class="preview-stats">
+            <div class="stat-item">
+                <span class="stat-label">Grupos</span>
+                <span class="stat-value">{{ totalGruposSeleccionados }} / {{ gruposPreview.length }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Profesores</span>
+                <span class="stat-value">{{ totalProfesoresSeleccionados }} / {{ profesoresPreview.length }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Salones</span>
+                <span class="stat-value">{{ totalSalonesSeleccionados }} / {{ salonesPreview.length }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Materias</span>
+                <span class="stat-value">{{ totalMateriasSeleccionadas }} / {{ materiasPreview.length }}</span>
+            </div>
+        </div>
+
+        <div class="preview-lists">
+            <div class="preview-block">
+                <div class="preview-block-header">
+                    <h4>Grupos</h4>
+                    <div class="bulk-actions">
+                        <button type="button" class="btn-mini" (click)="seleccionarTodo('grupos', true)">Todo</button>
+                        <button type="button" class="btn-mini" (click)="seleccionarTodo('grupos', false)">Ninguno</button>
+                    </div>
+                </div>
+                <div class="preview-list">
+                    <label class="checkbox-row" *ngFor="let grupo of gruposPreview">
+                        <input type="checkbox" [(ngModel)]="grupo.selected">
+                        <span>{{ grupo.nombre }}</span>
+                        <span> Semestre: {{ grupo.grado }}</span>
+                    </label>
+                    <p class="empty-list" *ngIf="!gruposPreview.length">No hay grupos disponibles.</p>
+                </div>
+            </div>
+
+            <div class="preview-block">
+                <div class="preview-block-header">
+                    <h4>Profesores</h4>
+                    <div class="bulk-actions">
+                        <button type="button" class="btn-mini" (click)="seleccionarTodo('profesores', true)">Todo</button>
+                        <button type="button" class="btn-mini" (click)="seleccionarTodo('profesores', false)">Ninguno</button>
+                    </div>
+                </div>
+                <div class="preview-list">
+                    <label class="checkbox-row" *ngFor="let profesor of profesoresPreview">
+                        <input type="checkbox" [(ngModel)]="profesor.selected">
+                        <span>{{ profesor.nombre }}</span>
+                    </label>
+                    <p class="empty-list" *ngIf="!profesoresPreview.length">No hay profesores disponibles.</p>
+                </div>
+            </div>
+
+            <div class="preview-block">
+                <div class="preview-block-header">
+                    <h4>Salones</h4>
+                    <div class="bulk-actions">
+                        <button type="button" class="btn-mini" (click)="seleccionarTodo('salones', true)">Todo</button>
+                        <button type="button" class="btn-mini" (click)="seleccionarTodo('salones', false)">Ninguno</button>
+                    </div>
+                </div>
+                <div class="preview-list">
+                    <label class="checkbox-row" *ngFor="let salon of salonesPreview">
+                        <input type="checkbox" [(ngModel)]="salon.selected">
+                        <span>{{ salon.nombre }}</span>
+                    </label>
+                    <p class="empty-list" *ngIf="!salonesPreview.length">No hay salones disponibles.</p>
+                </div>
+            </div>
+
+            <div class="preview-block">
+                <div class="preview-block-header">
+                    <h4>Materias</h4>
+                    <div class="bulk-actions">
+                        <button type="button" class="btn-mini" (click)="seleccionarTodo('materias', true)">Todo</button>
+                        <button type="button" class="btn-mini" (click)="seleccionarTodo('materias', false)">Ninguno</button>
+                    </div>
+                </div>
+                <div class="preview-list">
+                    <label class="checkbox-row" *ngFor="let materia of materiasPreview">
+                        <input type="checkbox" [(ngModel)]="materia.selected">
+                        <span class="checkbox-main">{{ materia.nombre }}</span>
+                        <span class="checkbox-meta">{{ materia.carrera || 'Sin carrera' }}</span>
+                    </label>
+                    <p class="empty-list" *ngIf="!materiasPreview.length">No hay materias disponibles.</p>
+                </div>
+            </div>
         </div>
     </div>
 

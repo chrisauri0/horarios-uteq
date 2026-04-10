@@ -18,7 +18,7 @@ export class BienvenidaComponent {
 
   async iniciarSesion() {
     try {
-      const res = await fetch('https://horarios-backend-58w8.onrender.com/users/login-admin', {
+      const res = await fetch('http://localhost:3000/users/login-admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -32,9 +32,9 @@ export class BienvenidaComponent {
 
       console.log('Respuesta login:', data.user);
 
-      if (data.access_token) {
+      if (data.token) {
         // GUARDAR TOKEN
-        localStorage.setItem('token', data.access_token);
+        localStorage.setItem('token', data.token);
         localStorage.setItem('userData', JSON.stringify(data.user));
         this.router.navigate(['/dashboard']);
 

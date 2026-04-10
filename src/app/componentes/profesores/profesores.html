@@ -12,59 +12,19 @@
         </div>
     </div>
 
-    <div class="card-form">
-        <form (ngSubmit)="editandoId ? guardarEdicion() : agregarProfesor()" class="profesor-form" id="profesorForm">
-            <div class="inputs-grid">
-                <div class="input-group">
-                    <label for="nombreProfesor">Nombre(s)</label>
-                    <input id="nombreProfesor" type="text" placeholder="Ej. Juan" [(ngModel)]="nuevoProfesor.nombre"
-                        name="nombre" required class="input-profesor" />
-                </div>
-                <div class="input-group">
-                    <label for="apellidosProfesor">Apellidos</label>
-                    <input id="apellidosProfesor" type="text" placeholder="Ej. Pérez"
-                        [(ngModel)]="nuevoProfesor.apellidos" name="apellidos" required class="input-profesor" />
-                </div>
-                <div class="input-group">
-                    <label for="emailProfesor">Email</label>
-                    <input id="emailProfesor" type="email" placeholder="ejemplo@uteq.edu.mx"
-                        [(ngModel)]="nuevoProfesor.email" name="email" required class="input-profesor" />
-                </div>
+    <div class="toolbar-actions">
+        <button type="button" class="btn-guardar" (click)="abrirModalNuevoProfesor()">
+            Agregar profesor
+        </button>
+        <br>
+        <br>
 
-                <div class="input-group">
-                    <label for="canBeTutorSelect">¿Puede ser tutor?</label>
-                    <select id="canBeTutorSelect" [(ngModel)]="nuevoProfesor.can_be_tutor" name="can_be_tutor"
-                        class="input-profesor">
-                        <option [ngValue]="false">No</option>
-                        <option [ngValue]="true">Sí</option>
-                    </select>
-                </div>
-                <!-- <div class ="input-group">
-                    <label for="horaEmpezarProfesor">Hora que empieza a trabajar</label>
-                    <input id="horaEmpezarProfesor" type="time" [(ngModel)]="nuevoProfesor.hora_empezar" name="hora_empezar" required class="input-profesor" />
-                </div>
-                    <div class ="input-group">
-                        <label for="horaTerminarProfesor">Hora que termina de trabajar</label>
-                        <input id="horaTerminarProfesor" type="time" [(ngModel)]="nuevoProfesor.hora_terminar" name="hora_terminar" required class="input-profesor" />
-                    </div> -->
+        <div class="search-box">
+            <input type="text" [(ngModel)]="busquedaProfesor" name="busquedaProfesor"
+                placeholder="Buscar por nombre, apellidos, email o materia" class="input-busqueda" />
+        </div>
 
-                <div class="input-group full-width">
-                    <label>Materias que puede impartir</label>
-                    <ng-select [items]="materiasOpciones" [(ngModel)]="nuevoProfesor.materias" [multiple]="true"
-                        [searchable]="true" name="materias" placeholder="Selecciona materias" class="custom-select">
-                    </ng-select>
-                </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn-guardar">
-                        {{ editandoId ? 'Guardar Cambios' : 'Agregar Profesor' }}
-                    </button>
-                    <button type="button" *ngIf="editandoId" (click)="cancelarEdicion()" class="btn-cancelar">
-                        Cancelar
-                    </button>
-                </div>
-            </div>
-        </form>
     </div>
 
     <div class="card-table">
@@ -76,11 +36,12 @@
                     <th>Email</th>
                     <th>Tutor</th>
                     <th>Materias</th>
+                    <th>Disponibilidad</th>
                     <th class="th-actions">Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let profesor of profesores">
+                <tr *ngFor="let profesor of profesoresFiltrados">
                     <td class="td-nombre">{{ profesor.nombre }}</td>
                     <td>{{ profesor.apellidos }}</td>
                     <td>{{ profesor.email }}</td>
@@ -98,6 +59,16 @@
                                 </span>
                             </span>
                             <ng-template #sinMaterias><span class="text-muted">Sin materias</span></ng-template>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="disponibilidad-list">
+                            <span *ngIf="profesor.disponibilidad && profesor.disponibilidad.length; else sinDisponibilidad">
+                                <span *ngFor="let bloque of profesor.disponibilidad" class="bloque-tag">
+                                    {{ bloque.dias.join(', ') }}: {{ bloque.hora_inicio }} - {{ bloque.hora_fin }}
+                                </span>
+                            </span>
+                            <ng-template #sinDisponibilidad><span class="text-muted">Sin disponibilidad</span></ng-template>
                         </div>
                     </td>
                     <td class="td-actions">
@@ -121,7 +92,119 @@
                         No hay profesores registrados. ¡Agrega uno nuevo arriba!
                     </td>
                 </tr>
+                <tr *ngIf="profesores.length > 0 && profesoresFiltrados.length === 0">
+                    <td colspan="6" class="empty-state">
+                        No se encontraron profesores con ese filtro.
+                    </td>
+                </tr>
             </tbody>
         </table>
+    </div>
+
+    <div class="modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+        <div class="card-form" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3>{{ editandoId ? 'Editar profesor' : 'Nuevo profesor' }}</h3>
+                <button type="button" class="btn-icon btn-cerrar" (click)="cerrarModal()" title="Cerrar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" color="red">
+                        <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form (ngSubmit)="editandoId ? guardarEdicion() : agregarProfesor()" class="profesor-form"
+                id="profesorForm">
+                <div class="inputs-grid">
+                    <div class="input-group">
+                        <label for="nombreProfesor">Nombre(s)</label>
+                        <input id="nombreProfesor" type="text" placeholder="Ej. Juan" [(ngModel)]="nuevoProfesor.nombre"
+                            name="nombre" required class="input-profesor" />
+                    </div>
+                    <div class="input-group">
+                        <label for="apellidosProfesor">Apellidos</label>
+                        <input id="apellidosProfesor" type="text" placeholder="Ej. Pérez"
+                            [(ngModel)]="nuevoProfesor.apellidos" name="apellidos" required class="input-profesor" />
+                    </div>
+                    <div class="input-group">
+                        <label for="emailProfesor">Email</label>
+                        <input id="emailProfesor" type="email" placeholder="ejemplo@uteq.edu.mx"
+                            [(ngModel)]="nuevoProfesor.email" name="email" required class="input-profesor" />
+                    </div>
+
+                    <div class="input-group">
+                        <label for="canBeTutorSelect">¿Puede ser tutor?</label>
+                        <select id="canBeTutorSelect" [(ngModel)]="nuevoProfesor.can_be_tutor" name="can_be_tutor"
+                            class="input-profesor">
+                            <option [ngValue]="false">No</option>
+                            <option [ngValue]="true">Sí</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Materias que puede impartir</label>
+                        <ng-select [items]="materiasOpciones" [(ngModel)]="nuevoProfesor.materias" [multiple]="true"
+                            [searchable]="true" name="materias" placeholder="Selecciona materias" class="custom-select">
+                        </ng-select>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label class="section-label">Bloques de horas disponibles</label>
+
+                        <div class="disponibilidad-container">
+                            <div class="form-dias">
+                                <div *ngFor="let bloque of bloques; let b = index" class="bloque-card">
+                                    <div class="bloque-header">
+                                        <span>Bloque {{ b + 1 }}</span>
+                                        <button type="button" class="btn-link-danger" (click)="eliminarBloque(b)"
+                                            *ngIf="bloques.length > 1">
+                                            Eliminar
+                                        </button>
+                                    </div>
+
+                                    <div class="days-grid">
+                                        <label class="day-item" *ngFor="let dia of dias">
+                                            <input type="checkbox" [checked]="bloque.dias.includes(dia)"
+                                                [disabled]="esDiaBloqueado(b, dia) && !bloque.dias.includes(dia)"
+                                                (change)="toggleDia(b, dia)" />
+                                            <span>{{ dia }}</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="bloque-times">
+                                        <input type="time" [(ngModel)]="bloque.hora_inicio" name="horaInicio{{ b }}"
+                                            class="input-profesor" />
+                                        <input type="time" [(ngModel)]="bloque.hora_fin" name="horaFin{{ b }}"
+                                            class="input-profesor" />
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn-secondary" (click)="agregarBloque()">
+                                    + Agregar bloque
+                                </button>
+                            </div>
+
+                            <div class="preview">
+                                <label>Visualizacion de bloques</label>
+                                <div *ngFor="let bloque of bloques; let i = index" class="bloque-preview">
+                                    <span>Bloque {{ i + 1 }}</span>
+                                    <strong>{{ bloque.dias.length ? bloque.dias.join(', ') : 'Sin dias' }}</strong>
+                                    <span>{{ bloque.hora_inicio || '--:--' }} - {{ bloque.hora_fin || '--:--' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-guardar">
+                            {{ editandoId ? 'Guardar Cambios' : 'Agregar Profesor' }}
+                        </button>
+                        <button type="button" (click)="cerrarModal()" class="btn-cancelar">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>

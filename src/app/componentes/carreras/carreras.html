@@ -12,34 +12,10 @@
         </div>
     </div>
 
-    <div class="card-form">
-        <form class="carrera-form" (ngSubmit)="editandoId ? guardarEdicion() : agregarCarrera()">
-            <div class="inputs-grid">
-                <div class="input-group">
-                    <label for="nombreCarrera">Nombre de la carrera</label>
-                    <input id="nombreCarrera" type="text" [(ngModel)]="nuevaCarrera.nombre" name="nombre"
-                        placeholder="Ej. Ingeniería en Software" required class="input-carrera" />
-                </div>
-                <div class="input-group">
-                    <label for="gradoCarrera">Grado/Cuatrimestre</label>
-                    <input id="gradoCarrera" type="number" [(ngModel)]="nuevaCarrera.grado" name="grado"
-                        placeholder="Ej. 7" min="1" max="12" required class="input-carrera" />
-                </div>
-                <div class="input-group">
-                    <label for="divisionCarrera">División</label>
-                    <input id="divisionCarrera" type="text" [(ngModel)]="nuevaCarrera.division" name="division"
-                        placeholder="División" class="input-carrera" [disabled]="true" />
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn-guardar">
-                        {{ editandoId ? 'Guardar Cambios' : 'Agregar Carrera' }}
-                    </button>
-                    <button type="button" *ngIf="editandoId" (click)="cancelarEdicion()" class="btn-cancelar">
-                        Cancelar
-                    </button>
-                </div>
-            </div>
-        </form>
+    <div class="toolbar-actions">
+        <button type="button" class="btn-guardar" (click)="abrirModalNuevaCarrera()">
+            Agregar carrera
+        </button>
     </div>
 
     <div class="card-table">
@@ -81,5 +57,47 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <div class="modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+        <div class="card-form" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3>{{ editandoId ? 'Editar carrera' : 'Nueva carrera' }}</h3>
+                <button type="button" class="btn-icon btn-cerrar" (click)="cerrarModal()" title="Cerrar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" color="red">
+                        <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form class="carrera-form" (ngSubmit)="editandoId ? guardarEdicion() : agregarCarrera()">
+                <div class="inputs-grid">
+                    <div class="input-group">
+                        <label for="nombreCarrera">Nombre de la carrera</label>
+                        <input id="nombreCarrera" type="text" [(ngModel)]="nuevaCarrera.nombre" name="nombre"
+                            placeholder="Ej. Ingeniería en Software" required class="input-carrera" />
+                    </div>
+                    <div class="input-group">
+                        <label for="gradoCarrera">Grado/Cuatrimestre</label>
+                        <input id="gradoCarrera" type="number" [(ngModel)]="nuevaCarrera.grado" name="grado"
+                            placeholder="Ej. 7" min="1" max="12" required class="input-carrera" />
+                    </div>
+                    <div class="input-group">
+                        <label for="divisionCarrera">División</label>
+                        <input id="divisionCarrera" type="text" [(ngModel)]="nuevaCarrera.division" name="division"
+                            placeholder="División" class="input-carrera" [disabled]="true" />
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-guardar">
+                            {{ editandoId ? 'Guardar Cambios' : 'Agregar Carrera' }}
+                        </button>
+                        <button type="button" (click)="cerrarModal()" class="btn-cancelar">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
