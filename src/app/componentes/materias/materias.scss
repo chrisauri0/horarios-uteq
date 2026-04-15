@@ -99,6 +99,34 @@ $danger-hover: #c62828;
   margin-bottom: 1.25rem;
 }
 
+.filtros-card {
+  background: $white;
+  border-radius: 16px;
+  border: 1px solid $border;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.filtros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.filtros-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+
+  @media (max-width: 600px) {
+    justify-content: stretch;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -168,6 +196,38 @@ $danger-hover: #c62828;
       background: $white;
       box-shadow: 0 0 0 3px rgba($primary, 0.1);
     }
+  }
+
+  .salones-selector {
+    min-height: 140px;
+    border: 1px solid $border;
+    border-radius: 8px;
+    background: $secondary;
+    padding: 0.65rem;
+    display: grid;
+    gap: 0.45rem;
+    overflow-y: auto;
+    max-height: 180px;
+  }
+
+  .salon-option {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.92rem;
+    cursor: pointer;
+    color: $text;
+
+    input[type='checkbox'] {
+      accent-color: $primary;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .field-hint {
+    color: color.adjust($text, $lightness: 25%);
+    font-size: 0.8rem;
   }
 }
 
@@ -289,6 +349,27 @@ $danger-hover: #c62828;
   .td-actions {
     text-align: right;
     width: 120px;
+  }
+
+  .td-salones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+  }
+
+  .salon-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid color.adjust($primary, $alpha: -0.8);
+    background: color.adjust($primary, $alpha: -0.9);
+    color: $primary;
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
   }
 
   .empty-state {

@@ -18,6 +18,42 @@
         </button>
     </div>
 
+    <div class="filtros-card">
+        <div class="filtros-grid">
+            <div class="input-group">
+                <label for="filtroNombre">Buscar por nombre</label>
+                <input id="filtroNombre" type="text" [(ngModel)]="filtros.nombre" name="filtroNombre"
+                    placeholder="Ej. Matemáticas" class="input-materia" />
+            </div>
+
+            <div class="input-group">
+                <label for="filtroCarrera">Carrera</label>
+                <select id="filtroCarrera" [(ngModel)]="filtros.carrera" name="filtroCarrera" class="input-materia">
+                    <option value="">Todas</option>
+                    <option *ngFor="let carrera of carreras" [value]="carrera">{{ carrera }}</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="filtroGrado">Cuatrimestre</label>
+                <input id="filtroGrado" type="number" [(ngModel)]="filtros.grado" name="filtroGrado" min="1"
+                    placeholder="Todos" class="input-materia" />
+            </div>
+
+            <div class="input-group">
+                <label for="filtroSalon">Salón</label>
+                <select id="filtroSalon" [(ngModel)]="filtros.salon" name="filtroSalon" class="input-materia">
+                    <option value="">Todos</option>
+                    <option *ngFor="let salon of salones" [value]="salon">{{ salon }}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="filtros-actions">
+            <button type="button" class="btn-cancelar" (click)="limpiarFiltros()">Limpiar filtros</button>
+        </div>
+    </div>
+
     <div class="card-table">
         <table class="tabla-materias">
             <thead>
@@ -32,13 +68,18 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let materia of materias; let i = index">
+                <tr *ngFor="let materia of materiasFiltradas; let i = index">
                     <td class="td-id">{{ i + 1 }}</td>
                     <td class="td-nombre">{{ materia.nombre }}</td>
                     <td>{{ materia.carrera }}</td>
                     <td class="td-horas">{{ materia.horas_semana }}</td>
                     <td class="td-grado">{{ materia.grado }}</td>
-                    <td >{{ materia.salones }}</td>
+                    <td class="td-salones">
+                        <ng-container *ngIf="getSalonesList(materia.salones).length > 0; else sinSalones">
+                            <span class="salon-chip" *ngFor="let salon of getSalonesList(materia.salones)">{{ salon }}</span>
+                        </ng-container>
+                        <ng-template #sinSalones>-</ng-template>
+                    </td>
                     <td class="td-actions">
                         <button class="btn-icon btn-editar" (click)="editarMateria(materia)" title="Editar">
                             <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -54,9 +95,9 @@
                         </button>
                     </td>
                 </tr>
-                <tr *ngIf="materias.length === 0">
+                <tr *ngIf="materiasFiltradas.length === 0">
                     <td colspan="7" class="empty-state">
-                        No hay materias registradas. ¡Agrega una nueva arriba!
+                        {{ materias.length === 0 ? 'No hay materias registradas. ¡Agrega una nueva arriba!' : 'No hay resultados para los filtros seleccionados.' }}
                     </td>
                 </tr>
             </tbody>
@@ -93,12 +134,15 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="salonMateria">Salón</label>
-                        <select id="salonMateria" [(ngModel)]="nuevaMateria.salones" name="salones" required
-                            class="input-materia">
-                            <option value="" disabled>Selecciona un salón</option>
-                            <option *ngFor="let salon of salones" [value]="salon">{{ salon }}</option>
-                        </select>
+                        <label for="salonMateria">Salones</label>
+                        <div id="salonMateria" class="salones-selector" role="group" aria-label="Seleccion de salones">
+                            <label class="salon-option" *ngFor="let salon of salones">
+                                <input type="checkbox" [checked]="salonSeleccionado(salon)"
+                                    (change)="toggleSalon(salon, $any($event.target).checked)" />
+                                <span>{{ salon }}</span>
+                            </label>
+                        </div>
+                        <small class="field-hint">Puedes elegir uno o varios salones.</small>
                     </div>
 
                     <div class="input-group">

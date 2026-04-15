@@ -11,8 +11,7 @@ export interface Materia {
   carrera?: string;
   horas_semana: number;
   data?: object;
-  salones?: object
-  
+  salones?: string[]
 }
 
 @Component({
@@ -23,11 +22,38 @@ export interface Materia {
 })
 export class Materias {
   materias: Materia[] = [];
-  nuevaMateria: Materia = { id: '', nombre: '', grado: NaN, carrera: '', horas_semana: NaN, data: {}, salones: {} , };
+  nuevaMateria: Materia = { id: '', nombre: '', grado: NaN, carrera: '', horas_semana: NaN, data: {}, salones: [], };
   editandoId: string | null = null;
-  salones: object[] = [];
-  carreras: object[] = []
+  salones: string[] = [];
+  carreras: string[] = []
   modalAbierto = false;
+  filtros = {
+    nombre: '',
+    carrera: '',
+    grado: '',
+    salon: ''
+  };
+
+  get materiasFiltradas(): Materia[] {
+    const nombre = this.filtros.nombre.trim().toLowerCase();
+    const carrera = this.filtros.carrera;
+    const grado = this.filtros.grado;
+    const salon = this.filtros.salon;
+
+    return this.materias.filter((materia) => {
+      const nombreMateria = (materia.nombre || '').toLowerCase();
+      const carreraMateria = String(materia.carrera || '');
+      const gradoMateria = String(materia.grado ?? '');
+      const salonesMateria = this.normalizarSalones(materia.salones);
+
+      const coincideNombre = !nombre || nombreMateria.includes(nombre);
+      const coincideCarrera = !carrera || carreraMateria === carrera;
+      const coincideGrado = !grado || gradoMateria === grado;
+      const coincideSalon = !salon || salonesMateria.some((s) => s.toLowerCase() === salon.toLowerCase());
+
+      return coincideNombre && coincideCarrera && coincideGrado && coincideSalon;
+    });
+  }
 
   ngOnInit() {
     this.cargarMaterias();
@@ -85,7 +111,7 @@ export class Materias {
         carrera: m.carrera,
         horas_semana: m.horas_semana,
         data: m.data || {},
-        salones: m.salones || {}
+        salones: this.normalizarSalones(m.salones)
       })) : [];
       localStorage.setItem(localKey, JSON.stringify(this.materias));
     } catch (err) {
@@ -95,13 +121,14 @@ export class Materias {
 
   async agregarMateria() {
     if (!this.nuevaMateria.nombre.trim()) return;
+    if (!this.validarSalonesSeleccionados()) return;
     const body = {
       nombre: this.nuevaMateria.nombre,
       grado: this.nuevaMateria.grado || 1,
       carrera: this.nuevaMateria.carrera || '',
       horas_semana: this.nuevaMateria.horas_semana || 1,
       data: this.nuevaMateria.data || {},
-      salones: this.nuevaMateria.salones || {}
+      salones: this.normalizarSalones(this.nuevaMateria.salones)
     };
     try {
       const res = await fetch('https://horarios-backend-58w8.onrender.com/materias', {
@@ -117,10 +144,9 @@ export class Materias {
         grado: data.grado,
         carrera: data.carrera,
         horas_semana: data.horas_semana,
-
-        salones: data.salones || {}
+        salones: this.normalizarSalones(data.salones)
       });
-      this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: {} };
+      this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: [] };
       this.modalAbierto = false;
     } catch (err) {
       alert('No se pudo crear la materia: ' + err);
@@ -129,13 +155,14 @@ export class Materias {
 
   async guardarEdicion() {
     if (!this.nuevaMateria.nombre.trim() || !this.editandoId) return;
+    if (!this.validarSalonesSeleccionados()) return;
     const body: any = {
       nombre: this.nuevaMateria.nombre,
       grado: this.nuevaMateria.grado || 1,
       carrera: this.nuevaMateria.carrera || '',
       data: this.nuevaMateria.data || {},
       horas_semana: this.nuevaMateria.horas_semana || 1,
-      salones: this.nuevaMateria.salones || {}
+      salones: this.normalizarSalones(this.nuevaMateria.salones)
     };
     try {
       const res = await fetch(`https://horarios-backend-58w8.onrender.com/materias/${this.editandoId}`, {
@@ -151,9 +178,10 @@ export class Materias {
         grado: body.grado,
         carrera: body.carrera,
         horas_semana: body.horas_semana,
-        data: body.data
+        data: body.data,
+        salones: this.normalizarSalones(body.salones)
       } : m);
-      this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: {} };
+      this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: [] };
       this.editandoId = null;
       this.modalAbierto = false;
     } catch (err) {
@@ -179,23 +207,109 @@ export class Materias {
 
   editarMateria(materia: Materia) {
     this.editandoId = materia.id;
-    this.nuevaMateria = { ...materia };
+    this.nuevaMateria = { ...materia, salones: this.normalizarSalones(materia.salones) };
     this.modalAbierto = true;
   }
 
   cancelarEdicion() {
-    this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: {} };
+    this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: [] };
     this.editandoId = null;
   }
 
   abrirModalNuevaMateria() {
     this.editandoId = null;
-    this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: {} };
+    this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: [] };
     this.modalAbierto = true;
   }
 
   cerrarModal() {
     this.cancelarEdicion();
     this.modalAbierto = false;
+  }
+
+  limpiarFiltros() {
+    this.filtros = {
+      nombre: '',
+      carrera: '',
+      grado: '',
+      salon: ''
+    };
+  }
+
+  formatSalones(salones?: string[]): string {
+    const lista = this.normalizarSalones(salones);
+    return lista.length > 0 ? lista.join(', ') : '-';
+  }
+
+  getSalonesList(salones: unknown): string[] {
+    return this.normalizarSalones(salones);
+  }
+
+  salonSeleccionado(salon: string): boolean {
+    const seleccionados = this.normalizarSalones(this.nuevaMateria.salones);
+    return seleccionados.includes(salon);
+  }
+
+  toggleSalon(salon: string, checked: boolean): void {
+    const seleccionados = this.normalizarSalones(this.nuevaMateria.salones);
+
+    if (checked && !seleccionados.includes(salon)) {
+      this.nuevaMateria.salones = [...seleccionados, salon];
+      return;
+    }
+
+    if (!checked) {
+      this.nuevaMateria.salones = seleccionados.filter((s) => s !== salon);
+    }
+  }
+
+  private validarSalonesSeleccionados(): boolean {
+    const seleccionados = this.normalizarSalones(this.nuevaMateria.salones);
+    if (seleccionados.length === 0) {
+      alert('Selecciona al menos un salon para la materia.');
+      return false;
+    }
+
+    this.nuevaMateria.salones = seleccionados;
+    return true;
+  }
+
+  private normalizarSalones(salones: unknown): string[] {
+    const limpiar = (lista: string[]) => Array.from(new Set(lista.map((s) => s.trim()).filter((s) => s.length > 0)));
+
+    if (Array.isArray(salones)) {
+      return limpiar(salones.map((s) => String(s)));
+    }
+
+    if (typeof salones === 'string' && salones.trim()) {
+      return [salones.trim()];
+    }
+
+    if (salones && typeof salones === 'object') {
+      const entries = Object.entries(salones as Record<string, unknown>);
+      if (entries.length === 0) return [];
+
+      const valoresString = entries
+        .map(([, value]) => value)
+        .filter((value) => typeof value === 'string')
+        .map((value) => String(value));
+
+      if (valoresString.length > 0) {
+        return limpiar(valoresString);
+      }
+
+      const clavesBooleanas = entries
+        .filter(([, value]) => value === true)
+        .map(([key]) => key);
+
+      if (clavesBooleanas.length > 0) {
+        return limpiar(clavesBooleanas);
+      }
+
+      const claves = entries.map(([key]) => key);
+      return limpiar(claves);
+    }
+
+    return [];
   }
 }

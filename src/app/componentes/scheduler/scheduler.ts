@@ -18,10 +18,35 @@ import { RouterModule } from '@angular/router';
 export class SchedulerComponent {
   private readonly apiBaseUrl = 'https://horarios-backend-58w8.onrender.com';
   private readonly apiBaseUrlLocal = 'http://localhost:3000';
+  private readonly claseColorClasses = [
+    'clase-tone-1',
+    'clase-tone-2',
+    'clase-tone-3',
+    'clase-tone-4',
+    'clase-tone-5',
+    'clase-tone-6',
+    'clase-tone-7',
+    'clase-tone-8'
+  ];
+  private readonly diasMap: Record<string, string> = {
+    lun: 'Lun',
+    lunes: 'Lun',
+    mar: 'Mar',
+    martes: 'Mar',
+    mie: 'Mie',
+    miercoles: 'Mie',
+    miércoles: 'Mie',
+    jue: 'Jue',
+    jueves: 'Jue',
+    vie: 'Vie',
+    viernes: 'Vie'
+  };
 
   loading = false;
   message = '';
   isSuccess = false;
+  modoActual: 'generar' | 'ver' = 'generar';
+  mostrarToast = false;
   usuarioNombre: string = '';
   usuarioCarrera: string = '';
   usuarioDivision: string = '';
@@ -32,6 +57,36 @@ export class SchedulerComponent {
   vistaHorarios: 'grupo' | 'profesor' = 'grupo';
   profesoresConHorarios: Array<{ nombre: string, clases: any[] }> = [];
   gruposPreview: Array<{ id: string; nombre: string; division: string; selected: boolean; grado: number | string }> = [];
+  
+  // Paginación
+  paginaActualGrupos = 0;
+  gruposPorPagina = 1;
+  paginaActualProfesores = 0;
+  profesoresPorPagina = 1;
+  
+  get gruposConHorariosFiltered(): Array<{ nombregrupo: string; data: any[] }> {
+    return this.groupedSchedules;
+  }
+  
+  get gruposEnPaginaActual(): Array<{ nombregrupo: string; data: any[] }> {
+    const inicio = this.paginaActualGrupos * this.gruposPorPagina;
+    const fin = inicio + this.gruposPorPagina;
+    return this.gruposConHorariosFiltered.slice(inicio, fin);
+  }
+  
+  get totalPaginasGrupos(): number {
+    return Math.ceil(this.gruposConHorariosFiltered.length / this.gruposPorPagina);
+  }
+  
+  get profesoresEnPaginaActual(): Array<{ nombre: string, clases: any[] }> {
+    const inicio = this.paginaActualProfesores * this.profesoresPorPagina;
+    const fin = inicio + this.profesoresPorPagina;
+    return this.profesoresConHorarios.slice(inicio, fin);
+  }
+  
+  get totalPaginasProfesores(): number {
+    return Math.ceil(this.profesoresConHorarios.length / this.profesoresPorPagina);
+  }
   profesoresPreview: Array<{ id: string; nombre: string; materias: string[]; disponibilidad: Array<string | Record<string, unknown>>; selected: boolean }> = [];
   salonesPreview: Array<{ id: string; nombre: string; division: string; selected: boolean }> = [];
   materiasPreview: Array<{ id: string; nombre: string; carrera: string; grado: number | string; horas_semana: number; salones: string[]; selected: boolean }> = [];
@@ -42,23 +97,54 @@ export class SchedulerComponent {
   }
 
   getClase(data: any[], dia: string, hora: string): any {
-    // Busca la clase cuyo campo start coincide con el día y la hora
-    return data.find(clase => {
-      if (typeof clase.start === 'string') {
-        return clase.start.startsWith(dia) && clase.start.substring(3, 5) === hora;
-      }
-      return false;
-    }) || null;
+    return data.find(clase => this.normalizarDiaClase(clase) === dia && this.normalizarHoraClase(clase) === hora) || null;
   }
 
 
   getClaseProfesor(clases: any[], dia: string, hora: string): any {
-    return clases.find(clase => {
-      if (typeof clase.start === 'string') {
-        return clase.start.startsWith(dia) && clase.start.substring(3, 5) === hora;
-      }
-      return false;
-    }) || null;
+    return clases.find(clase => this.normalizarDiaClase(clase) === dia && this.normalizarHoraClase(clase) === hora) || null;
+  }
+
+  private normalizarDiaClase(clase: any): string {
+    if (typeof clase?.start === 'string' && clase.start.length >= 3) {
+      return clase.start.substring(0, 3);
+    }
+
+    const rawDia = String(clase?.dia || clase?.day || '').trim().toLowerCase();
+    return this.diasMap[rawDia] || '';
+  }
+
+  private normalizarHoraClase(clase: any): string {
+    if (typeof clase?.start === 'string' && clase.start.length >= 5) {
+      return clase.start.substring(3, 5);
+    }
+
+    const rawHora = String(clase?.hora || clase?.time || '').trim();
+    const match = rawHora.match(/^(\d{1,2})/);
+    return match ? match[1].padStart(2, '0') : '';
+  }
+
+  private normalizarClase(rawClase: any): any {
+    const dia = this.normalizarDiaClase(rawClase);
+    const hora = this.normalizarHoraClase(rawClase);
+    const start = dia && hora ? `${dia}${hora}:00` : '';
+
+    return {
+      ...rawClase,
+      start,
+      subj: rawClase?.subj || rawClase?.materia || rawClase?.subject || 'Sin materia',
+      prof: rawClase?.prof || rawClase?.profesor || rawClase?.teacher || 'Sin profesor',
+      room: rawClase?.room || rawClase?.salon || rawClase?.salón || rawClase?.classroom || 'Sin salón',
+      group: rawClase?.group || rawClase?.grupo || rawClase?.nombregrupo || ''
+    };
+  }
+
+  getClaseColorClass(materia: unknown): string {
+    const nombre = String(materia || '').trim().toLowerCase();
+    if (!nombre) return this.claseColorClasses[0];
+
+    const hash = nombre.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return this.claseColorClasses[hash % this.claseColorClasses.length];
   }
 
   ngOnInit() {
@@ -104,7 +190,12 @@ export class SchedulerComponent {
       this.profesoresPreview = this.normalizeProfesores(profesoresData);
       this.salonesPreview = this.normalizeSalones(salonesData);
       this.materiasPreview = this.normalizeMaterias(materiasData);
-      console.log(materiasData); 
+      console.log('Datos de preview cargados:', {
+        grupos: this.gruposPreview,
+        profesores: this.profesoresPreview,
+        salones: this.salonesPreview,
+        materias: this.materiasPreview
+      }); 
     } catch (error) {
       this.message = '⚠️ No se pudo cargar el preview completo. Revisa tu conexion e intenta de nuevo.';
       this.isSuccess = false;
@@ -229,6 +320,39 @@ export class SchedulerComponent {
     });
   }
 
+  irAPaginaGrupo(numeroPagina: number): void {
+    if (numeroPagina >= 0 && numeroPagina < this.totalPaginasGrupos) {
+      this.paginaActualGrupos = numeroPagina;
+    }
+  }
+
+  irAPaginaProfesor(numeroPagina: number): void {
+    if (numeroPagina >= 0 && numeroPagina < this.totalPaginasProfesores) {
+      this.paginaActualProfesores = numeroPagina;
+    }
+  }
+
+  generarRangoNumeros(cantidad: number): number[] {
+    return Array.from({ length: cantidad }, (_, i) => i);
+  }
+
+  cambiarModo(nuevo: 'generar' | 'ver'): void {
+    this.modoActual = nuevo;
+  }
+
+  mostrarToastExitoso(mensaje: string): void {
+    this.message = mensaje;
+    this.isSuccess = true;
+    this.mostrarToast = true;
+    setTimeout(() => {
+      this.mostrarToast = false;
+    }, 4000);
+  }
+
+  cerrarToast(): void {
+    this.mostrarToast = false;
+  }
+
   private getSelectionList(tipo: 'grupos' | 'profesores' | 'salones' | 'materias') {
     if (tipo === 'grupos') return this.gruposPreview;
     if (tipo === 'profesores') return this.profesoresPreview;
@@ -265,15 +389,16 @@ export class SchedulerComponent {
       if (Array.isArray(schedulesArray)) {
         this.groupedSchedules = schedulesArray.map((s: any) => ({
           nombregrupo: s.nombregrupo ?? s.groupName ?? 'Sin nombre',
-          data: Array.isArray(s.data) ? s.data : []
+          data: Array.isArray(s.data) ? s.data.map((clase: any) => this.normalizarClase(clase)) : []
         }));
         // Generar lista de profesores con sus clases
-        const clasesTodas: any[] = schedulesArray.flatMap((g: any) => Array.isArray(g.data) ? g.data : []);
+        const clasesTodas: any[] = this.groupedSchedules.flatMap((g: any) => Array.isArray(g.data) ? g.data : []);
         const profesoresMap: { [nombre: string]: any[] } = {};
         for (const clase of clasesTodas) {
-          if (clase.prof) {
-            if (!profesoresMap[clase.prof]) profesoresMap[clase.prof] = [];
-            profesoresMap[clase.prof].push(clase);
+          const nombreProfesor = String(clase.prof || '').trim();
+          if (nombreProfesor) {
+            if (!profesoresMap[nombreProfesor]) profesoresMap[nombreProfesor] = [];
+            profesoresMap[nombreProfesor].push(clase);
           }
         }
         this.profesoresConHorarios = Object.entries(profesoresMap).map(([nombre, clases]) => ({ nombre, clases }));
@@ -288,72 +413,113 @@ export class SchedulerComponent {
     }
   }
 
-  generateSchedule() {
-    const gruposSeleccionados = this.gruposPreview
-      .filter((grupo) => grupo.selected)
-      .map((grupo) => ({ nombre: grupo.nombre, grado: grupo.grado }));
-    const profesoresSeleccionados = this.profesoresPreview
-      .filter((profesor) => profesor.selected)
-      .map((profesor) => ({ nombre: profesor.nombre, materias: profesor.materias, disponibilidad: profesor.disponibilidad }));
-    const salonesSeleccionados = this.salonesPreview.filter((salon) => salon.selected).map((salon) => salon.nombre);
-    const materiasSeleccionadas = this.materiasPreview
-      .filter((materia) => materia.selected)
-      .map((materia) => ({ nombre: materia.nombre, grado: materia.grado, salones: materia.salones, horas: materia.horas_semana }));
+async generateSchedule() {
+  const gruposSeleccionados = this.gruposPreview
+    .filter((grupo) => grupo.selected)
+    .map((grupo) => ({ nombre: grupo.nombre, grado: grupo.grado }));
 
-    if (!gruposSeleccionados.length || !profesoresSeleccionados.length || !salonesSeleccionados.length || !materiasSeleccionadas.length) {
-      this.isSuccess = false;
-      this.message = '⚠️ Debes seleccionar al menos 1 grupo, 1 profesor, 1 materia y 1 salon para generar.';
-      return;
+  const profesoresSeleccionados = this.profesoresPreview
+    .filter((profesor) => profesor.selected)
+    .map((profesor) => ({
+      nombre: profesor.nombre,
+      materias: profesor.materias,
+      disponibilidad: profesor.disponibilidad,
+    }));
+
+  const salonesSeleccionados = this.salonesPreview
+    .filter((salon) => salon.selected)
+    .map((salon) => salon.nombre);
+
+  const materiasSeleccionadas = this.materiasPreview
+    .filter((materia) => materia.selected)
+    .map((materia) => ({
+      nombre: materia.nombre,
+      grado: materia.grado,
+      salones: materia.salones,
+      horas: materia.horas_semana,
+    }));
+
+  if (
+    !gruposSeleccionados.length ||
+    !profesoresSeleccionados.length ||
+    !salonesSeleccionados.length ||
+    !materiasSeleccionadas.length
+  ) {
+    this.isSuccess = false;
+    this.message = '⚠️ Debes seleccionar al menos 1 grupo, 1 profesor, 1 materia y 1 salón para generar.';
+    return;
+  }
+
+  this.loading = true;
+  this.message = '';
+  this.isSuccess = false;
+
+  const payload = {
+    grupos: gruposSeleccionados,
+    profesores: profesoresSeleccionados,
+    salones: salonesSeleccionados,
+    materias: materiasSeleccionadas,
+  };
+
+  const PYTHON_URL = 'http://localhost:8000/generar-horario';
+  const NEST_SAVE_URL = 'http://localhost:3000/scheduler/save';
+
+  try {
+    // 1) Generar horario en Python
+    const pythonRes = await fetch(PYTHON_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!pythonRes.ok) {
+      const errorText = await pythonRes.text();
+      throw new Error(`Error Python: ${errorText}`);
     }
 
-    this.loading = true;
-    this.message = '';
+    const pythonData = await pythonRes.json();
+    console.log('Respuesta Python:', pythonData);
+
+    // 2) Normalizar para Nest:
+    // Nest acepta { horario: [...] } o [...] directo
+    const bodyParaNest = Array.isArray(pythonData)
+      ? pythonData
+      : pythonData && Array.isArray(pythonData.horario)
+        ? { horario: pythonData.horario }
+        : null;
+
+    if (!bodyParaNest) {
+      throw new Error('La respuesta de Python no contiene un arreglo de horario válido.');
+    }
+
+    // 3) Guardar en Nest
+    const saveRes = await fetch(NEST_SAVE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bodyParaNest),
+    });
+
+    if (!saveRes.ok) {
+      const errorText = await saveRes.text();
+      throw new Error(`Error guardando en Nest: ${errorText}`);
+    }
+
+    const saveData = await saveRes.json();
+    console.log('Respuesta guardado Nest:', saveData);
+
+    this.cargarHorariosCreados();
+    this.modoActual = 'ver';
+    this.paginaActualGrupos = 0;
+    this.paginaActualProfesores = 0;
+    this.mostrarToastExitoso('✅ Horario generado y guardado exitosamente.');
+  } catch (err) {
+    console.error('Error en flujo generar/guardar:', err);
     this.isSuccess = false;
-
-    const payload = {
-      grupos: gruposSeleccionados,
-      profesores: profesoresSeleccionados,
-      salones: salonesSeleccionados,
-      materias: materiasSeleccionadas,
-    
-    };
-
-
-    console.log('Payload para generación:', payload);
-    
-    fetch(`http://localhost:8000/generar-horario`, {
-      method: 'POST', 
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-
-    })
-
-    // fetch(`${this.apiBaseUrlLocal}/scheduler/generate`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     ...this.getAuthHeaders()
-    //   },
-    //   body: JSON.stringify(payload)
-    // })
-    //   .then(async res => {
-    //     if (!res.ok) throw new Error('Error al generar los horarios');
-    //     const response = await res.json();
-    //     this.loading = false;
-    //     this.isSuccess = true;
-    //     this.message = '✅ Horarios generados correctamente.';
-    //     console.log('Respuesta del backend:', response);
-    //     this.cargarHorariosCreados();
-    //   })
-    //   .catch(error => {
-    //     this.loading = false;
-    //     this.isSuccess = false;
-    //     this.message = '❌ Ocurrió un error al generar los horarios.';
-    //     console.error('Error:', error);
-    //   });
+    this.message = '⚠️ Ocurrió un error al generar o guardar el horario.';
+  } finally {
+    this.loading = false;
   }
+}
 
 
 

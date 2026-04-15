@@ -24,7 +24,7 @@ $warning-border: #ffecb3;
 }
 
 .header-section {
-  display: flex;
+  
   align-items: center;
   justify-content: center;
   position: relative;
@@ -569,6 +569,78 @@ $warning-border: #ffecb3;
         border-radius: 50%;
       }
     }
+
+    &.clase-tone-1 {
+      background: #d5e8ff;
+      border-left-color: #2266b8;
+
+      .materia {
+        color: #18477f;
+      }
+    }
+
+    &.clase-tone-2 {
+      background: #def3e8;
+      border-left-color: #5fae88;
+
+      .materia {
+        color: #1e6549;
+      }
+    }
+
+    &.clase-tone-3 {
+      background: #ffead3;
+      border-left-color: #c99353;
+
+      .materia {
+        color: #8b561f;
+      }
+    }
+
+    &.clase-tone-4 {
+      background: #ece2ff;
+      border-left-color: #9a80cc;
+
+      .materia {
+        color: #543c83;
+      }
+    }
+
+    &.clase-tone-5 {
+      background: #ffe1e7;
+      border-left-color: #c97d8f;
+
+      .materia {
+        color: #7d3d4f;
+      }
+    }
+
+    &.clase-tone-6 {
+      background: #d6f3f0;
+      border-left-color: #2f9fab;
+
+      .materia {
+        color: #1b5b64;
+      }
+    }
+
+    &.clase-tone-7 {
+      background: #edf1d5;
+      border-left-color: #9aa955;
+
+      .materia {
+        color: #4f5825;
+      }
+    }
+
+    &.clase-tone-8 {
+      background: #e5e8f1;
+      border-left-color: #7f8dab;
+
+      .materia {
+        color: #36425f;
+      }
+    }
   }
 }
 
@@ -613,5 +685,238 @@ $warning-border: #ffecb3;
       width: 100%;
       justify-content: center;
     }
+  }
+}
+
+// Paginación
+.vista-grupos-container,
+.vista-profesores-container {
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.25rem;
+    background: $white;
+    border: 1px solid $border;
+    border-radius: 12px;
+    flex-wrap: wrap;
+
+    @media (max-width: 600px) {
+      gap: 0.75rem;
+      padding: 1rem;
+    }
+  }
+
+  .btn-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid $border;
+    border-radius: 8px;
+    background: $white;
+    color: $primary;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: color.adjust($primary, $alpha: -0.95);
+      border-color: $primary;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      color: color.adjust($text, $lightness: 40%);
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .selector-grupo,
+  .selector-profesor {
+    flex: 1;
+    min-width: 200px;
+    max-width: 400px;
+
+    @media (max-width: 768px) {
+      min-width: 150px;
+      max-width: 100%;
+      flex: 0 1 auto;
+    }
+  }
+
+  .grupo-select,
+  .profesor-select {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid $border;
+    border-radius: 8px;
+    background: $secondary;
+    color: $text;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      background: $white;
+      box-shadow: 0 0 0 2px rgba($primary, 0.1);
+    }
+
+    &:hover {
+      border-color: $primary;
+    }
+  }
+
+  .pagination-info {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $primary;
+    min-width: 60px;
+    text-align: center;
+
+    @media (max-width: 600px) {
+      width: 100%;
+      order: 5;
+    }
+  }
+}
+
+// Secciones Generar y Ver
+.seccion-generar,
+.seccion-ver {
+  animation: fadeInDown 0.4s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Modo Switch
+.modo-switch {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  .toggle-modo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid $border;
+    border-radius: 10px;
+    background: $white;
+    color: color.adjust($text, $lightness: 20%);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover {
+      border-color: $primary;
+      color: $primary;
+    }
+
+    &.active {
+      background: $primary;
+      border-color: $primary;
+      color: $white;
+      box-shadow: 0 4px 12px rgba($primary, 0.25);
+    }
+  }
+}
+
+// Toast
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  max-width: 400px;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  z-index: 9999;
+  animation: slideInUp 0.3s ease-out;
+
+  @media (max-width: 600px) {
+    left: 1rem;
+    right: 1rem;
+    max-width: none;
+  }
+
+  &.success {
+    background: color.adjust($success, $lightness: 40%);
+    border: 1px solid color.adjust($success, $lightness: 20%);
+    color: color.adjust($success, $lightness: -30%);
+  }
+
+  &.error {
+    background: color.adjust($danger, $lightness: 40%);
+    border: 1px solid color.adjust($danger, $lightness: 20%);
+    color: color.adjust($danger, $lightness: -30%);
+  }
+
+  .toast-content {
+    flex: 1;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  .toast-close {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
