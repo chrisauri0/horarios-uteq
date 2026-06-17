@@ -29,7 +29,7 @@ export interface bloques {
 })
 export class Psicologos {
   private API_DEPLOY = 'https://horarios-backend-58w8.onrender.com/psicologos';
-  private API_LOCAL = 'http://localhost:3000/psicologos';
+  private API_LOCAL = 'https://horarios-backend-58w8.onrender.com/psicologos';
 
   psicologos: PsicologoData[] = [];
   editandoId: string | null = null;

@@ -12,10 +12,11 @@ import { SchedulerComponent } from './componentes/scheduler/scheduler';
 import { VerHorarios } from './componentes/scheduler/ver-horarios/ver-horarios';
 import { Carreras } from './componentes/carreras/carreras';
 import { Psicologos } from './componentes/psicologos/psicologos';
+import { LandingPage } from './pages/landing-page/landing-page';
 
 
 export const routes: Routes = [
-  {  path: '', component: BienvenidaComponent, title: 'Iniciar Sesión' },
+  {  path: '', component: LandingPage, title: 'Página de Inicio' },
   {  path: 'login', component: BienvenidaComponent, title: 'Iniciar Sesión' },
   { path: 'dashboard', component: DashboardComponent , title: 'Dashboard'},
   { path: 'salones', component: SalonesComponent , title: 'Salones'},

@@ -17,7 +17,7 @@ import { RouterModule } from '@angular/router';
 })
 export class SchedulerComponent {
   private readonly apiBaseUrl = 'https://horarios-backend-58w8.onrender.com';
-  private readonly apiBaseUrlLocal = 'http://localhost:3000';
+  private readonly apiBaseUrlLocal = 'https://horarios-backend-58w8.onrender.com';
   private readonly claseColorClasses = [
     'clase-tone-1',
     'clase-tone-2',
@@ -462,7 +462,7 @@ async generateSchedule() {
   };
 
   const PYTHON_URL = 'http://localhost:8000/generar-horario';
-  const NEST_SAVE_URL = 'http://localhost:3000/scheduler/save';
+  const NEST_SAVE_URL = 'https://horarios-backend-58w8.onrender.com/scheduler/save';
 
   try {
     // 1) Generar horario en Python
