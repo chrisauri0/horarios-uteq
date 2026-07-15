@@ -174,5 +174,42 @@ export class SalonesComponent {
     this.cancelarEdicion();
     this.modalAbierto = false;
   }
+
+
+  // --- Paginación ---
+paginaActual: number = 1;
+elementosPorPagina: number = 10;
+get salonesPaginados(): salonesData[] {
+  const inicio = (this.paginaActual - 1) * this.elementosPorPagina;
+  return this.salonesFiltrados.slice(inicio, inicio + this.elementosPorPagina);
+}
+
+get totalPaginas(): number {
+  return Math.ceil(this.salonesFiltrados.length / this.elementosPorPagina);
+}
+
+get paginas(): number[] {
+  return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
+}
+
+cambiarPagina(pagina: number) {
+  if (pagina < 1 || pagina > this.totalPaginas) return;
+  this.paginaActual = pagina;
+}
+onBusqueda(valor: string) {
+  this.textoBusqueda = valor;
+  this.paginaActual = 1;
+}
+// --- Búsqueda ---
+textoBusqueda: string = '';
+
+get salonesFiltrados(): salonesData[] {
+  const texto = this.textoBusqueda.trim().toLowerCase();
+  if (!texto) return this.salones;
+  return this.salones.filter(s =>
+    s.nombre.toLowerCase().includes(texto) ||
+    s.division.toLowerCase().includes(texto)
+  );
+}
 }
 

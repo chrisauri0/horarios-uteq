@@ -3,6 +3,8 @@ import { Component, signal, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
+import {  HostListener } from '@angular/core'; // <-- agrega HostListener al import existente
+
 /**
  * Componente principal de la aplicación.
  * Gestiona el layout, la sesión de usuario y la navegación principal.
@@ -30,6 +32,12 @@ export class App implements OnInit {
   esLogin = false;
   /** Estado del menú superior responsive */
   navbarOpen = false;
+
+
+   sidebarColapsado = false;        // true = encogido (solo iconos) en desktop
+  sidebarAbiertoMobile = false;    // true = visible como overlay en mobile
+ 
+
 
   constructor(private router: Router) {
     // Detecta si la ruta actual es /login o la raíz para ocultar el layout
@@ -61,6 +69,35 @@ export class App implements OnInit {
       this.usuarioNombre = 'Usuario';
       this.usuarioCarrera = 'N/A';
       // Se podría loggear el error si se cuenta con un sistema de logs
+    }
+  }
+
+
+
+    // ===== NUEVO: alternar el sidebar =====
+  toggleSidebar(): void {
+    if (this.esMobile()) {
+      this.sidebarAbiertoMobile = !this.sidebarAbiertoMobile;
+    } else {
+      this.sidebarColapsado = !this.sidebarColapsado;
+    }
+  }
+ 
+  // ===== NUEVO: cerrar el sidebar en mobile (al tocar el overlay) =====
+  cerrarSidebarMobile(): void {
+    this.sidebarAbiertoMobile = false;
+  }
+ 
+  // ===== NUEVO: helper para saber si estamos en mobile =====
+  private esMobile(): boolean {
+    return window.innerWidth <= 768;
+  }
+ 
+  // ===== NUEVO: si cambian de mobile a desktop (o viceversa), resetea estados =====
+  @HostListener('window:resize')
+  onResize(): void {
+    if (!this.esMobile()) {
+      this.sidebarAbiertoMobile = false;
     }
   }
 

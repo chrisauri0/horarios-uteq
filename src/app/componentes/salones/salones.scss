@@ -95,10 +95,60 @@ $danger-hover: #c62828;
 
 .toolbar-actions {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 1.25rem;
+  align-items: center;
+  gap: 100%;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
 }
 
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 220px;
+  max-width: 360px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.input-busqueda {
+  width: 100%;
+  padding: 8px 36px 8px 36px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #374151;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  }
+}
+
+.btn-limpiar {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0;
+
+  &:hover {
+    color: #ef4444;
+  }
+}
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -191,7 +241,8 @@ $danger-hover: #c62828;
   background: $primary;
   color: $white;
   border: none;
-  padding: 0.8rem 1.5rem;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1.5rem;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
@@ -207,7 +258,7 @@ $danger-hover: #c62828;
   background: transparent;
   color: color.adjust($text, $lightness: 20%);
   border: 1px solid $border;
-  padding: 0.8rem 1.5rem;
+  padding: 0.8rem 1rem;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
@@ -324,5 +375,44 @@ $danger-hover: #c62828;
     display: block;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+  }
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-pag {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #374151;
+  transition: background 0.2s, color 0.2s;
+
+  &:hover:not(:disabled) {
+    background: #e0e7ff;
+    border-color: #6366f1;
+    color: #6366f1;
+  }
+
+  &.active {
+    background: #6366f1;
+    color: #fff;
+    border-color: #6366f1;
+    font-weight: 600;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 }
