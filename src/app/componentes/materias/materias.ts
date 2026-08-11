@@ -1,8 +1,9 @@
-
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 export interface Materia {
   id: string;
@@ -11,7 +12,7 @@ export interface Materia {
   carrera?: string;
   horas_semana: number;
   data?: object;
-  salones?: string[]
+  salones?: string[];
 }
 
 @Component({
@@ -21,18 +22,37 @@ export interface Materia {
   styleUrl: './materias.scss'
 })
 export class Materias {
+  private apiUrl = `${environment.apiUrl}/materias`;
+  private salonesUrl = `${environment.apiUrl}/salones`;
+  private carrerasUrl = `${environment.apiUrl}/carreras`;
+
   materias: Materia[] = [];
-  nuevaMateria: Materia = { id: '', nombre: '', grado: NaN, carrera: '', horas_semana: NaN, data: {}, salones: [], };
+  nuevaMateria: Materia = { id: '', nombre: '', grado: NaN, carrera: '', horas_semana: NaN, data: {}, salones: [] };
   editandoId: string | null = null;
   salones: string[] = [];
-  carreras: string[] = []
+  carreras: string[] = [];
   modalAbierto = false;
+
   filtros = {
     nombre: '',
     carrera: '',
     grado: '',
     salon: ''
   };
+
+  notificacion: { visible: boolean; mensaje: string; tipo: 'info' | 'error' | 'success' } = {
+    visible: false,
+    mensaje: '',
+    tipo: 'info'
+  };
+
+  confirmacion: { visible: boolean; mensaje: string; idPendiente: string | null } = {
+    visible: false,
+    mensaje: '',
+    idPendiente: null
+  };
+
+  constructor(private http: HttpClient) {}
 
   get materiasFiltradas(): Materia[] {
     const nombre = this.filtros.nombre.trim().toLowerCase();
@@ -59,69 +79,64 @@ export class Materias {
     this.cargarMaterias();
     this.cargarCarreras();
     this.cargarSalones();
-    console.log('Salones materias:', this.materias);
   }
 
-  async cargarSalones() {
-    try {
-      const res = await fetch('https://horarios-backend-58w8.onrender.com/salones');
-      if (!res.ok) throw new Error('Error al obtener salones');
-      const data = await res.json();
-      this.salones = Array.isArray(data) ? data.map((s: any) => s.nombre) : [];
-    } catch (err) {
-      alert('No se pudo cargar la lista de salones: ' + err);
-    }
+  private mostrarNotificacion(mensaje: string, tipo: 'info' | 'error' | 'success' = 'info') {
+    this.notificacion = { visible: true, mensaje, tipo };
   }
 
-  async cargarCarreras() {
-    try {
-      const res = await fetch('https://horarios-backend-58w8.onrender.com/carreras');
-      if (!res.ok) throw new Error('Error al obtener carreras');
-      const data = await res.json();
-      this.carreras = Array.isArray(data) ? data.map((c: any) => c.nombre) : [];
-    } catch (err) {
-      alert('No se pudo cargar la lista de carreras: ' + err);
-    }
+  cerrarNotificacion() {
+    this.notificacion.visible = false;
   }
 
-  async cargarMaterias() {
-    const localKey = 'materias-caches';
-    const localHashKey = 'materias-cache-hash';
-    // Intenta cargar desde localStorage
-    const cache = localStorage.getItem(localKey);
-    const cacheHash = localStorage.getItem(localHashKey);
-    let materiasLocal: Materia[] = [];
-    if (cache) {
-      try {
-        materiasLocal = JSON.parse(cache);
-        this.materias = materiasLocal;
-        console.log('Cargado desde cache localStorage');
-      } catch { }
-    }
-
-    try {
-
-      const resList = await fetch('https://horarios-backend-58w8.onrender.com/materias');
-      if (!resList.ok) throw new Error('Error al obtener materias');
-      const data = await resList.json();
-      this.materias = Array.isArray(data) ? data.map((m: any) => ({
-        id: m.id,
-        nombre: m.nombre,
-        grado: m.grado,
-        carrera: m.carrera,
-        horas_semana: m.horas_semana,
-        data: m.data || {},
-        salones: this.normalizarSalones(m.salones)
-      })) : [];
-      localStorage.setItem(localKey, JSON.stringify(this.materias));
-    } catch (err) {
-      alert('No se pudo cargar la lista de materias: ' + err);
-    }
+  cargarSalones() {
+    this.http.get<any[]>(this.salonesUrl).subscribe({
+      next: (data) => {
+        this.salones = Array.isArray(data) ? data.map((s: any) => s.nombre) : [];
+      },
+      error: (err) => {
+        this.mostrarNotificacion('No se pudo cargar la lista de salones: ' + err.message, 'error');
+      }
+    });
   }
 
-  async agregarMateria() {
-    if (!this.nuevaMateria.nombre.trim()) return;
+  cargarCarreras() {
+    this.http.get<any[]>(this.carrerasUrl).subscribe({
+      next: (data) => {
+        this.carreras = Array.isArray(data) ? data.map((c: any) => c.nombre) : [];
+      },
+      error: (err) => {
+        this.mostrarNotificacion('No se pudo cargar la lista de carreras: ' + err.message, 'error');
+      }
+    });
+  }
+
+  cargarMaterias() {
+    this.http.get<any[]>(this.apiUrl).subscribe({
+      next: (data) => {
+        this.materias = Array.isArray(data) ? data.map((m: any) => ({
+          id: m.id,
+          nombre: m.nombre,
+          grado: m.grado,
+          carrera: m.carrera,
+          horas_semana: m.horas_semana,
+          data: m.data || {},
+          salones: this.normalizarSalones(m.salones)
+        })) : [];
+      },
+      error: (err) => {
+        this.mostrarNotificacion('No se pudo cargar la lista de materias: ' + err.message, 'error');
+      }
+    });
+  }
+
+  agregarMateria() {
+    if (!this.nuevaMateria.nombre.trim()) {
+      this.mostrarNotificacion('El nombre de la materia es obligatorio.', 'error');
+      return;
+    }
     if (!this.validarSalonesSeleccionados()) return;
+
     const body = {
       nombre: this.nuevaMateria.nombre,
       grado: this.nuevaMateria.grado || 1,
@@ -130,32 +145,38 @@ export class Materias {
       data: this.nuevaMateria.data || {},
       salones: this.normalizarSalones(this.nuevaMateria.salones)
     };
-    try {
-      const res = await fetch('https://horarios-backend-58w8.onrender.com/materias', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      if (!res.ok) throw new Error('Error al crear la materia');
-      const data = await res.json();
-      this.materias.push({
-        id: data.id || Date.now().toString(),
-        nombre: data.nombre,
-        grado: data.grado,
-        carrera: data.carrera,
-        horas_semana: data.horas_semana,
-        salones: this.normalizarSalones(data.salones)
-      });
-      this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: [] };
-      this.modalAbierto = false;
-    } catch (err) {
-      alert('No se pudo crear la materia: ' + err);
-    }
+
+    this.http.post<any>(this.apiUrl, body).subscribe({
+      next: (data) => {
+        if (data.error) {
+          this.mostrarNotificacion(data.error, 'error');
+          return;
+        }
+        this.materias.push({
+          id: data.id || Date.now().toString(),
+          nombre: data.nombre,
+          grado: data.grado,
+          carrera: data.carrera,
+          horas_semana: data.horas_semana,
+          salones: this.normalizarSalones(data.salones)
+        });
+        this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: [] };
+        this.modalAbierto = false;
+        this.mostrarNotificacion('Materia agregada correctamente.', 'success');
+      },
+      error: (err) => {
+        this.mostrarNotificacion('No se pudo crear la materia: ' + err.message, 'error');
+      }
+    });
   }
 
-  async guardarEdicion() {
-    if (!this.nuevaMateria.nombre.trim() || !this.editandoId) return;
+  guardarEdicion() {
+    if (!this.nuevaMateria.nombre.trim() || !this.editandoId) {
+      this.mostrarNotificacion('El nombre de la materia es obligatorio.', 'error');
+      return;
+    }
     if (!this.validarSalonesSeleccionados()) return;
+
     const body: any = {
       nombre: this.nuevaMateria.nombre,
       grado: this.nuevaMateria.grado || 1,
@@ -164,45 +185,55 @@ export class Materias {
       horas_semana: this.nuevaMateria.horas_semana || 1,
       salones: this.normalizarSalones(this.nuevaMateria.salones)
     };
-    try {
-      const res = await fetch(`https://horarios-backend-58w8.onrender.com/materias/${this.editandoId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      if (!res.ok) throw new Error('Error al editar la materia');
-      const data = await res.json();
-      this.materias = this.materias.map(m => m.id === this.editandoId ? {
-        id: this.editandoId!,
-        nombre: body.nombre,
-        grado: body.grado,
-        carrera: body.carrera,
-        horas_semana: body.horas_semana,
-        data: body.data,
-        salones: this.normalizarSalones(body.salones)
-      } : m);
-      this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: [] };
-      this.editandoId = null;
-      this.modalAbierto = false;
-    } catch (err) {
-      alert('No se pudo editar la materia: ' + err);
-    }
+
+    this.http.patch<any>(`${this.apiUrl}/${this.editandoId}`, body).subscribe({
+      next: () => {
+        this.materias = this.materias.map(m => m.id === this.editandoId ? {
+          id: this.editandoId!,
+          nombre: body.nombre,
+          grado: body.grado,
+          carrera: body.carrera,
+          horas_semana: body.horas_semana,
+          data: body.data,
+          salones: this.normalizarSalones(body.salones)
+        } : m);
+        this.nuevaMateria = { id: '', nombre: '', grado: 1, carrera: '', horas_semana: 1, data: {}, salones: [] };
+        this.editandoId = null;
+        this.modalAbierto = false;
+        this.mostrarNotificacion('Cambios guardados correctamente.', 'success');
+      },
+      error: (err) => {
+        this.mostrarNotificacion('No se pudo editar la materia: ' + err.message, 'error');
+      }
+    });
   }
 
-  async eliminarMateria(id: string) {
+  eliminarMateria(id: string) {
+    this.confirmacion = {
+      visible: true,
+      mensaje: '¿Estás seguro de eliminar esta materia?',
+      idPendiente: id
+    };
+  }
 
-    const confirmacion = confirm('¿Estás seguro de eliminar esta materia?');
-    if (!confirmacion) return;
+  confirmarEliminacion() {
+    const id = this.confirmacion.idPendiente;
+    this.confirmacion = { visible: false, mensaje: '', idPendiente: null };
+    if (!id) return;
 
-    try {
-      const res = await fetch(`https://horarios-backend-58w8.onrender.com/materias/${id}`, {
-        method: 'DELETE'
-      });
-      if (!res.ok) throw new Error('Error al eliminar la materia');
-      this.materias = this.materias.filter(m => m.id !== id);
-    } catch (err) {
-      alert('No se pudo eliminar la materia: ' + err);
-    }
+    this.http.delete(`${this.apiUrl}/${id}`).subscribe({
+      next: () => {
+        this.materias = this.materias.filter(m => m.id !== id);
+        this.mostrarNotificacion('Materia eliminada correctamente.', 'success');
+      },
+      error: (err) => {
+        this.mostrarNotificacion('No se pudo eliminar la materia: ' + err.message, 'error');
+      }
+    });
+  }
+
+  cancelarEliminacion() {
+    this.confirmacion = { visible: false, mensaje: '', idPendiente: null };
   }
 
   editarMateria(materia: Materia) {
@@ -266,7 +297,7 @@ export class Materias {
   private validarSalonesSeleccionados(): boolean {
     const seleccionados = this.normalizarSalones(this.nuevaMateria.salones);
     if (seleccionados.length === 0) {
-      alert('Selecciona al menos un salon para la materia.');
+      this.mostrarNotificacion('Selecciona al menos un salón para la materia.', 'error');
       return false;
     }
 

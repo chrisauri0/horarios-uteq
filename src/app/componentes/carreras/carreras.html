@@ -24,8 +24,6 @@
                 <tr>
                     <th class="th-id">#</th>
                     <th>Nombre</th>
-                    <th>Grado</th>
-                    <th>División</th>
                     <th class="th-actions">Acciones</th>
                 </tr>
             </thead>
@@ -33,8 +31,7 @@
                 <tr *ngFor="let carrera of carreras; let i = index">
                     <td class="td-id">{{ i + 1 }}</td>
                     <td class="td-nombre">{{ carrera.nombre }}</td>
-                    <td>{{ carrera.grado }}</td>
-                    <td>{{ carrera.division }}</td>
+                   
                     <td class="td-actions">
                         <button class="btn-icon btn-editar" (click)="editarCarrera(carrera)" title="Editar">
                             <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -78,16 +75,8 @@
                         <input id="nombreCarrera" type="text" [(ngModel)]="nuevaCarrera.nombre" name="nombre"
                             placeholder="Ej. Ingeniería en Software" required class="input-carrera" />
                     </div>
-                    <div class="input-group">
-                        <label for="gradoCarrera">Grado/Cuatrimestre</label>
-                        <input id="gradoCarrera" type="number" [(ngModel)]="nuevaCarrera.grado" name="grado"
-                            placeholder="Ej. 7" min="1" max="12" required class="input-carrera" />
-                    </div>
-                    <div class="input-group">
-                        <label for="divisionCarrera">División</label>
-                        <input id="divisionCarrera" type="text" [(ngModel)]="nuevaCarrera.division" name="division"
-                            placeholder="División" class="input-carrera" [disabled]="true" />
-                    </div>
+                   
+                 
                     <div class="form-actions">
                         <button type="submit" class="btn-guardar">
                             {{ editandoId ? 'Guardar Cambios' : 'Agregar Carrera' }}
@@ -98,6 +87,18 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+   
+
+    <!-- MODAL DE CONFIRMACIÓN (reemplaza window.confirm) -->
+    <div class="modal-overlay" *ngIf="confirmacion.visible" (click)="cancelarEliminacion()">
+        <div class="notificacion-modal" (click)="$event.stopPropagation()">
+            <p>{{ confirmacion.mensaje }}</p>
+            <div class="form-actions">
+                <button type="button" class="btn-guardar" (click)="confirmarEliminacion()">Eliminar</button>
+                <button type="button" class="btn-cancelar" (click)="cancelarEliminacion()">Cancelar</button>
+            </div>
         </div>
     </div>
 </div>

@@ -1,23 +1,18 @@
-export type EstadoJustificante = 'pendiente' | 'aprobado' | 'rechazado';
+export type EstadoJustificante = 'pendiente' | 'aceptado' | 'rechazado';
 
 export interface Justificante {
-  id: number;
-  alumno: {
-    nombre: string;
-    matricula: string;
-    grupo: string;
-    avatarUrl?: string;
+  id: string;
+  usuarioId: string;
+  usuario: {
+    id: string;
+    full_name: string | null;
+    email: string;
   };
-  fechaFalta: string;       // fecha en que el alumno faltó
-  fechaEnvio: string;       // fecha en que envió el justificante
   motivo: string;
-  descripcion: string;
-  archivoAdjunto: {
-    nombre: string;
-    tipo: 'pdf' | 'imagen';
-    url: string;
-  };
+  fecha: string;
+  driveUrl: string;
   estado: EstadoJustificante;
-  materia: string;
-  comentarioAdmin?: string;
+  comentarioAdmin: string | null;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -1,6 +1,5 @@
 <div class="contenedor">
 
-  <!-- ENCABEZADO -->
   <header class="encabezado">
     <div>
       <h1>Justificantes de faltas</h1>
@@ -8,7 +7,6 @@
     </div>
   </header>
 
-  <!-- TARJETAS RESUMEN -->
   <section class="resumen">
     <div class="tarjeta-resumen tarjeta-resumen--pendiente">
       <span class="resumen-numero">{{ totalPendientes() }}</span>
@@ -24,14 +22,13 @@
     </div>
   </section>
 
-  <!-- FILTROS -->
   <section class="filtros">
     <div class="filtro-grupo">
       <label for="buscarAlumno">Buscar alumno</label>
       <input
         id="buscarAlumno"
         type="text"
-        placeholder="Nombre o matrícula..."
+        placeholder="Nombre o correo..."
         [ngModel]="filtroAlumno()"
         (ngModelChange)="filtroAlumno.set($event)"
       />
@@ -46,20 +43,17 @@
       >
         <option value="todos">Todos</option>
         <option value="pendiente">Pendiente</option>
-        <option value="aprobado">Aprobado</option>
+        <option value="aceptado">Aprobado</option>
         <option value="rechazado">Rechazado</option>
       </select>
     </div>
   </section>
 
-  <!-- TABLA DE JUSTIFICANTES -->
   <section class="tabla-wrapper">
     <table class="tabla" *ngIf="justificantesFiltrados().length > 0">
       <thead>
         <tr>
           <th>Alumno</th>
-          <th>Grupo</th>
-          <th>Materia</th>
           <th>Fecha de falta</th>
           <th>Motivo</th>
           <th>Estado</th>
@@ -70,16 +64,13 @@
         <tr *ngFor="let j of justificantesFiltrados()">
           <td>
             <div class="celda-alumno">
-              <img [src]="j.alumno.avatarUrl" [alt]="j.alumno.nombre" class="avatar" />
               <div>
-                <p class="alumno-nombre">{{ j.alumno.nombre }}</p>
-                <p class="alumno-matricula">{{ j.alumno.matricula }}</p>
+                <p class="alumno-nombre">{{ j.usuario?.full_name || 'Sin nombre' }}</p>
+                <p class="alumno-matricula">{{ j.usuario?.email }}</p>
               </div>
             </div>
           </td>
-          <td>{{ j.alumno.grupo }}</td>
-          <td>{{ j.materia }}</td>
-          <td>{{ j.fechaFalta | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ j.fecha | date: 'dd/MM/yyyy' }}</td>
           <td>{{ j.motivo }}</td>
           <td>
             <span [class]="claseEstado(j.estado)">{{ textoEstado(j.estado) }}</span>
@@ -119,10 +110,9 @@
 
         <header class="modal-header">
           <div class="celda-alumno">
-            <img [src]="j.alumno.avatarUrl" [alt]="j.alumno.nombre" class="avatar avatar--grande" />
             <div>
-              <p class="alumno-nombre">{{ j.alumno.nombre }}</p>
-              <p class="alumno-matricula">{{ j.alumno.matricula }} · {{ j.alumno.grupo }}</p>
+              <p class="alumno-nombre">{{ j.usuario?.full_name || 'Sin nombre' }}</p>
+              <p class="alumno-matricula">{{ j.usuario?.email }}</p>
             </div>
           </div>
           <button class="btn-cerrar" (click)="cerrarDetalle()">✕</button>
@@ -135,41 +125,25 @@
           </div>
 
           <div class="fila-detalle">
-            <span class="detalle-label">Materia</span>
-            <span>{{ j.materia }}</span>
-          </div>
-
-          <div class="fila-detalle">
             <span class="detalle-label">Fecha de la falta</span>
-            <span>{{ j.fechaFalta | date: 'dd/MM/yyyy' }}</span>
+            <span>{{ j.fecha | date: 'dd/MM/yyyy' }}</span>
           </div>
 
           <div class="fila-detalle">
             <span class="detalle-label">Fecha de envío</span>
-            <span>{{ j.fechaEnvio | date: 'dd/MM/yyyy' }}</span>
-          </div>
-
-          <div class="fila-detalle">
-            <span class="detalle-label">Motivo</span>
-            <span>{{ j.motivo }}</span>
+            <span>{{ j.createdAt | date: 'dd/MM/yyyy' }}</span>
           </div>
 
           <div class="fila-detalle fila-detalle--columna">
-            <span class="detalle-label">Descripción del alumno</span>
-            <p class="descripcion-texto">{{ j.descripcion }}</p>
+            <span class="detalle-label">Motivo</span>
+            <p class="descripcion-texto">{{ j.motivo }}</p>
           </div>
 
           <div class="fila-detalle fila-detalle--columna">
             <span class="detalle-label">Archivo adjunto</span>
-            <a class="adjunto" [href]="j.archivoAdjunto.url" target="_blank">
-              📎 {{ j.archivoAdjunto.nombre }}
+            <a class="adjunto" [href]="j.driveUrl" target="_blank">
+              📎 Ver archivo en Drive
             </a>
-            <img
-              *ngIf="j.archivoAdjunto.tipo === 'imagen'"
-              [src]="j.archivoAdjunto.url"
-              alt="Vista previa del adjunto"
-              class="preview-imagen"
-            />
           </div>
 
           <div class="fila-detalle fila-detalle--columna">
@@ -191,6 +165,14 @@
         </footer>
 
       </ng-container>
+    </div>
+  </div>
+
+  <!-- MODAL DE NOTIFICACIÓN -->
+  <div class="modal-overlay" *ngIf="notificacion.visible" (click)="cerrarNotificacion()">
+    <div class="notificacion-modal" [ngClass]="notificacion.tipo" (click)="$event.stopPropagation()">
+      <p>{{ notificacion.mensaje }}</p>
+      <button type="button" class="btn btn--aprobar" (click)="cerrarNotificacion()">Entendido</button>
     </div>
   </div>
 

@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 })
 export class DashboardComponent {
   usuarioNombre: string = '';
-  usuarioCarrera: string = '';
+  usuarioOrganizacion: string = '';
   sidebarCollapsed = false;
   constructor(private router: Router) {}
 
@@ -24,9 +24,9 @@ export class DashboardComponent {
   ngOnInit() {
     const usuarioData = localStorage.getItem('userData');
     if (usuarioData) {
-      const { nombre, metadata: { division , turno } } = JSON.parse(usuarioData);
-      this.usuarioNombre = nombre;
-      this.usuarioCarrera = division + ' - ' + turno;
+      const { nombreOrganizacion,full_name } = JSON.parse(usuarioData);
+      this.usuarioNombre = full_name;
+      this.usuarioOrganizacion = nombreOrganizacion;
     } else {
       this.router.navigate(['/']);
     }

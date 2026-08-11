@@ -236,7 +236,33 @@ $danger-hover: #c62828;
     }
   }
 }
+.notificacion-modal {
+	background: $white;
+	border-radius: 16px;
+	padding: 2rem;
+	max-width: 360px;
+	width: 90%;
+	text-align: center;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 
+	p {
+		margin: 0 0 1.5rem;
+		color: $text;
+		font-size: 1rem;
+	}
+
+	.form-actions {
+		justify-content: center;
+	}
+
+	&.error p {
+		color: $danger;
+	}
+
+	&.success p {
+		color: #2e7d32;
+	}
+}
 .btn-guardar {
   background: $primary;
   color: $white;
@@ -258,7 +284,7 @@ $danger-hover: #c62828;
   background: transparent;
   color: color.adjust($text, $lightness: 20%);
   border: 1px solid $border;
-  padding: 0.8rem 1rem;
+  padding: 0.8rem 1.5rem;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;

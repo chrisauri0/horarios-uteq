@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { TdisService } from './tdis.service';
 
 export interface TdiPrograma {
-  id?: string; // ⬅️ nuevo, viene del backend
+  id?: string;
   eje: string;
   nombre: string;
   personaEncargada: string;
@@ -31,8 +31,7 @@ export interface TdiPrograma {
   styleUrl: './tdis.scss'
 })
 export class Tdis implements OnInit {
-  private readonly storageKey = 'tdi-programas-cache';
-  private readonly ejes =[
+  private readonly ejes = [
     { value: '1', label: 'Eje Identidad Personal' },
     { value: '2', label: 'Eje Entorno Social' },
     { value: '3', label: 'Eje Entorno Físico' },
@@ -45,32 +44,34 @@ export class Tdis implements OnInit {
     { value: '4', label: '4 - Implementador Lidera' }
   ];
 
-   readonly alumnosRegistrados = [
+  readonly alumnosRegistrados = [
     { matricula: '2023001', nombre: 'Juan Pérez', carrera: 'Ingeniería en Sistemas', totalPuntosTdi: 10, identidadPersonal: 5, entornoSocial: 3, entornoFisico: 2, trascendencia: 0 }
   ];
 
   readonly solicitudesValidacion = [
-    {id: 1, matricula:'2023002', nombreSolicitud: 'Voluntariado en refugio de animales', correoAlumno: 'maria.lopez@correo.com',
-       eje:'Identidad Personal',
-  personaEncargada: 'José Martínez',
-  puesto: 'Encargado de Voluntariado',
-  telefono: '412345678',
-  extension: '',
-  correo: 'jose.martinez@correo.com',
-  tipo: 'externa',
-  horasRequeridas: 20,
-  nivelDeImpacto: 'sensibilizador',
-  tdisporGanar: 0,
-  competencias: 'Apoyo en cuidado de animales, limpieza',
-  evidencias: ' Fotos del voluntariado, carta de recomendación',
-  obeservaciones: ' Actividad realizada durante vacaciones de verano',
-   estado: 'Pendiente' },
-  ]
+    {
+      id: 1, matricula: '2023002', nombreSolicitud: 'Voluntariado en refugio de animales', correoAlumno: 'maria.lopez@correo.com',
+      eje: 'Identidad Personal',
+      personaEncargada: 'José Martínez',
+      puesto: 'Encargado de Voluntariado',
+      telefono: '412345678',
+      extension: '',
+      correo: 'jose.martinez@correo.com',
+      tipo: 'externa',
+      horasRequeridas: 20,
+      nivelDeImpacto: 'sensibilizador',
+      tdisporGanar: 0,
+      competencias: 'Apoyo en cuidado de animales, limpieza',
+      evidencias: ' Fotos del voluntariado, carta de recomendación',
+      obeservaciones: ' Actividad realizada durante vacaciones de verano',
+      estado: 'Pendiente'
+    },
+  ];
 
   solicitudActual: any = null;
 
   tdis: TdiPrograma[] = [];
-  cargando = false; // ⬅️ FIX 1: propiedad faltante
+  cargando = false;
   busqueda = '';
   modalAbierto = false;
   modalSolicitudesAbierto = false;
@@ -81,6 +82,18 @@ export class Tdis implements OnInit {
 
   nuevoTdi: TdiPrograma = this.crearTdiVacio();
   modalSolicitudIndividualAbierto = false;
+
+  notificacion: { visible: boolean; mensaje: string; tipo: 'info' | 'error' | 'success' } = {
+    visible: false,
+    mensaje: '',
+    tipo: 'info'
+  };
+
+  confirmacion: { visible: boolean; mensaje: string; tdiPendiente: TdiPrograma | null } = {
+    visible: false,
+    mensaje: '',
+    tdiPendiente: null
+  };
 
   get totalTdi(): number {
     return this.tdis.length;
@@ -129,14 +142,21 @@ export class Tdis implements OnInit {
     this.cargarTdis();
   }
 
+  private mostrarNotificacion(mensaje: string, tipo: 'info' | 'error' | 'success' = 'info') {
+    this.notificacion = { visible: true, mensaje, tipo };
+  }
+
+  cerrarNotificacion() {
+    this.notificacion.visible = false;
+  }
+
   private cargarTdis() {
     this.cargando = true;
     this.tdisService.getAll().subscribe({
       next: (data) => { this.tdis = data; this.cargando = false; },
       error: (err) => {
-        console.error('Error cargando TDIs:', err);
         this.cargando = false;
-        alert('No se pudieron cargar los TDIs.');
+        this.mostrarNotificacion('No se pudieron cargar los TDIs: ' + err.message, 'error');
       },
     });
   }
@@ -145,7 +165,7 @@ export class Tdis implements OnInit {
     const tdi = this.normalizarTdi(this.nuevoTdi);
 
     if (!tdi.eje || !tdi.nombre || !tdi.personaEncargada || !tdi.correo) {
-      alert('Completa los campos obligatorios: eje, nombre, persona encargada y correo.');
+      this.mostrarNotificacion('Completa los campos obligatorios: eje, nombre, persona encargada y correo.', 'error');
       return;
     }
 
@@ -153,12 +173,13 @@ export class Tdis implements OnInit {
       next: () => {
         this.cargarTdis();
         this.cerrarModal();
+        this.mostrarNotificacion('TDI agregado correctamente.', 'success');
       },
       error: (err) => {
         if (err.status === 409) {
-          alert('Ya existe un registro con ese eje.');
+          this.mostrarNotificacion('Ya existe un registro con ese eje.', 'error');
         } else {
-          alert('Error al guardar el TDI.');
+          this.mostrarNotificacion('Error al guardar el TDI: ' + err.message, 'error');
         }
       },
     });
@@ -169,32 +190,50 @@ export class Tdis implements OnInit {
 
     const tdi = this.normalizarTdi(this.nuevoTdi);
     if (!tdi.eje || !tdi.nombre || !tdi.personaEncargada || !tdi.correo) {
-      alert('Completa los campos obligatorios: eje, nombre, persona encargada y correo.');
+      this.mostrarNotificacion('Completa los campos obligatorios: eje, nombre, persona encargada y correo.', 'error');
       return;
     }
 
-    if (!tdi.id) return; // seguridad
+    if (!tdi.id) return;
 
     this.tdisService.update(tdi.id, tdi).subscribe({
       next: () => {
         this.cargarTdis();
         this.cerrarModal();
+        this.mostrarNotificacion('Cambios guardados correctamente.', 'success');
       },
-      error: () => alert('Error al actualizar el TDI.'),
+      error: (err) => this.mostrarNotificacion('Error al actualizar el TDI: ' + err.message, 'error'),
     });
   }
 
   eliminarTdi(tdi: TdiPrograma) {
-    const confirmacion = confirm('¿Deseas eliminar este TDI?');
-    if (!confirmacion || !tdi.id) return;
+    if (!tdi.id) return;
+    this.confirmacion = {
+      visible: true,
+      mensaje: `¿Deseas eliminar el TDI "${tdi.nombre}"?`,
+      tdiPendiente: tdi
+    };
+  }
+
+  confirmarEliminacion() {
+    const tdi = this.confirmacion.tdiPendiente;
+    this.confirmacion = { visible: false, mensaje: '', tdiPendiente: null };
+    if (!tdi || !tdi.id) return;
 
     this.tdisService.delete(tdi.id).subscribe({
-      next: () => this.cargarTdis(),
-      error: () => alert('Error al eliminar el TDI.'),
+      next: () => {
+        this.cargarTdis();
+        this.mostrarNotificacion('TDI eliminado correctamente.', 'success');
+      },
+      error: (err) => this.mostrarNotificacion('Error al eliminar el TDI: ' + err.message, 'error'),
     });
   }
 
-   verAlumnosRegistrados() {
+  cancelarEliminacion() {
+    this.confirmacion = { visible: false, mensaje: '', tdiPendiente: null };
+  }
+
+  verAlumnosRegistrados() {
     this.modalAlumnosAbierto = true;
   }
 
@@ -223,23 +262,22 @@ export class Tdis implements OnInit {
     };
   }
 
-  verSolicitud(id : number) {
+  verSolicitud(id: number) {
     this.solicitudActual = this.solicitudesValidacion.find(solicitud => solicitud.id === id) || null;
     if (this.solicitudActual) {
       this.modalSolicitudesAbierto = true;
+      this.abrirModalSolicitud();
     } else {
-      alert('Solicitud no encontrada');
+      this.mostrarNotificacion('Solicitud no encontrada.', 'error');
     }
-
-    this.abrirModalSolicitud()
   }
 
   aprobarSolicitud(solicitud: any) {
-    // Lógica para aprobar la solicitud
+    // Pendiente: conectar con endpoint real de solicitudes de validación
   }
-  
+
   rechazarSolicitud(solicitud: any) {
-    // Lógica para rechazar la solicitud
+    // Pendiente: conectar con endpoint real de solicitudes de validación
   }
 
   abrirModalSolicitudesValidacion() {
@@ -258,7 +296,7 @@ export class Tdis implements OnInit {
   }
 
   verEstadisticas(tdi: TdiPrograma) {
-    // Lógica para ver estadísticas
+    // Pendiente: implementar vista de estadísticas
   }
 
   cerrarModal() {

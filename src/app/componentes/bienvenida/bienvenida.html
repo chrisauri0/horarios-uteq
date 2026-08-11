@@ -27,7 +27,7 @@
                         </svg>
                     </span>
                     <input id="usuario" type="email" placeholder="ejemplo@uteq.edu.mx" [(ngModel)]="email" name="email"
-                        required />
+                        required [disabled]="cargando" />
                 </div>
             </div>
 
@@ -42,9 +42,9 @@
                         </svg>
                     </span>
                     <input id="contrasena" [type]="showPassword ? 'text' : 'password'" placeholder="••••••••"
-                        [(ngModel)]="contrasena" name="password" required />
+                        [(ngModel)]="contrasena" name="password" required [disabled]="cargando" />
                     <button type="button" class="toggle-password" (click)="togglePassword()"
-                        aria-label="Mostrar u ocultar contraseña">
+                        aria-label="Mostrar u ocultar contraseña" [disabled]="cargando">
                         <svg *ngIf="!showPassword" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
@@ -60,9 +60,9 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn-login">
-                <span>Iniciar Sesión</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            <button type="submit" class="btn-login" [disabled]="cargando">
+                <span>{{ cargando ? 'Iniciando...' : 'Iniciar Sesión' }}</span>
+                <svg *ngIf="!cargando" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
@@ -72,6 +72,21 @@
 
         <div class="login-footer">
             <p>© 2025 Universidad Tecnológica de Querétaro</p>
+        </div>
+    </div>
+
+    <!-- MODAL DE CARGA -->
+    <div class="loading-overlay" *ngIf="cargando">
+        <div class="loading-modal">
+            <ng-container *ngIf="!huboTimeout; else timeoutMsg">
+                <div class="spinner"></div>
+                <p>{{ mensajeCarga }}</p>
+            </ng-container>
+            <ng-template #timeoutMsg>
+                <div class="timeout-icon">⏱️</div>
+                <p>El servidor tardó demasiado en responder.</p>
+                <p class="timeout-sub">Por favor, intenta de nuevo.</p>
+            </ng-template>
         </div>
     </div>
 </div>

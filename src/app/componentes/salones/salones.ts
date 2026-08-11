@@ -2,10 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+
 export interface salonesData {
   id: string;
   nombre: string;
-  division: string;
 }
 
 @Component({
@@ -15,115 +17,119 @@ export interface salonesData {
   styleUrls: ['./salones.scss']
 })
 export class SalonesComponent {
+  private apiUrl = `${environment.apiUrl}/salones`;
+
   usuarioNombre: string = '';
-  usuarioCarrera: string = '';
-  sidebarCollapsed = false;
-
-
 
   salones: salonesData[] = [];
-  nuevoSalon: salonesData = { id: '', nombre: '', division: '' };
+  nuevoSalon: salonesData = { id: '', nombre: '' };
   editandoId: string | null = null;
-  defaultDivision: string = '';
 
   modalAbierto = false;
 
+  notificacion: { visible: boolean; mensaje: string; tipo: 'info' | 'error' | 'success' } = {
+    visible: false,
+    mensaje: '',
+    tipo: 'info'
+  };
+
+  confirmacion: { visible: boolean; mensaje: string; idPendiente: string | null } = {
+    visible: false,
+    mensaje: '',
+    idPendiente: null
+  };
+
+  constructor(private http: HttpClient) {}
 
   ngOnInit() {
     const usuarioData = localStorage.getItem('userData');
     if (usuarioData) {
-      const { full_name, metadata: { division, turno } } = JSON.parse(usuarioData);
+      const { full_name } = JSON.parse(usuarioData);
       this.usuarioNombre = full_name || 'Usuario';
-      this.usuarioCarrera = `${division || ''} - ${turno || ''}`;
-      this.defaultDivision = division || '';
-      this.nuevoSalon.division = this.defaultDivision;
     } else {
       this.usuarioNombre = 'Usuario';
-      this.usuarioCarrera = '';
-      this.defaultDivision = '';
-      this.nuevoSalon.division = '';
     }
     this.cargarSalones();
   }
 
-  async cargarSalones() {
-    // Intentar cargar desde localStorage primero
-    const cache = localStorage.getItem('salonesCache');
-    const token = localStorage.getItem('token') || '';
-    if (cache) {
-      try {
-        const cacheData = JSON.parse(cache);
-        this.salones = Array.isArray(cacheData) ? cacheData : [];
-      } catch { }
-    }
-
-    try {
-      const res = await fetch('https://horarios-backend-58w8.onrender.com/salones', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (!res.ok) throw new Error('Error al obtener salones');
-      const data = await res.json();
-      // La nueva API devuelve { id, nombre, data } donde data puede tener edificio
-      const salonesList = Array.isArray(data) ? data.map((s, idx) => ({
-        id: s.id || idx,
-        nombre: s.nombre,
-        division: s.division
-      })) : [];
-      // Solo actualiza si hay cambios
-      if (JSON.stringify(salonesList) !== localStorage.getItem('salonesCache')) {
-        this.salones = salonesList;
-        localStorage.setItem('salonesCache', JSON.stringify(salonesList));
-      }
-    } catch (err) {
-      alert('No se pudo cargar la lista de salones: ' + err);
-    }
+  private mostrarNotificacion(mensaje: string, tipo: 'info' | 'error' | 'success' = 'info') {
+    this.notificacion = { visible: true, mensaje, tipo };
   }
 
-  async agregarSalon() {
-    if (!this.nuevoSalon.nombre.trim()) return;
+  cerrarNotificacion() {
+    this.notificacion.visible = false;
+  }
+
+  cargarSalones() {
+    this.http.get<any[]>(this.apiUrl).subscribe({
+      next: (data) => {
+        this.salones = Array.isArray(data) ? data.map((s, idx) => ({
+          id: s.id || idx,
+          nombre: s.nombre
+        })) : [];
+      },
+      error: (err) => {
+        this.mostrarNotificacion('No se pudo cargar la lista de salones: ' + err.message, 'error');
+      }
+    });
+  }
+
+  agregarSalon() {
+    if (!this.nuevoSalon.nombre.trim()) {
+      this.mostrarNotificacion('Completa el nombre antes de guardar.', 'error');
+      return;
+    }
+
     const body = {
-      nombre: this.nuevoSalon.nombre,
-      division: this.nuevoSalon.division
+      nombre: this.nuevoSalon.nombre
     };
-    try {
-      const res = await fetch('https://horarios-backend-58w8.onrender.com/salones', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      if (!res.ok) throw new Error('Error al crear el salón');
-      const data = await res.json();
 
-      if (data.error) {
-        alert(data.error);
-        return;
+    this.http.post<any>(this.apiUrl, body).subscribe({
+      next: (data) => {
+        if (data.error) {
+          this.mostrarNotificacion(data.error, 'error');
+          return;
+        }
+        this.salones.push({
+          id: data.id || Date.now().toString(),
+          nombre: data.nombre
+        });
+        this.nuevoSalon = { id: '', nombre: '' };
+        this.modalAbierto = false;
+        this.mostrarNotificacion('Salón agregado correctamente.', 'success');
+      },
+      error: (err) => {
+        this.mostrarNotificacion('No se pudo crear el salón: ' + err.message, 'error');
       }
-      this.salones.push({
-        id: data.id || Date.now(),
-        nombre: data.nombre,
-        division: data.division
-      });
-      this.nuevoSalon = { id: '', nombre: '', division: this.defaultDivision };
-      this.modalAbierto = false;
-    } catch (err) {
-      alert('No se pudo crear el salón: ' + err);
-    }
+    });
   }
 
-  async eliminarSalon(id: string) {
-    const confirmacion = confirm('¿Estás seguro de que deseas eliminar este salón?');
-    if (!confirmacion) return;
-    try {
-      const res = await fetch(`https://horarios-backend-58w8.onrender.com/salones/${id}`, {
-        method: 'DELETE'
-      });
-      if (!res.ok) throw new Error('Error al eliminar el salón');
-      this.salones = this.salones.filter(s => s.id !== id);
-    } catch (err) {
-      alert('No se pudo eliminar el salón: ' + err);
-    }
+  eliminarSalon(id: string) {
+    this.confirmacion = {
+      visible: true,
+      mensaje: '¿Estás seguro de que deseas eliminar este salón?',
+      idPendiente: id
+    };
+  }
+
+  confirmarEliminacion() {
+    const id = this.confirmacion.idPendiente;
+    this.confirmacion = { visible: false, mensaje: '', idPendiente: null };
+    if (!id) return;
+
+    this.http.delete(`${this.apiUrl}/${id}`).subscribe({
+      next: () => {
+        this.salones = this.salones.filter(s => s.id !== id);
+        this.mostrarNotificacion('Salón eliminado correctamente.', 'success');
+      },
+      error: (err) => {
+        this.mostrarNotificacion('No se pudo eliminar el salón: ' + err.message, 'error');
+      }
+    });
+  }
+
+  cancelarEliminacion() {
+    this.confirmacion = { visible: false, mensaje: '', idPendiente: null };
   }
 
   editarSalon(salon: salonesData) {
@@ -132,41 +138,41 @@ export class SalonesComponent {
     this.modalAbierto = true;
   }
 
-  async guardarEdicion() {
-    if (!this.nuevoSalon.nombre.trim()) return;
-    if (!this.editandoId) return;
-    const body: any = {
+  guardarEdicion() {
+    if (!this.nuevoSalon.nombre.trim() || !this.editandoId) {
+      this.mostrarNotificacion('Completa el nombre antes de guardar.', 'error');
+      return;
+    }
+
+    const body = {
       nombre: this.nuevoSalon.nombre
     };
-    try {
-      const res = await fetch(`https://horarios-backend-58w8.onrender.com/salones/${this.editandoId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      if (!res.ok) throw new Error('Error al editar el salón');
-      const data = await res.json();
-      this.salones = this.salones.map(s => s.id === this.editandoId ? {
-        id: this.editandoId!,
-        nombre: body.nombre,
-        division: this.nuevoSalon.division
-      } : s);
-      this.nuevoSalon = { id: '', nombre: '', division: this.defaultDivision };
-      this.editandoId = null;
-      this.modalAbierto = false;
-    } catch (err) {
-      alert('No se pudo editar el salón: ' + err);
-    }
+
+    this.http.patch<any>(`${this.apiUrl}/${this.editandoId}`, body).subscribe({
+      next: () => {
+        this.salones = this.salones.map(s => s.id === this.editandoId ? {
+          id: this.editandoId!,
+          nombre: body.nombre
+        } : s);
+        this.nuevoSalon = { id: '', nombre: '' };
+        this.editandoId = null;
+        this.modalAbierto = false;
+        this.mostrarNotificacion('Cambios guardados correctamente.', 'success');
+      },
+      error: (err) => {
+        this.mostrarNotificacion('No se pudo editar el salón: ' + err.message, 'error');
+      }
+    });
   }
 
   cancelarEdicion() {
-    this.nuevoSalon = { id: '', nombre: '', division: this.defaultDivision };
+    this.nuevoSalon = { id: '', nombre: '' };
     this.editandoId = null;
   }
 
   abrirModalNuevoSalon() {
     this.editandoId = null;
-    this.nuevoSalon = { id: '', nombre: '', division: this.defaultDivision };
+    this.nuevoSalon = { id: '', nombre: '' };
     this.modalAbierto = true;
   }
 
@@ -175,41 +181,41 @@ export class SalonesComponent {
     this.modalAbierto = false;
   }
 
-
   // --- Paginación ---
-paginaActual: number = 1;
-elementosPorPagina: number = 10;
-get salonesPaginados(): salonesData[] {
-  const inicio = (this.paginaActual - 1) * this.elementosPorPagina;
-  return this.salonesFiltrados.slice(inicio, inicio + this.elementosPorPagina);
-}
+  paginaActual: number = 1;
+  elementosPorPagina: number = 10;
 
-get totalPaginas(): number {
-  return Math.ceil(this.salonesFiltrados.length / this.elementosPorPagina);
-}
+  get salonesPaginados(): salonesData[] {
+    const inicio = (this.paginaActual - 1) * this.elementosPorPagina;
+    return this.salonesFiltrados.slice(inicio, inicio + this.elementosPorPagina);
+  }
 
-get paginas(): number[] {
-  return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
-}
+  get totalPaginas(): number {
+    return Math.ceil(this.salonesFiltrados.length / this.elementosPorPagina);
+  }
 
-cambiarPagina(pagina: number) {
-  if (pagina < 1 || pagina > this.totalPaginas) return;
-  this.paginaActual = pagina;
-}
-onBusqueda(valor: string) {
-  this.textoBusqueda = valor;
-  this.paginaActual = 1;
-}
-// --- Búsqueda ---
-textoBusqueda: string = '';
+  get paginas(): number[] {
+    return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
+  }
 
-get salonesFiltrados(): salonesData[] {
-  const texto = this.textoBusqueda.trim().toLowerCase();
-  if (!texto) return this.salones;
-  return this.salones.filter(s =>
-    s.nombre.toLowerCase().includes(texto) ||
-    s.division.toLowerCase().includes(texto)
-  );
-}
-}
+  cambiarPagina(pagina: number) {
+    if (pagina < 1 || pagina > this.totalPaginas) return;
+    this.paginaActual = pagina;
+  }
 
+  onBusqueda(valor: string) {
+    this.textoBusqueda = valor;
+    this.paginaActual = 1;
+  }
+
+  // --- Búsqueda ---
+  textoBusqueda: string = '';
+
+  get salonesFiltrados(): salonesData[] {
+    const texto = this.textoBusqueda.trim().toLowerCase();
+    if (!texto) return this.salones;
+    return this.salones.filter(s =>
+      s.nombre.toLowerCase().includes(texto)
+    );
+  }
+}

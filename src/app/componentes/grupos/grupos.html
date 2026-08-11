@@ -21,11 +21,6 @@
                         placeholder="Ej. A" required class="input-grupo" />
                 </div>
                 <div class="input-group">
-                    <label for="divisionGrupo">División</label>
-                    <input id="divisionGrupo" type="text" [(ngModel)]="nuevoGrupo.division" name="division"
-                        placeholder="Ej. TIC" required class="input-grupo" />
-                </div>
-                <div class="input-group">
                     <label for="gradoGrupo">Grado/Cuatrimestre</label>
                     <input id="gradoGrupo" type="number" [(ngModel)]="nuevoGrupo.grado" name="grado" placeholder="Ej. 7"
                         min="1" max="12" required class="input-grupo" />
@@ -56,7 +51,6 @@
                 <tr>
                     <th class="th-id">#</th>
                     <th>Nombre</th>
-                    <th>División</th>
                     <th>Grado</th>
                     <th>Carrera</th>
                     <th class="th-actions">Acciones</th>
@@ -66,7 +60,6 @@
                 <tr *ngFor="let grupo of grupos; let i = index">
                     <td class="td-id">{{ i + 1 }}</td>
                     <td class="td-nombre">{{ grupo.nombre }}</td>
-                    <td>{{ grupo.division }}</td>
                     <td>{{ grupo.grado }}</td>
                     <td>{{ grupo.carrera }}</td>
                     <td class="td-actions">
@@ -85,11 +78,28 @@
                     </td>
                 </tr>
                 <tr *ngIf="grupos.length === 0">
-                    <td colspan="6" class="empty-state">
+                    <td colspan="5" class="empty-state">
                         No hay grupos registrados. ¡Agrega uno nuevo arriba!
                     </td>
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <div class="modal-overlay" *ngIf="notificacion.visible" (click)="cerrarNotificacion()">
+        <div class="notificacion-modal" [ngClass]="notificacion.tipo" (click)="$event.stopPropagation()">
+            <p>{{ notificacion.mensaje }}</p>
+            <button type="button" class="btn-guardar" (click)="cerrarNotificacion()">Entendido</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" *ngIf="confirmacion.visible" (click)="cancelarEliminacion()">
+        <div class="notificacion-modal" (click)="$event.stopPropagation()">
+            <p>{{ confirmacion.mensaje }}</p>
+            <div class="form-actions">
+                <button type="button" class="btn-guardar" (click)="confirmarEliminacion()">Eliminar</button>
+                <button type="button" class="btn-cancelar" (click)="cancelarEliminacion()">Cancelar</button>
+            </div>
+        </div>
     </div>
 </div>
