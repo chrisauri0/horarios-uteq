@@ -160,6 +160,10 @@
 
                   
                 </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-guardar">{{ editandoId ? 'Guardar cambios' : 'Agregar materia' }}</button>
+                    <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+                </div>
             </form>
         </div>
     </div>
