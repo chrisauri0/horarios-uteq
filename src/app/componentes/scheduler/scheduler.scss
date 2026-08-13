@@ -1,19 +1,5 @@
-// Paleta institucional
-$primary: #005baa;
-$secondary: #f5f7fa;
-$accent: #ffb300;
-$text: #222;
-$border: #e0e4ea;
-$white: #ffffff;
-$success-bg: #eaf3fb;
-$danger: #e57373;
-$danger-hover: #c62828;
-$success: #27ae60;
-$warning-bg: #fff8e1;
-$warning-text: #5d4037;
-$warning-border: #ffecb3;
-
 @use "sass:color";
+@use 'styles/variables' as *;
 
 .scheduler-layout {
   max-width: 1200px;
@@ -24,42 +10,7 @@ $warning-border: #ffecb3;
 }
 
 .header-section {
-  
-  align-items: center;
-  justify-content: center;
-  position: relative;
   margin-bottom: 2rem;
-
-  .btn-back {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: $white;
-    border: 1px solid $border;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: $primary;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    z-index: 10;
-    cursor: pointer;
-
-    &:hover {
-      background: $primary;
-      color: $white;
-      transform: translateY(-50%) scale(1.1);
-      box-shadow: 0 4px 12px rgba(0, 91, 170, 0.2);
-    }
-  }
-
-  .header-text {
-    text-align: center;
-  }
 
   .titulo-scheduler {
     color: $primary;
@@ -67,12 +18,6 @@ $warning-border: #ffecb3;
     font-weight: 700;
     margin: 0 0 0.5rem 0;
     letter-spacing: -0.5px;
-  }
-
-  .subtitle {
-    color: color.adjust($text, $lightness: 20%);
-    font-size: 1.1rem;
-    margin: 0;
   }
 }
 
@@ -329,7 +274,7 @@ $warning-border: #ffecb3;
 
     &.success {
       background: $success-bg;
-      color: darken($success, 10%);
+      color: color.adjust($success, $lightness: -10%);
       border: 1px solid color.adjust($success, $lightness: 30%);
     }
 
@@ -688,57 +633,9 @@ $warning-border: #ffecb3;
   }
 }
 
-// Paginación
+// Selectores de filtro (paginación/badge-count/pagination-info son globales)
 .vista-grupos-container,
 .vista-profesores-container {
-  .pagination-controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    padding: 1.25rem;
-    background: $white;
-    border: 1px solid $border;
-    border-radius: 12px;
-    flex-wrap: wrap;
-
-    @media (max-width: 600px) {
-      gap: 0.75rem;
-      padding: 1rem;
-    }
-  }
-
-  .btn-nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border: 1px solid $border;
-    border-radius: 8px;
-    background: $white;
-    color: $primary;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover:not(:disabled) {
-      background: color.adjust($primary, $alpha: -0.95);
-      border-color: $primary;
-    }
-
-    &:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      color: color.adjust($text, $lightness: 40%);
-    }
-
-    svg {
-      width: 16px;
-      height: 16px;
-    }
-  }
-
   .selector-grupo,
   .selector-profesor {
     flex: 1;
@@ -774,19 +671,6 @@ $warning-border: #ffecb3;
 
     &:hover {
       border-color: $primary;
-    }
-  }
-
-  .pagination-info {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: $primary;
-    min-width: 60px;
-    text-align: center;
-
-    @media (max-width: 600px) {
-      width: 100%;
-      order: 5;
     }
   }
 }
@@ -848,75 +732,4 @@ $warning-border: #ffecb3;
   }
 }
 
-// Toast
-.toast {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  max-width: 400px;
-  padding: 1rem 1.25rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  z-index: 9999;
-  animation: slideInUp 0.3s ease-out;
-
-  @media (max-width: 600px) {
-    left: 1rem;
-    right: 1rem;
-    max-width: none;
-  }
-
-  &.success {
-    background: color.adjust($success, $lightness: 40%);
-    border: 1px solid color.adjust($success, $lightness: 20%);
-    color: color.adjust($success, $lightness: -30%);
-  }
-
-  &.error {
-    background: color.adjust($danger, $lightness: 40%);
-    border: 1px solid color.adjust($danger, $lightness: 20%);
-    color: color.adjust($danger, $lightness: -30%);
-  }
-
-  .toast-content {
-    flex: 1;
-    font-weight: 500;
-    font-size: 0.95rem;
-  }
-
-  .toast-close {
-    background: transparent;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: inherit;
-    transition: transform 0.2s ease;
-
-    &:hover {
-      transform: scale(1.1);
-    }
-
-    svg {
-      width: 16px;
-      height: 16px;
-    }
-  }
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+// .toast movido a src/styles/_notifications.scss

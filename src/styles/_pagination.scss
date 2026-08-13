@@ -1,0 +1,107 @@
+@use 'sass:color';
+@use 'variables' as *;
+
+// Paginación "institucional" usada hoy solo en scheduler (vista de grupos/profesores).
+// Se deja aquí como pieza reutilizable de design-system, no por duplicación 3+.
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  background: $white;
+  border: 1px solid $border;
+  border-radius: 12px;
+  flex-wrap: wrap;
+
+  @media (max-width: 600px) {
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+}
+
+.btn-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid $border;
+  border-radius: 8px;
+  background: $white;
+  color: $primary;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: color.adjust($primary, $alpha: -0.95);
+    border-color: $primary;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    color: color.adjust($text, $lightness: 40%);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.pagination-info {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $primary;
+  min-width: 60px;
+  text-align: center;
+
+  @media (max-width: 600px) {
+    width: 100%;
+    order: 5;
+  }
+}
+
+// Variante indigo usada hoy solo en salones. Nombres de clase distintos
+// (.pagination/.btn-pag) así que no colisiona con la variante de arriba.
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-pag {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #374151;
+  transition: background 0.2s, color 0.2s;
+
+  &:hover:not(:disabled) {
+    background: #e0e7ff;
+    border-color: #6366f1;
+    color: #6366f1;
+  }
+
+  &.active {
+    background: #6366f1;
+    color: #fff;
+    border-color: #6366f1;
+    font-weight: 600;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}

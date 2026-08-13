@@ -1,7 +1,4 @@
 
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -524,7 +521,9 @@ async generateSchedule() {
 
 
 
-  exportarPDF(group: { nombregrupo: string; data: any[] }) {
+  async exportarPDF(group: { nombregrupo: string; data: any[] }) {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const doc = new jsPDF();
 
     // Colores institucionales
@@ -607,7 +606,9 @@ async generateSchedule() {
 
   // ...mantener el resto del código igual...
 
-  exportarPDFProfesor(prof: { nombre: string, clases: any[] }) {
+  async exportarPDFProfesor(prof: { nombre: string, clases: any[] }) {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const doc = new jsPDF();
 
     // Colores institucionales

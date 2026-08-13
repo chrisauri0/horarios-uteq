@@ -1,13 +1,5 @@
-// Paleta institucional
-$primary: #005baa;
-$secondary: #f5f7fa;
-$accent: #ffb300;
-$text: #222;
-$border: #e0e4ea;
-$white: #ffffff;
-$success-bg: #eaf3fb;
-
 @use "sass:color";
+@use 'styles/variables' as *;
 
 .dashboard-container {
 	max-width: 800px;

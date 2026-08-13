@@ -1,0 +1,10 @@
+@use 'sass:color';
+@use 'variables' as *;
+
+// Estado :focus repetido en inputs de búsqueda y de formularios en todo el CRUD.
+@mixin focus-ring($color: $primary) {
+  outline: none;
+  border-color: $color;
+  background: $white;
+  box-shadow: 0 0 0 3px rgba($color, 0.1);
+}

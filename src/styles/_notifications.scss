@@ -1,0 +1,76 @@
+@use 'sass:color';
+@use 'variables' as *;
+
+// Toast de notificación, usado hoy solo en scheduler. Se centraliza como pieza
+// de design-system reutilizable, no por duplicación 3+.
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  max-width: 400px;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  z-index: 9999;
+  animation: toast-slide-in-up 0.3s ease-out;
+
+  @media (max-width: 600px) {
+    left: 1rem;
+    right: 1rem;
+    max-width: none;
+  }
+
+  &.success {
+    background: color.adjust($success, $lightness: 40%);
+    border: 1px solid color.adjust($success, $lightness: 20%);
+    color: color.adjust($success, $lightness: -30%);
+  }
+
+  &.error {
+    background: color.adjust($danger, $lightness: 40%);
+    border: 1px solid color.adjust($danger, $lightness: 20%);
+    color: color.adjust($danger, $lightness: -30%);
+  }
+
+  .toast-content {
+    flex: 1;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  .toast-close {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+@keyframes toast-slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

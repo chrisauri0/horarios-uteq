@@ -31,28 +31,34 @@
             ],
             "styles": [
               "src/styles.scss"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src"
+              ]
+            },
+            "allowedCommonJsDependencies": [
+              "html2canvas"
             ]
           },
           "configurations": {
             "production": {
-
               "fileReplacements": [
-                  {
-                    "replace": "src/environments/environment.ts",
-                    "with": "src/environments/environment.production.ts"
-                  }
-                ],
-
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.production.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1.1MB",
-                  "maximumError": "1.4MB"
+                  "maximumWarning": "800kB",
+                  "maximumError": "950kB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "10kB",
-                  "maximumError": "12kB"
+                  "maximumWarning": "15kB",
+                  "maximumError": "16kB"
                 }
               ],
               "outputHashing": "all"

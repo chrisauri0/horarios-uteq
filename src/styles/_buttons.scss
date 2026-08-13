@@ -1,0 +1,31 @@
+@use 'sass:color';
+@use 'variables' as *;
+
+// Botón de icono (editar/eliminar) repetido en tdis, profesores, psicologos,
+// salones, materias, carreras y grupos.
+.btn-icon {
+  background: transparent;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: color.adjust($text, $lightness: 30%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: $secondary;
+  }
+
+  &.btn-editar:hover {
+    color: $primary;
+    background: color.adjust($primary, $alpha: -0.9);
+  }
+
+  &.btn-eliminar:hover {
+    color: $danger;
+    background: color.adjust($danger, $alpha: -0.9);
+  }
+}

@@ -1,14 +1,5 @@
-// Paleta institucional
-$primary: #005baa;
-$primary-dark: #004a8f;
-$secondary: #f5f7fa;
-$text: #222;
-$text-light: #666;
-$border: #e0e4ea;
-$white: #ffffff;
-$input-bg: #f8fafc;
-
 @use "sass:color";
+@use 'styles/variables' as *;
 
 .login-container {
 	min-height: 100vh;
