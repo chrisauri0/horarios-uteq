@@ -1,7 +1,4 @@
 import { Component, NgModule } from '@angular/core';
-import jsPDF from 'jspdf';
-
-import autoTable from 'jspdf-autotable';
 import { SchedulerService } from '../services/scheduler.service';
 import { FormsModule, NgModel } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -74,7 +71,9 @@ export class VerHorarios {
     return grid;
   }
 
-  exportarPDF() {
+  async exportarPDF() {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const doc = new jsPDF();
     // Encabezado: Hora, luego días
     const head = [['Hora', ...this.diasSemana]];

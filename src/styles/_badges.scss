@@ -1,0 +1,23 @@
+@use 'sass:color';
+@use 'variables' as *;
+
+// Badge compartido por profesores y psicologos (tutor / no-tutor). tdis,
+// justificantes y crear-horario tienen su propio "badge" con otra forma/paleta
+// y se quedan como estilos locales de esos componentes.
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+
+  &.badge-tutor {
+    background: color.adjust($success, $lightness: 40%);
+    color: color.adjust($success, $lightness: -10%);
+  }
+
+  &.badge-no-tutor {
+    background: $secondary;
+    color: color.adjust($text, $lightness: 20%);
+  }
+}

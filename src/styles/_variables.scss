@@ -1,0 +1,25 @@
+// Paleta institucional compartida por los componentes CRUD (profesores, psicologos,
+// salones, materias, carreras, grupos, tdis, scheduler, bienvenida, dashboard, navbar).
+$primary: #005baa;
+$primary-dark: #004a8f;
+$secondary: #f5f7fa;
+$accent: #ffb300;
+$text: #222;
+$text-light: #666;
+$border: #e0e4ea;
+$white: #ffffff;
+$input-bg: #f8fafc;
+
+$success: #27ae60;
+$success-bg: #eaf3fb;
+$danger: #e57373;
+$danger-hover: #c62828;
+$warning-bg: #fff8e1;
+$warning-text: #5d4037;
+$warning-border: #ffecb3;
+
+// Tokens del sidebar (navbar/app-root)
+$sidebar-bg: #005baa;
+$sidebar-text: #ffffff;
+$sidebar-hover: rgba(255, 255, 255, 0.1);
+$sidebar-active: rgba(255, 255, 255, 0.2);

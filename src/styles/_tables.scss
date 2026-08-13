@@ -1,0 +1,86 @@
+@use 'sass:color';
+@use 'variables' as *;
+
+// Contenedor + tabla genérica de las páginas CRUD (profesores, psicologos, salones,
+// materias, carreras, grupos). Cada componente usa su propia clase en <table>
+// (.tabla-profesores, .tabla-salones, ...) así que se estiliza por la estructura
+// ".card-table > table" en vez de repetir la regla por cada nombre de clase.
+.card-table {
+  background: $white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid $border;
+  overflow: hidden;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 1.2rem 1.5rem;
+      text-align: left;
+    }
+
+    th {
+      background: $secondary;
+      color: $primary;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid $border;
+    }
+
+    td {
+      border-bottom: 1px solid $border;
+      color: $text;
+      font-size: 0.95rem;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr {
+      transition: background 0.2s;
+
+      &:hover {
+        background: color.adjust($secondary, $lightness: 2%);
+      }
+    }
+
+    .th-id,
+    .td-id {
+      width: 60px;
+      text-align: center;
+      color: color.adjust($text, $lightness: 40%);
+    }
+
+    .td-nombre {
+      font-weight: 500;
+      color: $primary;
+    }
+
+    .th-actions,
+    .td-actions {
+      text-align: right;
+      width: 120px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: color.adjust($text, $lightness: 30%);
+      font-style: italic;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .card-table table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

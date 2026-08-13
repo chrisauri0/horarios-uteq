@@ -1,0 +1,51 @@
+@use 'sass:color';
+@use 'variables' as *;
+
+// Encabezado con botón "volver" + título + subtítulo, repetido en 8 páginas CRUD
+// (tdis, scheduler, profesores, psicologos, salones, materias, carreras, grupos).
+// Cada componente mantiene localmente solo su clase .titulo-X (texto/color propios
+// ya cubiertos aquí vía la regla genérica de tamaño/peso si aplica).
+.header-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 2.5rem;
+
+  .btn-back {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: $white;
+    border: 1px solid $border;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $primary;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+    cursor: pointer;
+
+    &:hover {
+      background: $primary;
+      color: $white;
+      transform: translateY(-50%) scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 91, 170, 0.2);
+    }
+  }
+
+  .header-text {
+    text-align: center;
+  }
+
+  .subtitle {
+    color: color.adjust($text, $lightness: 20%);
+    font-size: 1.1rem;
+    margin: 0;
+  }
+}

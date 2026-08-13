@@ -1,4 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+@use 'styles/layout';
+@use 'styles/page-header';
+@use 'styles/modals';
+@use 'styles/forms';
+@use 'styles/tables';
+@use 'styles/badges';
+@use 'styles/buttons';
+@use 'styles/pagination';
+@use 'styles/notifications';
+
 @font-face {
  font-family: 'IosevkaNerd';
   src: url('/assets/fonts/IosevkaNerdFontPropo-Regular.ttf') format('truetype');
