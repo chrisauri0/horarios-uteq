@@ -1,0 +1,105 @@
+<section class="hero">
+  <div class="grid-bg"></div>
+  <nav class="nav">
+    <span class="brand">Horari<span class="brand-accent">·Uteq</span></span>
+    <ul class="nav-links">
+      <li><a href="#features">Funciones</a></li>
+      <li><a href="#how">¿Cómo funciona?</a></li>
+      <li><a href="#cta" class="nav-cta">Comenzar</a></li>
+    </ul>
+  </nav>
+ 
+  <div class="hero-content">
+    <div class="pill">Sistema de Gestión Académica · UTEQ</div>
+    <h1 class="hero-title">
+      Horarios <br />
+      <span class="title-outline">sin caos.</span>
+    </h1>
+    <p class="hero-sub">
+      Genera, organiza y distribuye los horarios académicos de tu institución
+      en minutos. Sin conflictos, sin errores.
+    </p>
+    <div class="hero-actions">
+      <a href="#cta" class="btn-primary">Solicitar acceso</a>
+      <a href="#how" class="btn-ghost">Ver demo →</a>
+    </div>
+  </div>
+ 
+  <!-- decorative timetable mockup -->
+  <div class="hero-visual" aria-hidden="true">
+    <div class="mock-table">
+      <div class="mock-header">
+        <span>LUN</span><span>MAR</span><span>MIÉ</span><span>JUE</span><span>VIE</span>
+      </div>
+      <div class="mock-rows">
+        <div class="mock-row">
+          <div class="mock-cell filled c1">Cálculo I<br/><small>Aula 101</small></div>
+          <div class="mock-cell"></div>
+          <div class="mock-cell filled c2">Álgebra<br/><small>Lab A</small></div>
+          <div class="mock-cell"></div>
+          <div class="mock-cell filled c3">Física<br/><small>Aula 203</small></div>
+        </div>
+        <div class="mock-row">
+          <div class="mock-cell"></div>
+          <div class="mock-cell filled c2">Programación<br/><small>Lab B</small></div>
+          <div class="mock-cell"></div>
+          <div class="mock-cell filled c1">Cálculo I<br/><small>Aula 101</small></div>
+          <div class="mock-cell"></div>
+        </div>
+        <div class="mock-row">
+          <div class="mock-cell filled c3">Física<br/><small>Aula 203</small></div>
+          <div class="mock-cell"></div>
+          <div class="mock-cell filled c4">Base de Datos<br/><small>Lab C</small></div>
+          <div class="mock-cell"></div>
+          <div class="mock-cell filled c2">Álgebra<br/><small>Lab A</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-label">// Capacidades del sistema</div>
+  <h2 class="section-title">Todo lo que necesita tu institución</h2>
+  <div class="features-grid">
+    @for (f of features; track f.title) {
+      <div class="feature-card">
+        <span class="feature-icon">{{ f.icon }}</span>
+        <h3>{{ f.title }}</h3>
+        <p>{{ f.desc }}</p>
+      </div>
+    }
+  </div>
+</section>
+ 
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="section-label">// Proceso</div>
+  <h2 class="section-title">¿Cómo funciona?</h2>
+  <div class="steps">
+    @for (s of steps; track s.num) {
+      <div class="step">
+        <div class="step-num">{{ s.num }}</div>
+        <div class="step-line"></div>
+        <h3 class="step-label">{{ s.label }}</h3>
+        <p class="step-detail">{{ s.detail }}</p>
+      </div>
+    }
+  </div>
+</section>
+ 
+<!-- CTA -->
+<section class="cta-section" id="cta">
+  <div class="cta-inner">
+    <h2>¿Listo para optimizar tus horarios?</h2>
+    <p>Únete a la nueva forma de gestionar la planificación académica en la UTEQ.</p>
+    <a href="#" class="btn-primary large">Solicitar acceso gratuito</a>
+  </div>
+</section>
+ 
+<!-- FOOTER -->
+<footer class="footer">
+  <span class="brand">Horari<span class="brand-accent">·Uteq</span></span>
+  <span class="footer-copy">© {{ currentYear }} · Proyecto académico UTEQ</span>
+</footer>

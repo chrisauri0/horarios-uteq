@@ -93,7 +93,7 @@
 
 
 
-                <div class="form-actions">
+               <div class="form-actions">
                     <button type="submit" class="btn-guardar">
                         {{ editandoId ? 'Guardar Cambios' : 'Agregar Psicólogo' }}
                     </button>
@@ -101,7 +101,7 @@
                         Cancelar
                     </button>
                 </div>
-
+ 
 
             </div>
 
@@ -177,5 +177,21 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+    <div class="modal-overlay" *ngIf="notificacion.visible" (click)="cerrarNotificacion()">
+        <div class="notificacion-modal" [ngClass]="notificacion.tipo" (click)="$event.stopPropagation()">
+            <p>{{ notificacion.mensaje }}</p>
+            <button type="button" class="btn-guardar" (click)="cerrarNotificacion()">Entendido</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" *ngIf="confirmacion.visible" (click)="cancelarEliminacion()">
+        <div class="notificacion-modal" (click)="$event.stopPropagation()">
+            <p>{{ confirmacion.mensaje }}</p>
+            <div class="form-actions">
+                <button type="button" class="btn-guardar" (click)="confirmarEliminacion()">Eliminar</button>
+                <button type="button" class="btn-cancelar" (click)="cancelarEliminacion()">Cancelar</button>
+            </div>
+        </div>
     </div>
 </div>

@@ -12,11 +12,15 @@ import { SchedulerComponent } from './componentes/scheduler/scheduler';
 import { VerHorarios } from './componentes/scheduler/ver-horarios/ver-horarios';
 import { Carreras } from './componentes/carreras/carreras';
 import { Psicologos } from './componentes/psicologos/psicologos';
+import { LandingPage } from './pages/landing-page/landing-page';
+import { Tdis } from './componentes/tdis/tdis';
+import { Justificantes } from './componentes/justificantes/justificantes';
+import {TdisAprobarEvidencia} from './componentes/tdis-aprobar-evidencia/tdis-aprobar-evidencia';
 
 
 export const routes: Routes = [
-  {  path: '', component: BienvenidaComponent, title: 'Iniciar Sesión' },
-  {  path: 'login', component: BienvenidaComponent, title: 'Iniciar Sesión' },
+  {  path: '', component: BienvenidaComponent, title: 'Inicio de Sesión' },
+  {  path: 'login', component: BienvenidaComponent, title: 'Inicio de Sesión' },
   { path: 'dashboard', component: DashboardComponent , title: 'Dashboard'},
   { path: 'salones', component: SalonesComponent , title: 'Salones'},
   { path: 'profesores', component: ProfesoresComponent , title: 'Profesores'},
@@ -24,6 +28,9 @@ export const routes: Routes = [
   { path: 'grupos', component: GruposComponent , title: 'Grupos'},
   { path: 'carreras', component: Carreras , title: 'Carreras'},
   {path: 'psicologos', component: Psicologos , title: 'Psicólogos'},
+  {path: 'justificantes', component: Justificantes , title: 'Justificantes'},
+  {path: 'tdis', component: Tdis , title: 'TDIS'},
+  {path: 'tdis/aprobar-evidencia', component: TdisAprobarEvidencia , title: 'Aprobar Evidencia TDIS'},
   {
     path: 'horarios',
     children: [

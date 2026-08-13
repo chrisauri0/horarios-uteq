@@ -1,0 +1,520 @@
+<div class="tdi-container">
+	<div class="header-section">
+		<a routerLink="/dashboard" class="btn-back" title="Volver al Dashboard">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+				stroke-linecap="round" stroke-linejoin="round">
+				<path d="M19 12H5M12 19l-7-7 7-7" />
+			</svg>
+		</a>
+		<div class="header-text">
+			<h2 class="titulo-tdi">Gestión de Tokens del Desarrollo Integral</h2>
+			<p class="subtitle">Administra actividades TDI trazables, medibles e institucionales.</p>
+		</div>
+	</div>
+
+	<div class="stats-grid">
+		<article class="stat-card">
+			<span class="stat-label">Total de actividades TDI activas</span>
+			<strong>{{ totalTdi }}</strong>
+		</article>
+		<article class="stat-card" (click)="verAlumnosRegistrados()">
+			<span class="stat-label">Total de alumnos registrados</span>
+			<strong>{{ totalAlumnos }}</strong>
+		</article>
+		<article class="stat-card">
+			<span class="stat-label">Total de TDI's por ganar</span>
+			<strong>{{ totalTdisPorGanar }}</strong>
+		</article>
+	</div>
+
+	<div class="toolbar-actions">
+		
+
+		<div class="search-box">
+			<input type="text" [(ngModel)]="busqueda" name="busqueda"
+				placeholder="Buscar por eje, nombre, encargado, correo o tipo" class="input-busqueda" />
+		</div>
+		<button type="button" class="btn-guardar" (click)="abrirModalNuevoTdi()">
+			Agregar TDI
+		</button>
+		<button type="button" (click)="abrirModalSolicitudesValidacion()"
+				[ngClass]="{
+					'btn-verde': solicitudesValidacion.length > 0,
+					'btn-rojo': solicitudesValidacion.length === 0 }" >
+				Solicitudes de validación
+
+				<span
+					*ngIf="solicitudesValidacion.length > 0"
+					class="badge-solicitudes"
+				>
+					{{ solicitudesValidacion.length }}
+				</span>
+				</button>
+	</div>
+
+	<div class="card-table">
+		<table class="tabla-tdi">
+			<thead>
+				<tr>
+					<th>Eje</th>
+					<th>Nombre</th>
+					<th>Encargado</th>
+					<th>Contacto</th>
+					<th>Tipo</th>
+					<th>Impacto</th>
+					<th>Horas</th>
+					<th>TDI's</th>
+					<th class="th-actions">Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let tdi of tdisFiltrados">
+					<td class="td-eje">{{ tdi.eje }}</td>
+					<td>
+						<div class="cell-title">{{ tdi.nombre }}</div>
+						<div class="cell-subtitle">{{ tdi.competencias || 'Sin competencias registradas' }}</div>
+					</td>
+					<td>
+						<div class="cell-title">{{ tdi.personaEncargada }}</div>
+						<div class="cell-subtitle">{{ tdi.puesto }}</div>
+					</td>
+					<td>
+						<div class="cell-title">{{ tdi.correo }}</div>
+						<div class="cell-subtitle">{{ tdi.telefono }}<span *ngIf="tdi.extension"> · Ext. {{ tdi.extension }}</span></div>
+					</td>
+					<td>
+						<span class="badge" [class.badge-interna]="tdi.tipo === 'interna'"
+							[class.badge-externa]="tdi.tipo === 'externa'">
+							{{ tdi.tipo | titlecase }}
+						</span>
+					</td>
+					<td>
+						<span class="impacto-pill">{{ etiquetaNivelImpacto[tdi.nivelDeImpacto] || tdi.nivelDeImpacto }}</span>
+					</td>
+					<td>{{ tdi.horasRequeridas }}</td>
+					<td>{{ tdi.tdisporGanar }}</td>
+					<td class="td-actions">
+						<button class="btn-icon btn-editar" (click)="editarTdi(tdi)" title="Editar">
+							<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+									d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+							</svg>
+						</button>
+						<!-- <button class="btn-icon btn-eliminar" (click)="eliminarTdi(tdi.eje)" title="Eliminar">
+							<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+									d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+							</svg>
+						</button> -->
+						<!-- boton para abrir estadisticas de la actividad -->
+						<button class="btn-icon btn-estadisticas" (click)="verEstadisticas(tdi)" title="Ver estadísticas">
+							<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+									d="M9 19v-6a2 2 0 012-2h6M9 10V5a2 2 0 012-2h6m-3 16h3m-3-4h3m-3-4h3M3 19h1m-1-4h1m-1-4h1m16 8h1m-1-4h1m-1-4h1" />
+							</svg>
+
+
+						</button>
+					</td>
+				</tr>
+
+				<tr *ngIf="tdis.length === 0">
+					<td colspan="9" class="empty-state">
+						No hay TDI's registrados. Agrega el primero para comenzar.
+					</td>
+				</tr>
+
+				<tr *ngIf="tdis.length > 0 && tdisFiltrados.length === 0">
+					<td colspan="9" class="empty-state">
+						No se encontraron TDI's con ese filtro.
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+
+	<div class="modal-overlay" *ngIf="modalSolicitudesAbierto" (click)="cerrarModalSolicitudes()">
+		<div class="card-form" (click)="$event.stopPropagation()">
+			<div class="modal-header">
+				<h3>Solicitudes de validación</h3>
+				<button type="button" class="btn-icon btn-cerrar" (click)="cerrarModalSolicitudes()" title="Cerrar">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+						stroke-linecap="round" stroke-linejoin="round" color="red">
+						<path d="M18 6 6 18M6 6l12 12" />
+					</svg>
+				</button>
+			</div>
+
+			<div class="solicitudes-content">
+				<p>Aquí se mostrarán las solicitudes de validación pendientes.</p>
+				<!-- Aquí puedes agregar la lógica para mostrar las solicitudes -->
+
+				<table class="tabla-alumnos">
+					<thead>
+						<tr>
+							<th>Matrícula</th>
+							<th>Nombre</th>
+							<th>Correo</th>
+							<th>Acciones</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- Aquí puedes agregar la lógica para mostrar las solicitudes -->
+						<tr *ngFor="let solicitud of solicitudesValidacion">
+							<td class="cell-alumnos">{{ solicitud.matricula }}</td>
+							<td class="cell-alumnos">{{ solicitud.nombreSolicitud }}</td>
+							<td class="cell-alumnos">{{ solicitud.correoAlumno		 }}</td>
+							<td class="cell-alumnos">
+
+								<!-- ver solicitud -->
+								<button class="btn-icon btn-ver" (click)="verSolicitud(solicitud.id)" title="Ver solicitud">
+									<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+									</svg>
+
+								</button>
+								<button class="btn-icon btn-editar" (click)="aprobarSolicitud(solicitud)" title="Aprobar">
+									<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M5 13l4 4L19 7" />
+									</svg>
+								</button>
+								<button class="btn-icon btn-eliminar" (click)="rechazarSolicitud(solicitud)" title="Rechazar">
+									<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12" />
+									</svg>
+								</button>
+							</td>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+	</div>
+
+
+	<div class="modal-overlay" *ngIf="modalSolicitudIndividualAbierto" (click)="cerrarModalSolicitud()">
+		<div class="card-form" (click)="$event.stopPropagation()">
+			<div class="modal-header">
+				<h3>Estadísticas de {{ solicitudActual?.nombreSolicitud }}</h3>
+				<button type="button" class="btn-icon btn-cerrar" (click)="cerrarModalSolicitud()" title="Cerrar">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+						stroke-linecap="round" stroke-linejoin="round" color="red">
+						<path d="M18 6 6 18M6 6l12 12" />
+					</svg>
+				</button>
+			</div>
+
+			<div class="estadisticas-content">
+				<p>Aquí se mostrarán las estadísticas detalladas de la solicitud.</p>
+				<!-- Aquí puedes agregar la lógica para mostrar las estadísticas de la solicitud -->
+<!-- 
+				matricula:'2023002', nombreSolicitud: 'Voluntariado en refugio de animales', correoAlumno: 'maria.lopez@correo.com',
+       eje:'Identidad Personal',
+  personaEncargada: 'José Martínez',
+  puesto: 'Encargado de Voluntariado',
+  telefono: '412345678',
+  extension: '',
+  correo: 'jose.martinez@correo.com',
+  tipo: 'externa',
+  horasRequeridas: 20,
+  nivelDeImpacto: 'sensibilizador',
+  tdisporGanar: 0,
+  competencias: 'Apoyo en cuidado de animales, limpieza',
+  evidencias: ' Fotos del voluntariado, carta de recomendación',
+  obeservaciones: ' Actividad realizada durante vacaciones de verano',
+   estado: 'Pendiente'  -->
+
+				<form action="">
+					<div class="input-group full-width">
+						<label for="matricula">Matrícula</label>
+						<input id="matricula" type="text" [value]="solicitudActual?.matricula" disabled class="input-tdi" />
+					</div>
+
+					<div class="input-group full-width">
+						<label for="nombreSolicitud">Nombre de la solicitud</label>
+						<input id="nombreSolicitud" type="text" [value]="solicitudActual?.nombreSolicitud" disabled class="input-tdi" />
+					</div>
+
+					<div class="input-group full-width">
+						<label for="correoAlumno">Correo del alumno</label>
+						<input id="correoAlumno" type="email" [value]="solicitudActual?.correoAlumno" disabled class="input-tdi" />
+					</div>
+
+					<div>
+					
+
+						<label for="estado" class="checkbox-label">
+							<input id="estado" type="text" [value]="solicitudActual?.estado" disabled class="checkbox-tdi" />
+							Estado de la solicitud
+						</label>
+					</div>
+					<div>
+					
+
+						<label for="tipo" class="checkbox-label">
+							<input id="tipo" type="text" [value]="solicitudActual?.tipo" disabled class="checkbox-tdi" />
+							Tipo de actividad
+						</label>
+					</div>
+					<div>
+					
+
+						<label for="nivelImpacto" class="checkbox-label">
+							<input id="nivelImpacto" type="text" [value]="solicitudActual ? (etiquetaNivelImpacto[solicitudActual.nivelDeImpacto] || solicitudActual.nivelDeImpacto) : ''" disabled class="checkbox-tdi" />
+							Nivel de impacto
+						</label>
+					</div>
+					<div>
+						<label for="horas" class="checkbox-label">
+							<input id="horas" type="text" [value]="solicitudActual?.horasRequeridas" disabled class="checkbox-tdi" />
+							Horas requeridas
+						</label>
+					</div>
+					<div>
+						<label for="tdis" class="checkbox-label">
+							<input id="tdis" type="text" [value]="solicitudActual?.tdisporGanar" disabled class="checkbox-tdi" />
+							TDI's por ganar
+						</label>
+					</div>
+					<div>
+						<label for="competencias" class="checkbox-label">
+							<textarea id="competencias" rows="3" [value]="solicitudActual?.competencias" disabled class="input-tdi"></textarea>
+							Competencias desarrolladas
+						</label>
+					</div>
+					<div>
+						<label for="evidencias" class="checkbox-label">
+							<textarea id="evidencias" rows="3" [value]="solicitudActual?.evidencias" disabled class="input-tdi"></textarea>
+							Evidencias proporcionadas
+						</label>
+					</div>
+					<div>
+						<label for="observaciones" class="checkbox-label">
+							<textarea id="observaciones" rows="3" [value]="solicitudActual?.obeservaciones" disabled class="input-tdi"></textarea>
+							Observaciones del alumno
+						</label>
+					</div>
+					<div>
+						<label for="observacionesAdmin" class="checkbox-label">
+							<textarea id="observacionesAdmin" rows="3" placeholder="Observaciones del administrador" [(ngModel)]="solicitudActual.observacionesAdmin" name="observacionesAdmin" class="input-tdi"></textarea>
+							Observaciones del administrador (solo para uso interno)
+						</label>
+					</div>
+					<div>
+						<button type="button" class="btn-guardar" (click)="aprobarSolicitud(solicitudActual)" [disabled]="solicitudActual?.estado !== 'Pendiente'">
+							Aprobar solicitud
+						</button>
+						<button type="button" class="btn-eliminar" (click)="rechazarSolicitud(solicitudActual)" [disabled]="solicitudActual?.estado !== 'Pendiente'">
+							Rechazar solicitud
+						</button>
+					</div>
+				</form>
+
+
+					
+			</div>
+		</div>
+
+	</div>
+
+	<!-- Modal de alumnos registrados -->
+	<div class="modal-overlay" *ngIf="modalAlumnosAbierto" (click)="cerrarModalAlumnos()">
+		<div class="card-form" (click)="$event.stopPropagation()">
+			<div class="modal-header">
+				<h3>Alumnos registrados</h3>
+				<button type="button" class="btn-icon btn-cerrar" (click)="cerrarModalAlumnos()" title="Cerrar">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+						stroke-linecap="round" stroke-linejoin="round" color="red">
+						<path d="M18 6 6 18M6 6l12 12" />
+					</svg>
+				</button>
+			</div>
+
+			<div class="alumnos-content">
+				<p>Aquí se mostrarán los alumnos registrados.</p>
+				<table class="tabla-alumnos">
+					<thead>
+						<tr>
+							<th>Matrícula</th>
+							<th>Total de puntos TDI</th>
+							<th>Idenitad Personal</th>
+							<th>Entorno Social</th>
+							<th>Entorno Físico</th>
+							<th>Trascendencia</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- Aquí puedes agregar la lógica para mostrar los alumnos registrados -->
+						<tr *ngFor="let alumno of alumnosRegistrados">
+							<td class="cell-alumnos">{{ alumno.matricula }}</td>
+							<td class="cell-alumnos">{{ alumno.totalPuntosTdi }}</td>
+							<td class="cell-alumnos">{{ alumno.identidadPersonal }}</td>
+							<td class="cell-alumnos">{{ alumno.entornoSocial }}</td>
+							<td class="cell-alumnos">{{ alumno.entornoFisico }}</td>
+							<td class="cell-alumnos">{{ alumno.trascendencia }}</td>
+						</tr>
+
+						<tr *ngIf="alumnosRegistrados.length === 0">
+							<td colspan="5" class="empty-state">
+								No hay alumnos registrados.
+							</td>
+						</tr>
+					</tbody>
+
+
+
+				</table>
+
+				
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal de formulario -->
+	<div class="modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+		<div class="card-form" (click)="$event.stopPropagation()">
+			<div class="modal-header">
+				<h3>{{ editandoEje ? 'Editar TDI' : 'Nuevo TDI' }}</h3>
+				<button type="button" class="btn-icon btn-cerrar" (click)="cerrarModal()" title="Cerrar">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+						stroke-linecap="round" stroke-linejoin="round" color="red">
+						<path d="M18 6 6 18M6 6l12 12" />
+					</svg>
+				</button>
+			</div>
+
+			<form (ngSubmit)="editandoEje ? guardarEdicion() : agregarTdi()" class="tdi-form">
+				<div class="inputs-grid">
+					<div class="input-group">
+						<label for="eje">Eje</label>
+						<input id="eje" type="text" placeholder="Ej. IE-001" [(ngModel)]="nuevoTdi.eje" name="eje" required class="input-tdi" />
+					</div>
+
+					<div class="input-group">
+						<label for="nombre">Nombre</label>
+						<input id="nombre" type="text" placeholder="Nombre de la actividad" [(ngModel)]="nuevoTdi.nombre" name="nombre" required class="input-tdi" />
+					</div>
+
+					<div class="input-group">
+						<label for="personaEncargada">Persona encargada</label>
+						<input id="personaEncargada" type="text" placeholder="Nombre completo" [(ngModel)]="nuevoTdi.personaEncargada" name="personaEncargada" required class="input-tdi" />
+					</div>
+
+					<div class="input-group">
+						<label for="puesto">Puesto</label>
+						<input id="puesto" type="text" placeholder="Cargo o puesto" [(ngModel)]="nuevoTdi.puesto" name="puesto" required class="input-tdi" />
+					</div>
+
+					<div class="input-group">
+						<label for="telefono">Teléfono</label>
+						<input id="telefono" type="tel" placeholder="000 000 0000" [(ngModel)]="nuevoTdi.telefono" name="telefono" class="input-tdi" />
+					</div>
+
+					<div class="input-group">
+						<label for="extension">Extensión</label>
+						<input id="extension" type="text" placeholder="Ext. 123" [(ngModel)]="nuevoTdi.extension" name="extension" class="input-tdi" />
+					</div>
+
+					<div class="input-group">
+						<label for="correo">Correo</label>
+						<input id="correo" type="email" placeholder="correo@uteq.edu.mx" [(ngModel)]="nuevoTdi.correo" name="correo" required class="input-tdi" />
+					</div>
+
+					<div class="input-group">
+						<label for="tipo">Tipo</label>
+						<select id="tipo" [(ngModel)]="nuevoTdi.tipo" name="tipo" class="input-tdi">
+							<option value="interna">Interna</option>
+							<option value="externa">Externa</option>
+						</select>
+					</div>
+
+					<div class="input-group">
+						<label for="horasRequeridas">Horas requeridas</label>
+						<input id="horasRequeridas" type="number" min="0" step="1" [(ngModel)]="nuevoTdi.horasRequeridas" name="horasRequeridas" class="input-tdi" />
+					</div>
+
+					<div class="input-group">
+						<label for="nivelDeImpacto">Nivel de impacto</label>
+						<select id="nivelDeImpacto" [(ngModel)]="nuevoTdi.nivelDeImpacto" name="nivelDeImpacto" class="input-tdi">
+							<option value="1">1 - Sensibilizador Conoce</option>
+							<option value="2">2 - Formador Participa</option>
+							<option value="3">3 - Aplicador Hace</option>
+							<option value="4">4 - Implementador Lidera</option>
+						</select>
+					</div>
+
+					<div class="input-group">
+						<label for="tdisporGanar">TDI's por ganar</label>
+						<input id="tdisporGanar" type="number" min="0" step="1" [(ngModel)]="nuevoTdi.tdisporGanar" name="tdisporGanar" class="input-tdi" />
+					</div>
+					<div>
+						<!-- checkbox para marcar si esta activo o no, para que no se borre el registro pero no aparezca en la tabla ni cuente para las estadisticas -->
+
+						<label for="activo" class="checkbox-label">
+							<input id="activo" type="checkbox" [(ngModel)]="nuevoTdi.activo" name="activo" class="checkbox-tdi" />
+							Activo
+						</label>
+					</div>
+
+					<div class="input-group full-width">
+						<label for="competencias">Competencias</label>
+						<textarea id="competencias" rows="3" placeholder="Competencias que desarrolla la actividad" [(ngModel)]="nuevoTdi.competencias" name="competencias" class="input-tdi"></textarea>
+					</div>
+
+					<div class="input-group full-width">
+						<label for="evidencias">Evidencias</label>
+						<textarea id="evidencias" rows="3" placeholder="Evidencias requeridas" [(ngModel)]="nuevoTdi.evidencias" name="evidencias" class="input-tdi"></textarea>
+					</div>
+
+					<div class="input-group full-width">
+						<label for="obeservaciones">Observaciones</label>
+						<textarea id="obeservaciones" rows="3" placeholder="Observaciones generales" [(ngModel)]="nuevoTdi.obeservaciones" name="obeservaciones" class="input-tdi"></textarea>
+					</div>
+
+					<div class="form-actions">
+						<button type="submit" class="btn-guardar">
+							{{ editandoEje ? 'Guardar Cambios' : 'Agregar TDI' }}
+						</button>
+						<button type="button" (click)="cerrarModal()" class="btn-cancelar">
+							Cancelar
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+
+
+	<!-- MODAL DE NOTIFICACIÓN -->
+	<div class="modal-overlay" *ngIf="notificacion.visible" (click)="cerrarNotificacion()">
+		<div class="notificacion-modal" [ngClass]="notificacion.tipo" (click)="$event.stopPropagation()">
+			<p>{{ notificacion.mensaje }}</p>
+			<button type="button" class="btn-guardar" (click)="cerrarNotificacion()">Entendido</button>
+		</div>
+	</div>
+
+	<!-- MODAL DE CONFIRMACIÓN -->
+	<div class="modal-overlay" *ngIf="confirmacion.visible" (click)="cancelarEliminacion()">
+		<div class="notificacion-modal" (click)="$event.stopPropagation()">
+			<p>{{ confirmacion.mensaje }}</p>
+			<div class="form-actions">
+				<button type="button" class="btn-guardar" (click)="confirmarEliminacion()">Eliminar</button>
+				<button type="button" class="btn-cancelar" (click)="cancelarEliminacion()">Cancelar</button>
+			</div>
+		</div>
+	</div>
+
+
+
+
+</div>
+
+
+

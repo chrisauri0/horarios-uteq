@@ -1,0 +1,179 @@
+<div class="contenedor">
+
+  <header class="encabezado">
+    <div>
+      <h1>Justificantes de faltas</h1>
+      <p class="subtitulo">Revisa y gestiona los justificantes enviados por los alumnos</p>
+    </div>
+  </header>
+
+  <section class="resumen">
+    <div class="tarjeta-resumen tarjeta-resumen--pendiente">
+      <span class="resumen-numero">{{ totalPendientes() }}</span>
+      <span class="resumen-label">Pendientes</span>
+    </div>
+    <div class="tarjeta-resumen tarjeta-resumen--aprobado">
+      <span class="resumen-numero">{{ totalAprobados() }}</span>
+      <span class="resumen-label">Aprobados</span>
+    </div>
+    <div class="tarjeta-resumen tarjeta-resumen--rechazado">
+      <span class="resumen-numero">{{ totalRechazados() }}</span>
+      <span class="resumen-label">Rechazados</span>
+    </div>
+  </section>
+
+  <section class="filtros">
+    <div class="filtro-grupo">
+      <label for="buscarAlumno">Buscar alumno</label>
+      <input
+        id="buscarAlumno"
+        type="text"
+        placeholder="Nombre o correo..."
+        [ngModel]="filtroAlumno()"
+        (ngModelChange)="filtroAlumno.set($event)"
+      />
+    </div>
+
+    <div class="filtro-grupo">
+      <label for="filtroEstado">Estado</label>
+      <select
+        id="filtroEstado"
+        [ngModel]="filtroEstado()"
+        (ngModelChange)="filtroEstado.set($event)"
+      >
+        <option value="todos">Todos</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="aceptado">Aprobado</option>
+        <option value="rechazado">Rechazado</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="tabla-wrapper">
+    <table class="tabla" *ngIf="justificantesFiltrados().length > 0">
+      <thead>
+        <tr>
+          <th>Alumno</th>
+          <th>Fecha de falta</th>
+          <th>Motivo</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let j of justificantesFiltrados()">
+          <td>
+            <div class="celda-alumno">
+              <div>
+                <p class="alumno-nombre">{{ j.usuario?.full_name || 'Sin nombre' }}</p>
+                <p class="alumno-matricula">{{ j.usuario?.email }}</p>
+              </div>
+            </div>
+          </td>
+          <td>{{ j.fecha | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ j.motivo }}</td>
+          <td>
+            <span [class]="claseEstado(j.estado)">{{ textoEstado(j.estado) }}</span>
+          </td>
+          <td>
+            <div class="acciones">
+              <button class="btn btn--ver" (click)="abrirDetalle(j)">Ver</button>
+              <button
+                class="btn btn--aprobar"
+                *ngIf="j.estado === 'pendiente'"
+                (click)="aprobar(j)"
+              >
+                Aprobar
+              </button>
+              <button
+                class="btn btn--rechazar"
+                *ngIf="j.estado === 'pendiente'"
+                (click)="rechazar(j)"
+              >
+                Rechazar
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="sin-resultados" *ngIf="justificantesFiltrados().length === 0">
+      <p>No se encontraron justificantes con esos filtros.</p>
+    </div>
+  </section>
+
+  <!-- MODAL DE DETALLE -->
+  <div class="modal-overlay" *ngIf="justificanteSeleccionado()" (click)="cerrarDetalle()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <ng-container *ngIf="justificanteSeleccionado() as j">
+
+        <header class="modal-header">
+          <div class="celda-alumno">
+            <div>
+              <p class="alumno-nombre">{{ j.usuario?.full_name || 'Sin nombre' }}</p>
+              <p class="alumno-matricula">{{ j.usuario?.email }}</p>
+            </div>
+          </div>
+          <button class="btn-cerrar" (click)="cerrarDetalle()">✕</button>
+        </header>
+
+        <div class="modal-body">
+          <div class="fila-detalle">
+            <span class="detalle-label">Estado actual</span>
+            <span [class]="claseEstado(j.estado)">{{ textoEstado(j.estado) }}</span>
+          </div>
+
+          <div class="fila-detalle">
+            <span class="detalle-label">Fecha de la falta</span>
+            <span>{{ j.fecha | date: 'dd/MM/yyyy' }}</span>
+          </div>
+
+          <div class="fila-detalle">
+            <span class="detalle-label">Fecha de envío</span>
+            <span>{{ j.createdAt | date: 'dd/MM/yyyy' }}</span>
+          </div>
+
+          <div class="fila-detalle fila-detalle--columna">
+            <span class="detalle-label">Motivo</span>
+            <p class="descripcion-texto">{{ j.motivo }}</p>
+          </div>
+
+          <div class="fila-detalle fila-detalle--columna">
+            <span class="detalle-label">Archivo adjunto</span>
+            <a class="adjunto" [href]="j.driveUrl" target="_blank">
+              📎 Ver archivo en Drive
+            </a>
+          </div>
+
+          <div class="fila-detalle fila-detalle--columna">
+            <span class="detalle-label">Comentario del administrador</span>
+            <textarea
+              rows="3"
+              placeholder="Agrega un comentario (opcional)..."
+              [(ngModel)]="comentarioTemp"
+            ></textarea>
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <button class="btn btn--cerrar-secundario" (click)="cerrarDetalle()">Cerrar</button>
+          <ng-container *ngIf="j.estado === 'pendiente'">
+            <button class="btn btn--rechazar" (click)="rechazar(j)">Rechazar</button>
+            <button class="btn btn--aprobar" (click)="aprobar(j)">Aprobar</button>
+          </ng-container>
+        </footer>
+
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- MODAL DE NOTIFICACIÓN -->
+  <div class="modal-overlay" *ngIf="notificacion.visible" (click)="cerrarNotificacion()">
+    <div class="notificacion-modal" [ngClass]="notificacion.tipo" (click)="$event.stopPropagation()">
+      <p>{{ notificacion.mensaje }}</p>
+      <button type="button" class="btn btn--aprobar" (click)="cerrarNotificacion()">Entendido</button>
+    </div>
+  </div>
+
+</div>

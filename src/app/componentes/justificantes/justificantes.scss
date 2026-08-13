@@ -1,0 +1,359 @@
+/* ===== CONTENEDOR GENERAL ===== */
+.contenedor {
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  color: #1f2937;
+}
+
+/* ===== ENCABEZADO ===== */
+.encabezado {
+  margin-bottom: 24px;
+}
+
+.encabezado h1 {
+  font-size: 1.75rem;
+  margin: 0 0 4px 0;
+  color: #111827;
+}
+
+.subtitulo {
+  color: #6b7280;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* ===== TARJETAS RESUMEN ===== */
+.resumen {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.tarjeta-resumen {
+  flex: 1;
+  min-width: 140px;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid #e5e7eb;
+}
+
+.resumen-numero {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.resumen-label {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.tarjeta-resumen--pendiente { background: #fff8e1; border-color: #ffe7a0; }
+.tarjeta-resumen--pendiente .resumen-numero { color: #b45309; }
+
+.tarjeta-resumen--aprobado { background: #ecfdf5; border-color: #bbf7d0; }
+.tarjeta-resumen--aprobado .resumen-numero { color: #15803d; }
+
+.tarjeta-resumen--rechazado { background: #fef2f2; border-color: #fecaca; }
+.tarjeta-resumen--rechazado .resumen-numero { color: #b91c1c; }
+
+/* ===== FILTROS ===== */
+.filtros {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filtro-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+}
+
+.filtro-grupo label {
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.filtro-grupo input,
+.filtro-grupo select {
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.filtro-grupo input:focus,
+.filtro-grupo select:focus {
+  border-color: #6366f1;
+}
+
+/* ===== TABLA ===== */
+.tabla-wrapper {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla thead {
+  background: #f9fafb;
+}
+
+.tabla th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 0.8rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tabla td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.9rem;
+  vertical-align: middle;
+}
+
+.tabla tbody tr:hover {
+  background: #f9fafb;
+}
+
+.sin-resultados {
+  padding: 40px;
+  text-align: center;
+  color: #9ca3af;
+}
+
+/* ===== CELDA ALUMNO ===== */
+.celda-alumno {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.avatar--grande {
+  width: 52px;
+  height: 52px;
+}
+
+.alumno-nombre {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+.alumno-matricula {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+/* ===== BADGES DE ESTADO ===== */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badge--pendiente { background: #fff3c4; color: #92400e; }
+.badge--aprobado { background: #d1fae5; color: #065f46; }
+.badge--rechazado { background: #fee2e2; color: #991b1b; }
+
+/* ===== BOTONES ===== */
+.acciones {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: none;
+  border-radius: 7px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.btn:hover {
+  opacity: 0.85;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn--ver { background: #e0e7ff; color: #3730a3; }
+.btn--aprobar { background: #16a34a; color: #fff; }
+.btn--rechazar { background: #dc2626; color: #fff; }
+.btn--cerrar-secundario { background: #f3f4f6; color: #374151; }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.btn-cerrar {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #9ca3af;
+  line-height: 1;
+}
+
+.btn-cerrar:hover {
+  color: #374151;
+}
+
+.modal-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fila-detalle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.fila-detalle--columna {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.detalle-label {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.descripcion-texto {
+  margin: 0;
+  background: #f9fafb;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.adjunto {
+  color: #4f46e5;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.adjunto:hover {
+  text-decoration: underline;
+}
+
+.preview-imagen {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-top: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.modal-body textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.88rem;
+  resize: vertical;
+  font-family: inherit;
+  outline: none;
+}
+
+.modal-body textarea:focus {
+  border-color: #6366f1;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 700px) {
+  .tabla-wrapper {
+    overflow-x: auto;
+  }
+  .tabla {
+    min-width: 700px;
+  }
+  .resumen {
+    flex-direction: column;
+  }
+}

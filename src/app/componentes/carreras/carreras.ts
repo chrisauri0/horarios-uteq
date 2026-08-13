@@ -1,15 +1,14 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 export interface Carrera {
   id: string;
   nombre: string;
-  grado: number;
-  division: string;
 }
-
-import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-carreras',
@@ -18,72 +17,86 @@ import { RouterModule } from '@angular/router';
   styleUrl: './carreras.scss'
 })
 export class Carreras {
+
+  private apiUrl = `${environment.apiUrl}/carreras`;
+
   carreras: Carrera[] = [];
-  nuevaCarrera: Carrera = { id: '', nombre: '', grado: 1, division: '' };
-  defaultDivision: string = '';
+  nuevaCarrera: Carrera = { id: '', nombre: '' };
+  
   editandoId: string | null = null;
   modalAbierto = false;
 
+  // Estado del modal de notificación (reemplaza alert)
+  notificacion: { visible: boolean; mensaje: string; tipo: 'info' | 'error' | 'success' } = {
+    visible: false,
+    mensaje: '',
+    tipo: 'info'
+  };
+
+  // Estado del modal de confirmación (reemplaza window.confirm)
+  confirmacion: { visible: boolean; mensaje: string; idPendiente: string | null } = {
+    visible: false,
+    mensaje: '',
+    idPendiente: null
+  };
+
+  constructor(private http: HttpClient) {}
+
   ngOnInit() {
     this.cargarCarreras();
-    const usuarioData = localStorage.getItem('userData');
-    if (usuarioData) {
-      const { metadata: { division, turno } } = JSON.parse(usuarioData);
-      this.defaultDivision = division || '';
-      this.nuevaCarrera.division = this.defaultDivision;
-    } else {
-      this.defaultDivision = '';
-      this.nuevaCarrera.division = '';
-    }
   }
 
-  async cargarCarreras() {
-    try {
-      const res = await fetch('https://horarios-backend-58w8.onrender.com/carreras');
-      if (!res.ok) throw new Error('Error al obtener carreras');
-      const data = await res.json();
-      this.carreras = Array.isArray(data) ? data.map((c: any) => ({
-        id: c.id,
-        nombre: c.nombre,
-        grado: c.grado,
-        division: c.division
-      })) : [];
-    } catch (err) {
-      alert('No se pudo cargar la lista de carreras: ' + err);
-    }
+  private mostrarNotificacion(mensaje: string, tipo: 'info' | 'error' | 'success' = 'info') {
+    this.notificacion = { visible: true, mensaje, tipo };
   }
 
-  async agregarCarrera() {
-    if (!this.nuevaCarrera.nombre.trim() || !this.nuevaCarrera.division.trim()) return;
+  cerrarNotificacion() {
+    this.notificacion.visible = false;
+  }
+
+  cargarCarreras() {
+    this.http.get<Carrera[]>(this.apiUrl).subscribe({
+      next: (data) => {
+        this.carreras = Array.isArray(data) ? data.map((c: any) => ({
+          id: c.id,
+          nombre: c.nombre,
+         
+        })) : [];
+
+      },
+      error: (err) => {
+        this.mostrarNotificacion('No se pudo cargar la lista de carreras: ' + err.message, 'error');
+      }
+    });
+  }
+
+  agregarCarrera() {
+    if (!this.nuevaCarrera.nombre.trim() ) return;
+
+    console.log('Agregando carrera:', this.nuevaCarrera);
+
     const body = {
       nombre: this.nuevaCarrera.nombre,
-      grado: this.nuevaCarrera.grado,
-      division: this.nuevaCarrera.division
     };
-    try {
-      const res = await fetch('https://horarios-backend-58w8.onrender.com/carreras', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      if (!res.ok) throw new Error('Error al crear la carrera');
-      const data = await res.json();
-      if (data.error) {
-        alert(data.error);
-        return;
+
+    this.http.post<any>(this.apiUrl, body).subscribe({
+      next: (data) => {
+        if (data.error) {
+          this.mostrarNotificacion(data.error, 'error');
+          return;
+        }
+        this.carreras.push({
+          id: data.id || Date.now().toString(),
+          nombre: data.nombre,
+        });
+        this.nuevaCarrera = { id: '', nombre: ''};
+        this.modalAbierto = false;
+        this.mostrarNotificacion('Carrera agregada correctamente.', 'success');
+      },
+      error: (err) => {
+        this.mostrarNotificacion('No se pudo crear la carrera: ' + err.message, 'error');
       }
-      this.carreras.push({
-        id: data.id || Date.now().toString(),
-        nombre: data.nombre,
-        grado: data.grado,
-        division: data.division
-      });
-      // reset form but preserve default division (from user metadata)
-      this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: this.defaultDivision };
-      this.modalAbierto = false;
-    } catch (err) {
-      alert('No se pudo crear la carrera: ' + err);
-    }
+    });
   }
 
   editarCarrera(carrera: Carrera) {
@@ -92,44 +105,38 @@ export class Carreras {
     this.modalAbierto = true;
   }
 
-  async guardarEdicion() {
-    if (!this.nuevaCarrera.nombre.trim() || !this.nuevaCarrera.division.trim() || !this.editandoId) return;
-    const body: any = {
+  guardarEdicion() {
+    if (!this.nuevaCarrera.nombre.trim()  || !this.editandoId) return;
+
+    const body = {
       nombre: this.nuevaCarrera.nombre,
-      grado: this.nuevaCarrera.grado,
-      division: this.nuevaCarrera.division
     };
-    try {
-      const res = await fetch(`https://horarios-backend-58w8.onrender.com/carreras/${this.editandoId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      if (!res.ok) throw new Error('Error al editar la carrera');
-      const data = await res.json();
-      this.carreras = this.carreras.map(c => c.id === this.editandoId ? {
-        id: this.editandoId!,
-        nombre: body.nombre,
-        grado: body.grado,
-        division: body.division
-      } : c);
-      // reset form and restore default division
-      this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: this.defaultDivision };
-      this.editandoId = null;
-      this.modalAbierto = false;
-    } catch (err) {
-      alert('No se pudo editar la carrera: ' + err);
-    }
+
+    this.http.patch<any>(`${this.apiUrl}/${this.editandoId}`, body).subscribe({
+      next: () => {
+        this.carreras = this.carreras.map(c => c.id === this.editandoId ? {
+          id: this.editandoId!,
+          nombre: body.nombre,
+        } : c);
+        this.nuevaCarrera = { id: '', nombre: '' };
+        this.editandoId = null;
+        this.modalAbierto = false;
+        this.mostrarNotificacion('Cambios guardados correctamente.', 'success');
+      },
+      error: (err) => {
+        this.mostrarNotificacion('No se pudo editar la carrera: ' + err.message, 'error');
+      }
+    });
   }
 
   cancelarEdicion() {
-    this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: this.defaultDivision };
+    this.nuevaCarrera = { id: '', nombre: '',   };
     this.editandoId = null;
   }
 
   abrirModalNuevaCarrera() {
     this.editandoId = null;
-    this.nuevaCarrera = { id: '', nombre: '', grado: 1, division: this.defaultDivision };
+    this.nuevaCarrera = { id: '', nombre: '',   };
     this.modalAbierto = true;
   }
 
@@ -138,19 +145,32 @@ export class Carreras {
     this.modalAbierto = false;
   }
 
-  async eliminarCarrera(id: string) {
+  // Abre el modal de confirmación en vez de window.confirm
+  eliminarCarrera(id: string) {
+    this.confirmacion = {
+      visible: true,
+      mensaje: '¿Estás seguro de eliminar esta carrera?',
+      idPendiente: id
+    };
+  }
 
+  confirmarEliminacion() {
+    const id = this.confirmacion.idPendiente;
+    this.confirmacion = { visible: false, mensaje: '', idPendiente: null };
+    if (!id) return;
 
-    const confirmacion = window.confirm('¿Estás seguro de eliminar esta carrera?');
-    if (!confirmacion) return;
-    try {
-      const res = await fetch(`https://horarios-backend-58w8.onrender.com/carreras/${id}`, {
-        method: 'DELETE'
-      });
-      if (!res.ok) throw new Error('Error al eliminar la carrera');
-      this.carreras = this.carreras.filter(c => c.id !== id);
-    } catch (err) {
-      alert('No se pudo eliminar la carrera: ' + err);
-    }
+    this.http.delete(`${this.apiUrl}/${id}`).subscribe({
+      next: () => {
+        this.carreras = this.carreras.filter(c => c.id !== id);
+        this.mostrarNotificacion('Carrera eliminada correctamente.', 'success');
+      },
+      error: (err) => {
+        this.mostrarNotificacion('No se pudo eliminar la carrera: ' + err.message, 'error');
+      }
+    });
+  }
+
+  cancelarEliminacion() {
+    this.confirmacion = { visible: false, mensaje: '', idPendiente: null };
   }
 }

@@ -1,0 +1,124 @@
+<div *ngIf="!esLogin; else soloLogin" class="app-layout" [class.sidebar-collapsed]="sidebarColapsado" [class.sidebar-open]="sidebarAbiertoMobile">
+
+    <!-- BOTÓN TOGGLE - esquina superior izquierda -->
+    <button class="btn-toggle-sidebar" (click)="toggleSidebar()" [attr.aria-label]="sidebarColapsado ? 'Expandir menú' : 'Colapsar menú'">
+        <span class="icono-hamburguesa">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+    </button>
+
+    <!-- OVERLAY para mobile (cierra el sidebar al tocar fuera) -->
+    <div class="overlay-mobile" *ngIf="sidebarAbiertoMobile" (click)="cerrarSidebarMobile()"></div>
+
+    <aside class="sidebar">
+      
+
+        <nav class="sidebar-nav">
+            <ul class="nav-list">
+                <br>
+                <br>
+                <br>
+                <li>
+                    <a routerLink="/dashboard" routerLinkActive="active" class="nav-link" title="Dashboard">
+                        <span class="nav-icon">
+                            <img src="assets/svgs/house-chimney-floor-svgrepo-com.svg" alt="Dashboard" />
+                        </span>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/carreras" routerLinkActive="active" class="nav-link" title="Carreras">
+                        <span class="nav-icon">
+                            <img src="assets/svgs/education-bag-learning-svgrepo-com.svg" alt="Carreras" />
+                        </span>
+                        <span class="nav-text">Carreras</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/salones" routerLinkActive="active" class="nav-link" title="Salones">
+                        <span class="nav-icon">
+                            <img src="/assets/svgs/room-svgrepo-com.svg" alt="Salones" />
+                        </span>
+                        <span class="nav-text">Salones</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/materias" routerLinkActive="active" class="nav-link" title="Materias">
+                        <span class="nav-icon">
+                            <img src="assets/svgs/books-svgrepo-com.svg" alt="Materias" />
+                        </span>
+                        <span class="nav-text">Materias</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/profesores" routerLinkActive="active" class="nav-link" title="Profesores">
+                        <span class="nav-icon">
+                            <img src="/assets/svgs/graduation-hat-alt-svgrepo-com.svg" alt="Profesores" />
+                        </span>
+                        <span class="nav-text">Profesores</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a routerLink="/psicologos" routerLinkActive="active" class="nav-link" title="Psicologos">
+                        <span class="nav-icon">
+                            <img src="/assets/svgs/brain-1-svgrepo-com.svg" alt="Psicologos" />
+                        </span>
+                        <span class="nav-text">Psicologos</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/grupos" routerLinkActive="active" class="nav-link" title="Grupos">
+                        <span class="nav-icon">
+                            <img src="/assets/svgs/grupos-svgrepo-com.svg" alt="Grupos" />
+                        </span>
+                        <span class="nav-text">Grupos</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/horarios/nuevo" routerLinkActive="active" class="nav-link" title="Horarios">
+                        <span class="nav-icon">
+                            <img src="/assets/svgs/calendar-alt-svgrepo-com.svg" alt="Horarios" />
+                        </span>
+                        <span class="nav-text">Horarios</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/tdis" routerLinkActive="active" class="nav-link" title="TDI'S">
+                        <span class="nav-icon">
+                            <img src="/assets/svgs/calendar-alt-svgrepo-com.svg" alt="TDI'S" />
+                        </span>
+                        <span class="nav-text">TDI'S</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/justificantes" routerLinkActive="active" class="nav-link" title="Justificantes">
+                        <span class="nav-icon">
+                            <img src="/assets/svgs/report-svgrepo-com.svg" alt="Reportes" />
+                        </span>
+                        <span class="nav-text">Justificantes</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <button (click)="cerrarSesion()" class="btn-logout" title="Cerrar sesión">
+                    <span class="nav-icon">
+                        <img src="/assets/svgs/logout-white-svgrepo-com.svg" alt="Cerrar sesión" />
+                    </span>
+                    <span class="nav-text">Cerrar sesión</span>
+                </button>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <router-outlet></router-outlet>
+    </main>
+</div>
+
+<ng-template #soloLogin>
+    <router-outlet></router-outlet>
+</ng-template>

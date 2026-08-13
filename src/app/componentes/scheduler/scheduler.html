@@ -10,143 +10,166 @@
             <h2 class="titulo-scheduler">Generador de Horarios</h2>
             <p class="subtitle">Crea y gestiona los horarios académicos</p>
         </div>
-    </div>
-
-    <div class="notice-card" role="alert">
-        <div class="notice-icon-wrapper">
-            <svg class="notice-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    <div class="modo-switch">
+        <button type="button" class="toggle-modo" [class.active]="modoActual === 'generar'" (click)="cambiarModo('generar')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path d="M12 5v14M5 12h14"></path>
             </svg>
-        </div>
-        <div class="notice-content">
-            <h3>Aviso importante</h3>
-            <p>Se generarán horarios para <strong>{{ usuarioCarrera }}</strong> basados en los salones del cuatrimestre
-                7. Este proceso puede tardar unos segundos.</p>
-            <p>
-                Preview actual: <strong>{{ totalGruposSeleccionados }}</strong> grupos,
-                <strong>{{ totalProfesoresSeleccionados }}</strong> profesores y
-                <strong>{{ totalSalonesSeleccionados }}</strong> salones,
-                <strong>{{ totalMateriasSeleccionadas }}</strong> materias seleccionadas.
-            </p>
-        </div>
+            <span>Generar</span>
+        </button>
+        <button type="button" class="toggle-modo" [class.active]="modoActual === 'ver'" (click)="cambiarModo('ver')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span>Ver</span>
+        </button>
     </div>
 
-    <div class="preview-card">
-        <div class="preview-header">
-            <h3>Preview de datos a procesar</h3>
-            <p>Ajusta aqui exactamente que grupos, profesores y salones entran al generador.</p>
-        </div>
-
-        <div class="preview-stats">
-            <div class="stat-item">
-                <span class="stat-label">Grupos</span>
-                <span class="stat-value">{{ totalGruposSeleccionados }} / {{ gruposPreview.length }}</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Profesores</span>
-                <span class="stat-value">{{ totalProfesoresSeleccionados }} / {{ profesoresPreview.length }}</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Salones</span>
-                <span class="stat-value">{{ totalSalonesSeleccionados }} / {{ salonesPreview.length }}</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Materias</span>
-                <span class="stat-value">{{ totalMateriasSeleccionadas }} / {{ materiasPreview.length }}</span>
-            </div>
-        </div>
-
-        <div class="preview-lists">
-            <div class="preview-block">
-                <div class="preview-block-header">
-                    <h4>Grupos</h4>
-                    <div class="bulk-actions">
-                        <button type="button" class="btn-mini" (click)="seleccionarTodo('grupos', true)">Todo</button>
-                        <button type="button" class="btn-mini" (click)="seleccionarTodo('grupos', false)">Ninguno</button>
-                    </div>
-                </div>
-                <div class="preview-list">
-                    <label class="checkbox-row" *ngFor="let grupo of gruposPreview">
-                        <input type="checkbox" [(ngModel)]="grupo.selected">
-                        <span>{{ grupo.nombre }}</span>
-                        <span> Semestre: {{ grupo.grado }}</span>
-                    </label>
-                    <p class="empty-list" *ngIf="!gruposPreview.length">No hay grupos disponibles.</p>
-                </div>
-            </div>
-
-            <div class="preview-block">
-                <div class="preview-block-header">
-                    <h4>Profesores</h4>
-                    <div class="bulk-actions">
-                        <button type="button" class="btn-mini" (click)="seleccionarTodo('profesores', true)">Todo</button>
-                        <button type="button" class="btn-mini" (click)="seleccionarTodo('profesores', false)">Ninguno</button>
-                    </div>
-                </div>
-                <div class="preview-list">
-                    <label class="checkbox-row" *ngFor="let profesor of profesoresPreview">
-                        <input type="checkbox" [(ngModel)]="profesor.selected">
-                        <span>{{ profesor.nombre }}</span>
-                    </label>
-                    <p class="empty-list" *ngIf="!profesoresPreview.length">No hay profesores disponibles.</p>
-                </div>
-            </div>
-
-            <div class="preview-block">
-                <div class="preview-block-header">
-                    <h4>Salones</h4>
-                    <div class="bulk-actions">
-                        <button type="button" class="btn-mini" (click)="seleccionarTodo('salones', true)">Todo</button>
-                        <button type="button" class="btn-mini" (click)="seleccionarTodo('salones', false)">Ninguno</button>
-                    </div>
-                </div>
-                <div class="preview-list">
-                    <label class="checkbox-row" *ngFor="let salon of salonesPreview">
-                        <input type="checkbox" [(ngModel)]="salon.selected">
-                        <span>{{ salon.nombre }}</span>
-                    </label>
-                    <p class="empty-list" *ngIf="!salonesPreview.length">No hay salones disponibles.</p>
-                </div>
-            </div>
-
-            <div class="preview-block">
-                <div class="preview-block-header">
-                    <h4>Materias</h4>
-                    <div class="bulk-actions">
-                        <button type="button" class="btn-mini" (click)="seleccionarTodo('materias', true)">Todo</button>
-                        <button type="button" class="btn-mini" (click)="seleccionarTodo('materias', false)">Ninguno</button>
-                    </div>
-                </div>
-                <div class="preview-list">
-                    <label class="checkbox-row" *ngFor="let materia of materiasPreview">
-                        <input type="checkbox" [(ngModel)]="materia.selected">
-                        <span class="checkbox-main">{{ materia.nombre }}</span>
-                        <span class="checkbox-meta">{{ materia.carrera || 'Sin carrera' }}</span>
-                    </label>
-                    <p class="empty-list" *ngIf="!materiasPreview.length">No hay materias disponibles.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="controls-card">
-        <div class="actions-wrapper">
-            <button (click)="generateSchedule()" [disabled]="loading" class="btn-generate" [class.loading]="loading">
-                <span *ngIf="!loading">Generar Horarios</span>
-                <span *ngIf="loading">Generando...</span>
-                <div *ngIf="loading" class="spinner-mini"></div>
-            </button>
-        </div>
-
-        <div *ngIf="message" class="status-message" [ngClass]="{ 'success': isSuccess, 'error': !isSuccess }">
+    <div class="toast" *ngIf="mostrarToast" [class.success]="isSuccess" [class.error]="!isSuccess">
+        <div class="toast-content">
             {{ message }}
         </div>
+        <button type="button" class="toast-close" (click)="cerrarToast()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path d="M18 6l-12 12M6 6l12 12"></path>
+            </svg>
+        </button>
     </div>
 
-    <div class="results-section" *ngIf="groupedSchedules.length || profesoresConHorarios.length">
+    <div *ngIf="modoActual === 'generar'" class="seccion-generar">
+        <div class="notice-card" role="alert">
+            <div class="notice-icon-wrapper">
+                <svg class="notice-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <div class="notice-content">
+                <h3>Aviso importante</h3>
+                <p>Se generarán horarios para <strong>{{ usuarioCarrera }}</strong> basados en los salones del cuatrimestre
+                    7. Este proceso puede tardar unos segundos.</p>
+                <p>
+                    Preview actual: <strong>{{ totalGruposSeleccionados }}</strong> grupos,
+                    <strong>{{ totalProfesoresSeleccionados }}</strong> profesores y
+                    <strong>{{ totalSalonesSeleccionados }}</strong> salones,
+                    <strong>{{ totalMateriasSeleccionadas }}</strong> materias seleccionadas.
+                </p>
+            </div>
+        </div>
+
+        <div class="preview-card">
+            <div class="preview-header">
+                <h3>Preview de datos a procesar</h3>
+                <p>Ajusta aqui exactamente que grupos, profesores y salones entran al generador.</p>
+            </div>
+
+            <div class="preview-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Grupos</span>
+                    <span class="stat-value">{{ totalGruposSeleccionados }} / {{ gruposPreview.length }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Profesores</span>
+                    <span class="stat-value">{{ totalProfesoresSeleccionados }} / {{ profesoresPreview.length }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Salones</span>
+                    <span class="stat-value">{{ totalSalonesSeleccionados }} / {{ salonesPreview.length }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Materias</span>
+                    <span class="stat-value">{{ totalMateriasSeleccionadas }} / {{ materiasPreview.length }}</span>
+                </div>
+            </div>
+
+            <div class="preview-lists">
+                <div class="preview-block">
+                    <div class="preview-block-header">
+                        <h4>Grupos</h4>
+                        <div class="bulk-actions">
+                            <button type="button" class="btn-mini" (click)="seleccionarTodo('grupos', true)">Todo</button>
+                            <button type="button" class="btn-mini" (click)="seleccionarTodo('grupos', false)">Ninguno</button>
+                        </div>
+                    </div>
+                    <div class="preview-list">
+                        <label class="checkbox-row" *ngFor="let grupo of gruposPreview">
+                            <input type="checkbox" [(ngModel)]="grupo.selected">
+                            <span>{{ grupo.nombre }}</span>
+                            <span> Semestre: {{ grupo.grado }}</span>
+                        </label>
+                        <p class="empty-list" *ngIf="!gruposPreview.length">No hay grupos disponibles.</p>
+                    </div>
+                </div>
+
+                <div class="preview-block">
+                    <div class="preview-block-header">
+                        <h4>Profesores</h4>
+                        <div class="bulk-actions">
+                            <button type="button" class="btn-mini" (click)="seleccionarTodo('profesores', true)">Todo</button>
+                            <button type="button" class="btn-mini" (click)="seleccionarTodo('profesores', false)">Ninguno</button>
+                        </div>
+                    </div>
+                    <div class="preview-list">
+                        <label class="checkbox-row" *ngFor="let profesor of profesoresPreview">
+                            <input type="checkbox" [(ngModel)]="profesor.selected">
+                            <span>{{ profesor.nombre }}</span>
+                        </label>
+                        <p class="empty-list" *ngIf="!profesoresPreview.length">No hay profesores disponibles.</p>
+                    </div>
+                </div>
+
+                <div class="preview-block">
+                    <div class="preview-block-header">
+                        <h4>Salones</h4>
+                        <div class="bulk-actions">
+                            <button type="button" class="btn-mini" (click)="seleccionarTodo('salones', true)">Todo</button>
+                            <button type="button" class="btn-mini" (click)="seleccionarTodo('salones', false)">Ninguno</button>
+                        </div>
+                    </div>
+                    <div class="preview-list">
+                        <label class="checkbox-row" *ngFor="let salon of salonesPreview">
+                            <input type="checkbox" [(ngModel)]="salon.selected">
+                            <span>{{ salon.nombre }}</span>
+                        </label>
+                        <p class="empty-list" *ngIf="!salonesPreview.length">No hay salones disponibles.</p>
+                    </div>
+                </div>
+
+                <div class="preview-block">
+                    <div class="preview-block-header">
+                        <h4>Materias</h4>
+                        <div class="bulk-actions">
+                            <button type="button" class="btn-mini" (click)="seleccionarTodo('materias', true)">Todo</button>
+                            <button type="button" class="btn-mini" (click)="seleccionarTodo('materias', false)">Ninguno</button>
+                        </div>
+                    </div>
+                    <div class="preview-list">
+                        <label class="checkbox-row" *ngFor="let materia of materiasPreview">
+                            <input type="checkbox" [(ngModel)]="materia.selected">
+                            <span class="checkbox-main">{{ materia.nombre }}</span>
+                            <span class="checkbox-meta">{{ materia.carrera || 'Sin carrera' }}</span>
+                        </label>
+                        <p class="empty-list" *ngIf="!materiasPreview.length">No hay materias disponibles.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls-card">
+            <div class="actions-wrapper">
+                <button (click)="generateSchedule()" [disabled]="loading" class="btn-generate" [class.loading]="loading">
+                    <span *ngIf="!loading">Generar Horarios</span>
+                    <span *ngIf="loading">Generando...</span>
+                    <div *ngIf="loading" class="spinner-mini"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="modoActual === 'ver'" class="seccion-ver">
         <div class="view-toggles">
             <button type="button" class="toggle-btn" [class.active]="vistaHorarios === 'grupo'"
                 (click)="vistaHorarios = 'grupo'">
@@ -171,8 +194,35 @@
         </div>
 
         <!-- Vista por Grupos -->
-        <div *ngIf="vistaHorarios === 'grupo'" class="schedules-grid">
-            <div *ngFor="let group of groupedSchedules" class="schedule-card">
+        <div *ngIf="vistaHorarios === 'grupo'" class="vista-grupos-container">
+            <div class="pagination-controls" *ngIf="totalPaginasGrupos > 1">
+                <button type="button" class="btn-nav" (click)="irAPaginaGrupo(paginaActualGrupos - 1)" [disabled]="paginaActualGrupos === 0">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                
+                <div class="selector-grupo">
+                    <select [(ngModel)]="paginaActualGrupos" (change)="irAPaginaGrupo(paginaActualGrupos)" name="grupoSelector" class="grupo-select">
+                        <option *ngFor="let pag of generarRangoNumeros(totalPaginasGrupos)" [value]="pag">
+                            {{ gruposEnPaginaActual[0]?.nombregrupo || 'Grupo ' + (pag + 1) }} ({{ pag + 1 }} / {{ totalPaginasGrupos }})
+                        </option>
+                    </select>
+                </div>
+                
+                <div class="pagination-info">
+                    {{ paginaActualGrupos + 1 }} de {{ totalPaginasGrupos }}
+                </div>
+                
+                <button type="button" class="btn-nav" (click)="irAPaginaGrupo(paginaActualGrupos + 1)" [disabled]="paginaActualGrupos === totalPaginasGrupos - 1">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="schedules-grid">
+                <div *ngFor="let group of gruposEnPaginaActual" class="schedule-card">
                 <div class="card-header">
                     <h4 class="group-title">{{ group.nombregrupo }} <span class="badge-count">{{ group.data.length }}
                             clases</span></h4>
@@ -200,7 +250,8 @@
                             <tr *ngFor="let hora of horas">
                                 <td class="hora-cell">{{ hora }}:00</td>
                                 <td *ngFor="let dia of diasSemana">
-                                    <div *ngIf="getClase(group.data, dia, hora) as clase" class="clase-item">
+                                    <div *ngIf="getClase(group.data, dia, hora) as clase" class="clase-item"
+                                        [ngClass]="getClaseColorClass(clase.subj)">
                                         <div class="materia">{{ clase.subj }}</div>
                                         <div class="profesor">{{ clase.prof }}</div>
                                         <div class="salon">{{ clase.room }}</div>
@@ -211,11 +262,39 @@
                     </table>
                 </div>
             </div>
+            </div>
         </div>
 
         <!-- Vista por Profesores -->
-        <div *ngIf="vistaHorarios === 'profesor'" class="schedules-grid">
-            <div *ngFor="let prof of profesoresConHorarios" class="schedule-card">
+        <div *ngIf="vistaHorarios === 'profesor'" class="vista-profesores-container">
+            <div class="pagination-controls" *ngIf="totalPaginasProfesores > 1">
+                <button type="button" class="btn-nav" (click)="irAPaginaProfesor(paginaActualProfesores - 1)" [disabled]="paginaActualProfesores === 0">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                
+                <div class="selector-profesor">
+                    <select [(ngModel)]="paginaActualProfesores" (change)="irAPaginaProfesor(paginaActualProfesores)" name="profesorSelector" class="profesor-select">
+                        <option *ngFor="let pag of generarRangoNumeros(totalPaginasProfesores)" [value]="pag">
+                            {{ profesoresEnPaginaActual[0]?.nombre || 'Profesor ' + (pag + 1) }} ({{ pag + 1 }} / {{ totalPaginasProfesores }})
+                        </option>
+                    </select>
+                </div>
+                
+                <div class="pagination-info">
+                    {{ paginaActualProfesores + 1 }} de {{ totalPaginasProfesores }}
+                </div>
+                
+                <button type="button" class="btn-nav" (click)="irAPaginaProfesor(paginaActualProfesores + 1)" [disabled]="paginaActualProfesores === totalPaginasProfesores - 1">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="schedules-grid">
+                <div *ngFor="let prof of profesoresEnPaginaActual" class="schedule-card">
                 <div class="card-header">
                     <h4 class="group-title">{{ prof.nombre }} <span class="badge-count">{{ prof.clases.length }}
                             clases</span></h4>
@@ -243,7 +322,8 @@
                             <tr *ngFor="let hora of horas">
                                 <td class="hora-cell">{{ hora }}:00</td>
                                 <td *ngFor="let dia of diasSemana">
-                                    <div *ngIf="getClaseProfesor(prof.clases, dia, hora) as clase" class="clase-item">
+                                    <div *ngIf="getClaseProfesor(prof.clases, dia, hora) as clase" class="clase-item"
+                                        [ngClass]="getClaseColorClass(clase.subj)">
                                         <div class="materia">{{ clase.subj }}</div>
                                         <div class="grupo-badge">{{ clase.group || clase.grupo || '-' }}</div>
                                         <div class="salon">{{ clase.room }}</div>
@@ -253,6 +333,7 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
             </div>
         </div>
     </div>

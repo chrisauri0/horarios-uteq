@@ -11,6 +11,35 @@ $danger-hover: #c62828;
 
 @use "sass:color";
 
+
+.notificacion-modal {
+	background: $white;
+	border-radius: 16px;
+	padding: 2rem;
+	max-width: 360px;
+	width: 90%;
+	text-align: center;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+
+	p {
+		margin: 0 0 1.5rem;
+		color: $text;
+		font-size: 1rem;
+	}
+
+	.form-actions {
+		justify-content: center;
+	}
+
+	&.error p {
+		color: $danger;
+	}
+
+	&.success p {
+		color: #2e7d32;
+	}
+}
+
 .grupos-container {
 	max-width: 900px;
 	margin: 40px auto;
