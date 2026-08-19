@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VerHorarios } from './ver-horarios/ver-horarios';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment';
+
 
 
 @Component({
@@ -13,8 +15,10 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./scheduler.scss']
 })
 export class SchedulerComponent {
-  private readonly apiBaseUrl = 'https://horarios-backend-58w8.onrender.com';
-  private readonly apiBaseUrlLocal = 'https://horarios-backend-58w8.onrender.com';
+
+    private apiUrl = `${environment.apiUrl}`;
+  
+
   private readonly claseColorClasses = [
     'clase-tone-1',
     'clase-tone-2',
@@ -39,6 +43,9 @@ export class SchedulerComponent {
     viernes: 'Vie'
   };
 
+
+horaInicio: number | null = 17;
+horaFin: number | null = 22;
   loading = false;
   message = '';
   isSuccess = false;
@@ -60,6 +67,7 @@ export class SchedulerComponent {
   gruposPorPagina = 1;
   paginaActualProfesores = 0;
   profesoresPorPagina = 1;
+  usuarioOrganizacion: any;
   
   get gruposConHorariosFiltered(): Array<{ nombregrupo: string; data: any[] }> {
     return this.groupedSchedules;
@@ -101,6 +109,27 @@ export class SchedulerComponent {
   getClaseProfesor(clases: any[], dia: string, hora: string): any {
     return clases.find(clase => this.normalizarDiaClase(clase) === dia && this.normalizarHoraClase(clase) === hora) || null;
   }
+
+
+
+  private validarRangoHorario(): string | null {
+  const inicio = this.horaInicio;
+  const fin = this.horaFin;
+
+  if (inicio === null || fin === null || inicio === undefined || fin === undefined) {
+    return 'Debes indicar la hora de inicio y la hora de fin.';
+  }
+  if (!Number.isInteger(inicio) || !Number.isInteger(fin)) {
+    return 'Las horas deben ser números enteros (ej. 7, 14).';
+  }
+  if (inicio < 0 || inicio > 22) {
+    return 'La hora de inicio debe estar entre 0 y 22.';
+  }
+  if (fin <= inicio || fin > 23) {
+    return 'La hora de fin debe ser mayor a la de inicio y no pasar de 23.';
+  }
+  return null; // válido
+}
 
   private normalizarDiaClase(clase: any): string {
     if (typeof clase?.start === 'string' && clase.start.length >= 3) {
@@ -147,17 +176,13 @@ export class SchedulerComponent {
   ngOnInit() {
     const usuarioData = localStorage.getItem('userData');
     if (usuarioData) {
-      const { full_name, metadata: { division, turno } } = JSON.parse(usuarioData);
-      this.usuarioNombre = full_name || 'Usuario';
-      this.usuarioCarrera = `${division || ''} - ${turno || ''}`;
-      this.usuarioDivision = division || '';
-      this.usuarioTurno = turno || '';
+      const { nombreOrganizacion,full_name } = JSON.parse(usuarioData);
+      this.usuarioNombre = full_name;
+      this.usuarioOrganizacion = nombreOrganizacion;
 
     } else {
-      this.usuarioNombre = 'Usuario';
-      this.usuarioCarrera = '';
-      this.usuarioDivision = '';
-      this.usuarioTurno = '';
+      this.usuarioNombre = '';
+      this.usuarioOrganizacion = '';
     }
     this.cargarDatosPreview();
     this.cargarHorariosCreados();
@@ -166,13 +191,19 @@ export class SchedulerComponent {
   async cargarDatosPreview() {
     try {
       const [gruposRes, profesoresRes, salonesRes, materiasRes] = await Promise.all([
-        fetch(`${this.apiBaseUrlLocal}/grupos`, { headers: this.getAuthHeaders() }),
-        fetch(`${this.apiBaseUrlLocal}/profesores`, { headers: this.getAuthHeaders() }),
-        fetch(`${this.apiBaseUrlLocal}/salones`, { headers: this.getAuthHeaders() }),
-        fetch(`${this.apiBaseUrlLocal}/materias`, { headers: this.getAuthHeaders() })
+        fetch(`${this.apiUrl}/grupos`, { headers: this.getAuthHeaders() }),
+        fetch(`${this.apiUrl}/profesores`, { headers: this.getAuthHeaders() }),
+        fetch(`${this.apiUrl}/salones`, { headers: this.getAuthHeaders() }),
+        fetch(`${this.apiUrl}/materias`, { headers: this.getAuthHeaders() })
       ]);
 
-      if (!gruposRes.ok || !profesoresRes.ok || !salonesRes.ok || !materiasRes.ok) {
+          if (!gruposRes.ok || !profesoresRes.ok || !salonesRes.ok || !materiasRes.ok) {
+        console.error('Error en la respuesta de la API:', {
+          gruposStatus: gruposRes.status,
+          profesoresStatus: profesoresRes.status,
+          salonesStatus: salonesRes.status,
+          materiasStatus: materiasRes.status
+        });
         throw new Error('No se pudieron cargar todos los datos de previsualizacion');
       }
 
@@ -375,8 +406,8 @@ export class SchedulerComponent {
 
   async cargarHorariosCreados() {
     try {
-      const res = await fetch(`${this.apiBaseUrlLocal}/scheduler/allschedules`, {
-        headers: this.getAuthHeaders()
+      const res = await fetch(`${this.apiUrl}/scheduler/`, {
+        headers:{ 'Content-Type': 'application/json', ...this.getAuthHeaders() }
       });
       if (!res.ok) throw new Error('Error al obtener horarios creados');
       const data = await res.json();
@@ -447,11 +478,22 @@ async generateSchedule() {
     return;
   }
 
+  const errorRango = this.validarRangoHorario();
+  if (errorRango) {
+    this.isSuccess = false;
+    this.message = `⚠️ ${errorRango}`;
+    return;
+  }
+
   this.loading = true;
   this.message = '';
   this.isSuccess = false;
 
   const payload = {
+    rango_horario: {
+      hora_inicio: this.horaInicio,
+      hora_fin: this.horaFin,
+    },
     grupos: gruposSeleccionados,
     profesores: profesoresSeleccionados,
     salones: salonesSeleccionados,
@@ -459,10 +501,9 @@ async generateSchedule() {
   };
 
   const PYTHON_URL = 'http://localhost:8000/generar-horario';
-  const NEST_SAVE_URL = 'https://horarios-backend-58w8.onrender.com/scheduler/save';
+  const NEST_SAVE_URL = `${this.apiUrl}/scheduler/guardar`;
 
   try {
-    // 1) Generar horario en Python
     const pythonRes = await fetch(PYTHON_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -477,8 +518,6 @@ async generateSchedule() {
     const pythonData = await pythonRes.json();
     console.log('Respuesta Python:', pythonData);
 
-    // 2) Normalizar para Nest:
-    // Nest acepta { horario: [...] } o [...] directo
     const bodyParaNest = Array.isArray(pythonData)
       ? pythonData
       : pythonData && Array.isArray(pythonData.horario)
@@ -489,10 +528,12 @@ async generateSchedule() {
       throw new Error('La respuesta de Python no contiene un arreglo de horario válido.');
     }
 
-    // 3) Guardar en Nest
     const saveRes = await fetch(NEST_SAVE_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...this.getAuthHeaders(),
+      },
       body: JSON.stringify(bodyParaNest),
     });
 
@@ -517,7 +558,6 @@ async generateSchedule() {
     this.loading = false;
   }
 }
-
 
 
 
