@@ -3,6 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TdisService } from './tdis.service';
+import {
+  SolicitudesValidacionService,
+  SolicitudValidacion,
+} from './solicitudes-validacion.service';
 
 export interface TdiPrograma {
   id?: string;
@@ -16,11 +20,16 @@ export interface TdiPrograma {
   tipo: 'externa' | 'interna' | string;
   horasRequeridas: number;
   nivelDeImpacto: string;
-  tdisporGanar: number;
+  tdisPorGanar: number; // 👈 corregido (antes: tdisporGanar)
   activo?: boolean;
   competencias: string;
   evidencias: string;
-  obeservaciones: string;
+  observaciones: string; // 👈 corregido (antes: obeservaciones)
+  // 👇 nuevos campos del catálogo
+  cupoMaximo?: number | null;
+  fecha?: string | null;
+  lugar?: string | null;
+  emoji?: string | null;
 }
 
 @Component({
@@ -31,12 +40,6 @@ export interface TdiPrograma {
   styleUrl: './tdis.scss'
 })
 export class Tdis implements OnInit {
-  private readonly ejes = [
-    { value: '1', label: 'Eje Identidad Personal' },
-    { value: '2', label: 'Eje Entorno Social' },
-    { value: '3', label: 'Eje Entorno Físico' },
-    { value: '4', label: 'Eje Trascendia' }
-  ];
   private readonly nivelesImpacto = [
     { value: '1', label: '1 - Sensibilizador Conoce' },
     { value: '2', label: '2 - Formador Participa' },
@@ -48,27 +51,22 @@ export class Tdis implements OnInit {
     { matricula: '2023001', nombre: 'Juan Pérez', carrera: 'Ingeniería en Sistemas', totalPuntosTdi: 10, identidadPersonal: 5, entornoSocial: 3, entornoFisico: 2, trascendencia: 0 }
   ];
 
-  readonly solicitudesValidacion = [
-    {
-      id: 1, matricula: '2023002', nombreSolicitud: 'Voluntariado en refugio de animales', correoAlumno: 'maria.lopez@correo.com',
-      eje: 'Identidad Personal',
-      personaEncargada: 'José Martínez',
-      puesto: 'Encargado de Voluntariado',
-      telefono: '412345678',
-      extension: '',
-      correo: 'jose.martinez@correo.com',
-      tipo: 'externa',
-      horasRequeridas: 20,
-      nivelDeImpacto: 'sensibilizador',
-      tdisporGanar: 0,
-      competencias: 'Apoyo en cuidado de animales, limpieza',
-      evidencias: ' Fotos del voluntariado, carta de recomendación',
-      obeservaciones: ' Actividad realizada durante vacaciones de verano',
-      estado: 'Pendiente'
-    },
-  ];
+  // ── Solicitudes de validación: ahora sí conectadas al backend ──────────
+  solicitudesValidacion: SolicitudValidacion[] = [];
+  cargandoSolicitudes = false;
 
-  solicitudActual: any = null;
+  solicitudActual: SolicitudValidacion | null = null;
+
+  // ── Formulario de aprobación (campos que el admin debe llenar) ─────────
+  aprobacionForm: {
+    nivelDeImpacto: string;
+    tdisPorGanar: number;
+    cupoMaximo: number;
+    fecha: string; // yyyy-mm-dd, formato de <input type="date">
+    lugar: string;
+    emoji: string;
+    observacionesAdmin: string;
+  } = this.crearAprobacionVacia();
 
   tdis: TdiPrograma[] = [];
   cargando = false;
@@ -79,6 +77,7 @@ export class Tdis implements OnInit {
   totalAlumnos = 1;
 
   editandoEje: string | null = null;
+  editandoId: string | null = null;
 
   nuevoTdi: TdiPrograma = this.crearTdiVacio();
   modalSolicitudIndividualAbierto = false;
@@ -100,7 +99,11 @@ export class Tdis implements OnInit {
   }
 
   get totalTdisPorGanar(): number {
-    return this.tdis.reduce((total, tdi) => total + Number(tdi.tdisporGanar || 0), 0);
+    return this.tdis.reduce((total, tdi) => total + Number(tdi.tdisPorGanar || 0), 0);
+  }
+
+  get solicitudesPendientes(): SolicitudValidacion[] {
+    return this.solicitudesValidacion.filter((s) => s.estado === 'Pendiente');
   }
 
   get tdisFiltrados(): TdiPrograma[] {
@@ -122,7 +125,7 @@ export class Tdis implements OnInit {
         tdi.nivelDeImpacto,
         tdi.competencias,
         tdi.evidencias,
-        tdi.obeservaciones
+        tdi.observaciones
       ].join(' ').toLowerCase();
 
       return texto.includes(query);
@@ -136,10 +139,14 @@ export class Tdis implements OnInit {
     }, {} as { [key: string]: string });
   }
 
-  constructor(private tdisService: TdisService) {}
+  constructor(
+    private tdisService: TdisService,
+    private solicitudesService: SolicitudesValidacionService,
+  ) {}
 
   ngOnInit() {
     this.cargarTdis();
+    this.cargarSolicitudes();
   }
 
   private mostrarNotificacion(mensaje: string, tipo: 'info' | 'error' | 'success' = 'info') {
@@ -157,6 +164,20 @@ export class Tdis implements OnInit {
       error: (err) => {
         this.cargando = false;
         this.mostrarNotificacion('No se pudieron cargar los TDIs: ' + err.message, 'error');
+      },
+    });
+  }
+
+  private cargarSolicitudes() {
+    this.cargandoSolicitudes = true;
+    this.solicitudesService.getAllAdmin().subscribe({
+      next: (data) => {
+        this.solicitudesValidacion = data;
+        this.cargandoSolicitudes = false;
+      },
+      error: (err) => {
+        this.cargandoSolicitudes = false;
+        this.mostrarNotificacion('No se pudieron cargar las solicitudes: ' + err.message, 'error');
       },
     });
   }
@@ -186,7 +207,7 @@ export class Tdis implements OnInit {
   }
 
   guardarEdicion() {
-    if (!this.editandoEje) return;
+    if (!this.editandoId) return;
 
     const tdi = this.normalizarTdi(this.nuevoTdi);
     if (!tdi.eje || !tdi.nombre || !tdi.personaEncargada || !tdi.correo) {
@@ -194,9 +215,7 @@ export class Tdis implements OnInit {
       return;
     }
 
-    if (!tdi.id) return;
-
-    this.tdisService.update(tdi.id, tdi).subscribe({
+    this.tdisService.update(this.editandoId, tdi).subscribe({
       next: () => {
         this.cargarTdis();
         this.cerrarModal();
@@ -254,30 +273,97 @@ export class Tdis implements OnInit {
       tipo: tdi.tipo.trim(),
       horasRequeridas: Number(tdi.horasRequeridas) || 0,
       nivelDeImpacto: String(tdi.nivelDeImpacto),
-      tdisporGanar: Number(tdi.tdisporGanar) || 0,
+      tdisPorGanar: Number(tdi.tdisPorGanar) || 0,
       activo: tdi.activo ?? true,
       competencias: tdi.competencias.trim(),
       evidencias: tdi.evidencias.trim(),
-      obeservaciones: tdi.obeservaciones.trim()
+      observaciones: tdi.observaciones.trim(),
+      cupoMaximo: tdi.cupoMaximo ? Number(tdi.cupoMaximo) : undefined,
+      fecha: tdi.fecha || undefined,
+      lugar: tdi.lugar?.trim() || undefined,
+      emoji: tdi.emoji?.trim() || undefined,
     };
   }
 
-  verSolicitud(id: number) {
-    this.solicitudActual = this.solicitudesValidacion.find(solicitud => solicitud.id === id) || null;
+  // ── Solicitudes de validación ────────────────────────────────────────────
+
+  verSolicitud(id: string) {
+    this.solicitudActual = this.solicitudesValidacion.find((s) => s.id === id) || null;
     if (this.solicitudActual) {
-      this.modalSolicitudesAbierto = true;
-      this.abrirModalSolicitud();
+      this.aprobacionForm = this.crearAprobacionVacia();
+      // Prellenamos con datos razonables tomados de la solicitud, el admin ajusta
+      this.aprobacionForm.nivelDeImpacto = this.solicitudActual.nivel_de_impacto || '1';
+      this.aprobacionForm.tdisPorGanar = this.solicitudActual.tdis_por_ganar || 0;
+      this.modalSolicitudIndividualAbierto = true;
     } else {
       this.mostrarNotificacion('Solicitud no encontrada.', 'error');
     }
   }
 
-  aprobarSolicitud(solicitud: any) {
-    // Pendiente: conectar con endpoint real de solicitudes de validación
+  aprobarSolicitud(solicitud: SolicitudValidacion | null) {
+    if (!solicitud) return;
+
+    if (
+      !this.aprobacionForm.nivelDeImpacto ||
+      !this.aprobacionForm.tdisPorGanar ||
+      !this.aprobacionForm.cupoMaximo ||
+      !this.aprobacionForm.lugar.trim()
+    ) {
+      this.mostrarNotificacion(
+        'Para aprobar, completa: nivel de impacto, TDIs por ganar, cupo máximo y lugar.',
+        'error',
+      );
+      return;
+    }
+
+    this.solicitudesService
+      .aprobar(solicitud.id, {
+        estado: 'Aprobada',
+        observacionesAdmin: this.aprobacionForm.observacionesAdmin || undefined,
+        nivelDeImpacto: this.aprobacionForm.nivelDeImpacto,
+        tdisPorGanar: Number(this.aprobacionForm.tdisPorGanar),
+        cupoMaximo: Number(this.aprobacionForm.cupoMaximo),
+        fecha: this.aprobacionForm.fecha
+          ? new Date(this.aprobacionForm.fecha).toISOString()
+          : undefined,
+        lugar: this.aprobacionForm.lugar.trim(),
+        emoji: this.aprobacionForm.emoji.trim() || undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.mostrarNotificacion('Solicitud aprobada. Ya aparece en el catálogo.', 'success');
+          this.cargarSolicitudes();
+          this.cargarTdis();
+          this.cerrarModalSolicitud();
+        },
+        error: (err) => {
+          const msg = err?.error?.message;
+          this.mostrarNotificacion(
+            'Error al aprobar: ' + (Array.isArray(msg) ? msg.join(', ') : err.message),
+            'error',
+          );
+        },
+      });
   }
 
-  rechazarSolicitud(solicitud: any) {
-    // Pendiente: conectar con endpoint real de solicitudes de validación
+  rechazarSolicitud(solicitud: SolicitudValidacion | null) {
+    if (!solicitud) return;
+
+    this.solicitudesService
+      .rechazar(solicitud.id, {
+        estado: 'Rechazada',
+        observacionesAdmin: this.aprobacionForm.observacionesAdmin || undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.mostrarNotificacion('Solicitud rechazada.', 'success');
+          this.cargarSolicitudes();
+          this.cerrarModalSolicitud();
+        },
+        error: (err) => {
+          this.mostrarNotificacion('Error al rechazar: ' + err.message, 'error');
+        },
+      });
   }
 
   abrirModalSolicitudesValidacion() {
@@ -287,12 +373,22 @@ export class Tdis implements OnInit {
     this.modalSolicitudesAbierto = false;
   }
 
-  abrirModalSolicitud() {
-    this.modalSolicitudIndividualAbierto = true;
-  }
   cerrarModalSolicitud() {
     this.modalSolicitudIndividualAbierto = false;
     this.solicitudActual = null;
+    this.aprobacionForm = this.crearAprobacionVacia();
+  }
+
+  private crearAprobacionVacia() {
+    return {
+      nivelDeImpacto: '1',
+      tdisPorGanar: 0,
+      cupoMaximo: 20,
+      fecha: '',
+      lugar: '',
+      emoji: '',
+      observacionesAdmin: '',
+    };
   }
 
   verEstadisticas(tdi: TdiPrograma) {
@@ -302,11 +398,13 @@ export class Tdis implements OnInit {
   cerrarModal() {
     this.modalAbierto = false;
     this.editandoEje = null;
+    this.editandoId = null;
     this.nuevoTdi = this.crearTdiVacio();
   }
 
   editarTdi(tdi: TdiPrograma) {
     this.editandoEje = tdi.eje;
+    this.editandoId = tdi.id ?? null;
     this.nuevoTdi = { ...tdi };
     this.modalAbierto = true;
   }
@@ -323,16 +421,21 @@ export class Tdis implements OnInit {
       tipo: 'interna',
       horasRequeridas: 0,
       nivelDeImpacto: '1',
-      tdisporGanar: 0,
+      tdisPorGanar: 0,
       activo: true,
       competencias: '',
       evidencias: '',
-      obeservaciones: ''
+      observaciones: '',
+      cupoMaximo: undefined,
+      fecha: undefined,
+      lugar: undefined,
+      emoji: undefined,
     };
   }
 
   abrirModalNuevoTdi() {
     this.editandoEje = null;
+    this.editandoId = null;
     this.nuevoTdi = this.crearTdiVacio();
     this.modalAbierto = true;
   }
