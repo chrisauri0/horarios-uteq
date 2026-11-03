@@ -67,6 +67,17 @@ export class ProfesoresComponent {
 
   constructor(private http: HttpClient) {}
 
+  /** Saca el mensaje real del backend (Nest) en vez del genérico de HttpClient. */
+  private mensajeError(err: any): string {
+    if (err?.status === 0) return 'No se pudo conectar con el servidor.';
+    if (err?.status === 401 || err?.status === 403) return 'Tu sesión expiró o no tienes permiso. Vuelve a iniciar sesión.';
+    const body = err?.error;
+    const msg = body?.message ?? body?.error ?? body;
+    if (Array.isArray(msg)) return msg.join(', ');
+    if (typeof msg === 'string' && msg) return msg;
+    return err?.message ?? 'Error desconocido';
+  }
+
   get profesoresFiltrados(): ProfesorData[] {
     const query = this.busquedaProfesor.trim().toLowerCase();
     if (!query) {
@@ -156,7 +167,7 @@ export class ProfesoresComponent {
         this.materiasOpciones = this.materias.map(m => m.nombre);
       },
       error: (err) => {
-        this.mostrarNotificacion('No se pudo cargar la lista de materias: ' + err.message, 'error');
+        this.mostrarNotificacion('No se pudo cargar la lista de materias: ' + this.mensajeError(err), 'error');
       }
     });
   }
@@ -167,7 +178,7 @@ export class ProfesoresComponent {
         this.profesores = Array.isArray(data) ? data : [];
       },
       error: (err) => {
-        this.mostrarNotificacion('No se pudo cargar la lista de profesores: ' + err.message, 'error');
+        this.mostrarNotificacion('No se pudo cargar la lista de profesores: ' + this.mensajeError(err), 'error');
       }
     });
   }
@@ -202,14 +213,14 @@ export class ProfesoresComponent {
           this.mostrarNotificacion(data.error, 'error');
           return;
         }
-        this.profesores.push({ ...this.nuevoProfesor, metadata, profesor_id: data.profesor_id });
+        this.profesores.push({ ...this.nuevoProfesor, disponibilidad: body.disponibilidad, metadata, profesor_id: data.profesor_id });
         this.nuevoProfesor = { profesor_id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {} };
         this.resetBloques();
         this.modalAbierto = false;
         this.mostrarNotificacion('Profesor agregado correctamente.', 'success');
       },
       error: (err) => {
-        this.mostrarNotificacion('No se pudo crear el profesor: ' + err.message, 'error');
+        this.mostrarNotificacion('No se pudo crear el profesor: ' + this.mensajeError(err), 'error');
       }
     });
   }
@@ -219,11 +230,16 @@ export class ProfesoresComponent {
       this.mostrarNotificacion('Completa nombre y email antes de guardar.', 'error');
       return;
     }
-    if (!this.editandoId) return;
+    if (!this.editandoId) {
+      this.mostrarNotificacion('No se pudo identificar al profesor que se está editando. Cierra y vuelve a abrir la edición.', 'error');
+      return;
+    }
 
     const disponibilidad = this.bloquesValidos();
+    // metadata.disponibilidad debe llevar los bloques NUEVOS; si no, se conserva la vieja
     const metadata = {
-      ...(this.nuevoProfesor.metadata || {})
+      ...(this.nuevoProfesor.metadata || {}),
+      disponibilidad
     };
 
     const body: any = {
@@ -237,7 +253,12 @@ export class ProfesoresComponent {
     };
 
     this.http.patch<any>(`${this.apiUrl}/${this.editandoId}`, body).subscribe({
-      next: () => {
+      next: (resp) => {
+        // El backend puede responder 200 con { error: '...' } (como en crear): no es un éxito.
+        if (resp?.error) {
+          this.mostrarNotificacion(String(resp.error), 'error');
+          return;
+        }
         this.profesores = this.profesores.map(p =>
           p.profesor_id === this.editandoId ? { ...p, ...body, profesor_id: p.profesor_id } : p
         );
@@ -249,7 +270,7 @@ export class ProfesoresComponent {
         this.mostrarNotificacion('Cambios guardados correctamente.', 'success');
       },
       error: (err) => {
-        this.mostrarNotificacion('No se pudo actualizar el profesor: ' + err.message, 'error');
+        this.mostrarNotificacion('No se pudo actualizar el profesor: ' + this.mensajeError(err), 'error');
       }
     });
   }
@@ -273,7 +294,7 @@ export class ProfesoresComponent {
         this.mostrarNotificacion('Profesor eliminado correctamente.', 'success');
       },
       error: (err) => {
-        this.mostrarNotificacion('No se pudo eliminar el profesor: ' + err.message, 'error');
+        this.mostrarNotificacion('No se pudo eliminar el profesor: ' + this.mensajeError(err), 'error');
       }
     });
   }
@@ -304,6 +325,7 @@ export class ProfesoresComponent {
 
   abrirModalNuevoProfesor() {
     this.editandoId = null;
+    this.resetBloques();
     this.nuevoProfesor = { profesor_id: '', nombre: '', apellidos: '', email: '', can_be_tutor: false, materias: [], metadata: {} };
     this.modalAbierto = true;
   }

@@ -25,18 +25,17 @@
             <span>Ver</span>
         </button>
     </div>
-
-    <div class="toast" *ngIf="mostrarToast" [class.success]="isSuccess" [class.error]="!isSuccess">
-        <div class="toast-content">
-            {{ message }}
-        </div>
-        <button type="button" class="toast-close" (click)="cerrarToast()">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                <path d="M18 6l-12 12M6 6l12 12"></path>
-            </svg>
-        </button>
     </div>
 
+       <div class="toast-scheduler" *ngIf="mostrarToast" [ngClass]="toastTipo">
+       <div class="toast-content">
+           <strong>{{ message }}</strong>
+           <ul class="toast-detalles" *ngIf="toastDetalles.length">
+               <li *ngFor="let d of toastDetalles">{{ d }}</li>
+           </ul>
+       </div>
+       <button type="button" class="toast-close" (click)="cerrarToast()">…</button>
+   </div>
     <div *ngIf="modoActual === 'generar'" class="seccion-generar">
         <div class="notice-card" role="alert">
             <div class="notice-icon-wrapper">
@@ -201,7 +200,7 @@
                         <path d="M15 19l-7-7 7-7"></path>
                     </svg>
                 </button>
-                
+
                 <div class="selector-grupo">
                     <select [(ngModel)]="paginaActualGrupos" (change)="irAPaginaGrupo(paginaActualGrupos)" name="grupoSelector" class="grupo-select">
                         <option *ngFor="let pag of generarRangoNumeros(totalPaginasGrupos)" [value]="pag">
@@ -209,18 +208,18 @@
                         </option>
                     </select>
                 </div>
-                
+
                 <div class="pagination-info">
                     {{ paginaActualGrupos + 1 }} de {{ totalPaginasGrupos }}
                 </div>
-                
+
                 <button type="button" class="btn-nav" (click)="irAPaginaGrupo(paginaActualGrupos + 1)" [disabled]="paginaActualGrupos === totalPaginasGrupos - 1">
                     <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <path d="M9 5l7 7-7 7"></path>
                     </svg>
                 </button>
             </div>
-            
+
             <div class="schedules-grid">
                 <div *ngFor="let group of gruposEnPaginaActual" class="schedule-card">
                 <div class="card-header">
@@ -273,7 +272,7 @@
                         <path d="M15 19l-7-7 7-7"></path>
                     </svg>
                 </button>
-                
+
                 <div class="selector-profesor">
                     <select [(ngModel)]="paginaActualProfesores" (change)="irAPaginaProfesor(paginaActualProfesores)" name="profesorSelector" class="profesor-select">
                         <option *ngFor="let pag of generarRangoNumeros(totalPaginasProfesores)" [value]="pag">
@@ -281,18 +280,18 @@
                         </option>
                     </select>
                 </div>
-                
+
                 <div class="pagination-info">
                     {{ paginaActualProfesores + 1 }} de {{ totalPaginasProfesores }}
                 </div>
-                
+
                 <button type="button" class="btn-nav" (click)="irAPaginaProfesor(paginaActualProfesores + 1)" [disabled]="paginaActualProfesores === totalPaginasProfesores - 1">
                     <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <path d="M9 5l7 7-7 7"></path>
                     </svg>
                 </button>
             </div>
-            
+
             <div class="schedules-grid">
                 <div *ngFor="let prof of profesoresEnPaginaActual" class="schedule-card">
                 <div class="card-header">

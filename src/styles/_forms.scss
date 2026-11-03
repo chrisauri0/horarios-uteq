@@ -20,7 +20,9 @@
     grid-column: 1 / -1;
   }
 
-  label {
+  // Solo la etiqueta del campo (hijo directo). Antes era "label" a secas y también
+  // pegaba en labels anidados, como los de los días (.day-item) en profesores.
+  > label {
     font-size: 0.9rem;
     font-weight: 600;
     color: color.adjust($text, $lightness: 10%);
@@ -30,7 +32,10 @@
   // Cada componente nombra su input distinto (.input-profesor, .input-salon,
   // .input-materia, .input-carrera, .input-grupo...); se estiliza por posición
   // en vez de por esas clases para no duplicar la misma regla siete veces.
-  input,
+  //
+  // Se excluyen checkbox/radio (si no, se estiran al 100% con padding y fondo) y el
+  // input interno de ng-select (role="combobox"), que tiene su propio estilo.
+  input:not([type='checkbox']):not([type='radio']):not([role='combobox']),
   select,
   textarea {
     padding: 0.8rem 1rem;
@@ -46,6 +51,13 @@
     &:focus {
       @include focus-ring;
     }
+  }
+
+  input[type='checkbox'],
+  input[type='radio'] {
+    width: auto;
+    margin: 0;
+    accent-color: $primary;
   }
 }
 
@@ -115,62 +127,89 @@
 }
 
 // Overrides de ng-select compartidos por profesores y psicologos.
-::ng-deep ng-select.custom-select > .ng-select-container {
-  min-height: 45px;
-  border-radius: 8px;
-  border: 1px solid $border;
-  background-color: $white !important;
-  transition: all 0.2s ease;
-}
+//
+// El tema por defecto de ng-select usa selectores largos (p. ej.
+// ".ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-value"),
+// así que aquí se repite la cadena completa para ganar en especificidad. Sin eso, el
+// fondo celeste del tema le ganaba al fondo $primary, pero el color blanco de este
+// archivo sí se aplicaba: texto blanco sobre fondo claro.
+::ng-deep ng-select.custom-select {
+  // Caja principal
+  > .ng-select-container {
+    min-height: 45px;
+    border-radius: 8px;
+    border: 1px solid $border;
+    background-color: $white !important;
+    transition: all 0.2s ease;
+  }
 
-::ng-deep ng-select.custom-select.ng-select-focused > .ng-select-container {
-  border-color: $primary;
-  box-shadow: 0 0 0 3px rgba($primary, 0.1);
-  background-color: $white !important;
-}
+  &.ng-select-focused:not(.ng-select-opened) > .ng-select-container,
+  &.ng-select-opened > .ng-select-container {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    background-color: $white !important;
+  }
 
-::ng-deep ng-select.custom-select.ng-select-multiple
-  .ng-value-container:has(.ng-value)
-  .ng-placeholder {
-  display: none;
-}
+  // Etiquetas de las materias seleccionadas
+  &.ng-select-multiple .ng-select-container .ng-value-container {
+    padding: 2px 6px;
 
-::ng-deep ng-select.custom-select.ng-select-opened > .ng-select-container {
-  background-color: $white !important;
-}
+    .ng-value {
+      display: inline-flex;
+      align-items: center;
+      margin: 3px 5px 3px 0;
+      background: $primary;
+      border: 1px solid $primary;
+      border-radius: 6px;
+      color: $white;
+      font-size: 0.85rem;
 
-::ng-deep ng-select.custom-select .ng-dropdown-panel {
-  background-color: $white;
-  border-radius: 8px;
-  border: 1px solid $border;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
+      .ng-value-label {
+        padding: 2px 8px;
+        color: inherit;
+      }
 
-::ng-deep ng-select.custom-select .ng-dropdown-panel .ng-option {
-  padding: 10px 16px;
-}
+      .ng-value-icon {
+        padding: 2px 6px;
+        color: inherit;
+        border-right: 1px solid rgba(255, 255, 255, 0.3);
 
-::ng-deep ng-select.custom-select .ng-option-marked {
-  background: $secondary;
-  color: $text;
-}
+        &:hover {
+          background: rgba(0, 0, 0, 0.15);
+        }
+      }
+    }
 
-::ng-deep ng-select.custom-select .ng-option-selected {
-  background: $primary;
-  color: $white;
-}
+    // Placeholder oculto cuando ya hay etiquetas
+    &:has(.ng-value) .ng-placeholder {
+      display: none;
+    }
+  }
 
-::ng-deep ng-select.custom-select .ng-value {
-  background: $primary;
-  color: $white;
-  border-radius: 4px;
-  margin-right: 5px;
-}
+  // Lista desplegable
+  .ng-dropdown-panel {
+    background-color: $white;
+    border-radius: 8px;
+    border: 1px solid $border;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 
-::ng-deep ng-select.custom-select .ng-value-icon {
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-}
+    .ng-dropdown-panel-items {
+      max-height: 240px;
 
-::ng-deep ng-select.custom-select .ng-value-icon:hover {
-  background: rgba(0, 0, 0, 0.1);
+      .ng-option {
+        padding: 10px 16px;
+
+        &.ng-option-marked {
+          background: $secondary;
+          color: $text;
+        }
+
+        &.ng-option-selected,
+        &.ng-option-selected.ng-option-marked {
+          background: $primary;
+          color: $white;
+        }
+      }
+    }
+  }
 }
