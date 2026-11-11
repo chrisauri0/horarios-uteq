@@ -18,9 +18,11 @@
             pnpm
             typescript
             typescript-language-server
+            chromium # navegador para correr las pruebas de Karma
           ];
 
           shellHook = ''
+            export CHROME_BIN="${pkgs.chromium}/bin/chromium"
             echo "🌐 Web devShell — Node $(node -v) / pnpm $(pnpm -v)"
           '';
         };

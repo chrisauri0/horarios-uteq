@@ -1,0 +1,2077 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reporte de pruebas unitarias — Horarios UTEQ</title>
+<style>
+  :root {
+    --fondo: #f4f6f9; --tarjeta: #ffffff; --texto: #1c2430; --suave: #5d6b7c; --borde: #dfe4ea;
+    --azul: #005baa; --ok: #1e8e4f; --ok-bg: #e5f5ec; --mal: #c8323b; --mal-bg: #fbe8e9;
+    --gris-bg: #eef1f4; --amarillo: #a36a00; --amarillo-bg: #fff4dc;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--texto); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .cont { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+  header.portada { background: var(--azul); color: #fff; padding: 28px 0 24px; }
+  header.portada .cont { padding-top: 0; padding-bottom: 0; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { opacity: .85; font-size: 14px; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  .veredicto { display: inline-block; margin-top: 14px; padding: 6px 14px; border-radius: 999px; font-weight: 700; background: #fff; }
+  .veredicto--ok { color: var(--ok); } .veredicto--mal { color: var(--mal); }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 20px 0; }
+  .kpi { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 10px; padding: 14px 16px; }
+  .kpi span { display: block; color: var(--suave); font-size: 13px; }
+  .kpi strong { font-size: 28px; line-height: 1.2; }
+  .kpi--ok strong { color: var(--ok); } .kpi--mal strong { color: var(--mal); }
+  .bloque { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 10px; padding: 18px 20px; margin: 18px 0; }
+  .bloque h2 { margin: 0 0 12px; font-size: 18px; }
+  .nota { color: var(--suave); font-size: 13px; margin: 10px 0 0; }
+  .tabla-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tabla { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .tabla th { text-align: left; font-weight: 600; color: var(--suave); border-bottom: 2px solid var(--borde); padding: 8px; }
+  .tabla td { border-bottom: 1px solid var(--borde); padding: 8px; vertical-align: top; }
+  .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  td.ok { color: var(--ok); } td.mal { color: var(--mal); font-weight: 700; }
+  .id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; white-space: nowrap; color: var(--azul); }
+  .sub { color: var(--suave); font-size: 12px; }
+  .estado { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .estado--ok { background: var(--ok-bg); color: var(--ok); }
+  .estado--fallo { background: var(--mal-bg); color: var(--mal); }
+  .estado--omitida { background: var(--gris-bg); color: var(--suave); }
+  .sev { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .sev--alta { background: var(--mal-bg); color: var(--mal); }
+  .sev--media { background: var(--amarillo-bg); color: var(--amarillo); }
+  .sev--baja { background: var(--gris-bg); color: var(--suave); }
+  .controles { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .controles input { flex: 1 1 220px; padding: 8px 10px; border: 1px solid var(--borde); border-radius: 8px; font: inherit; }
+  .controles button { padding: 7px 12px; border: 1px solid var(--borde); background: #fff; border-radius: 8px; cursor: pointer; font: inherit; }
+  .controles button.activo { background: var(--azul); border-color: var(--azul); color: #fff; }
+  details.modulo { border: 1px solid var(--borde); border-radius: 8px; margin: 10px 0; background: #fff; }
+  details.modulo summary { cursor: pointer; padding: 10px 14px; display: flex; gap: 12px; align-items: center; list-style: none; }
+  details.modulo summary::-webkit-details-marker { display: none; }
+  details.modulo summary::before { content: "▸"; color: var(--suave); }
+  details.modulo[open] summary::before { content: "▾"; }
+  .modulo__nombre { font-weight: 600; flex: 1; }
+  .modulo__conteo { color: var(--suave); font-size: 13px; font-variant-numeric: tabular-nums; }
+  details.modulo .tabla { border-top: 1px solid var(--borde); }
+  pre { margin: 0; white-space: pre-wrap; word-break: break-word; background: var(--mal-bg); color: #6d1a1f; padding: 10px; border-radius: 6px; font-size: 12px; }
+  .cobertura { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .cob__cab { display: flex; justify-content: space-between; }
+  .barra { height: 8px; background: var(--gris-bg); border-radius: 99px; overflow: hidden; margin: 6px 0 4px; }
+  .barra__relleno { height: 100%; }
+  .barra__relleno--alto { background: var(--ok); } .barra__relleno--medio { background: #d99a00; } .barra__relleno--bajo { background: var(--mal); }
+  .cob small { color: var(--suave); }
+  .alerta { background: var(--mal-bg); color: var(--mal); border-radius: 8px; padding: 12px 14px; margin-top: 16px; }
+  footer { color: var(--suave); font-size: 12.5px; text-align: center; margin-top: 28px; }
+  a { color: var(--azul); }
+  @media (max-width: 640px) { header h1 { font-size: 21px; } .bloque { padding: 14px 12px; } .tabla { font-size: 13px; } }
+  @media print {
+    body { background: #fff; } .controles { display: none; }
+    details.modulo { break-inside: avoid; } details.modulo > table { display: table; }
+    header.portada { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<header class="portada">
+  <div class="cont">
+    <h1>Reporte de pruebas unitarias — Horarios UTEQ</h1>
+    <div class="meta">
+      <span>Proyecto: <strong>horarios-uteq (Angular 20)</strong></span>
+      <span>Fecha: 11 de noviembre de 2026 a las 4:12 p.m.</span>
+      <span>Duración: 11.52 s</span>
+      <span>Navegador: Chrome Headless 156.0.0.0 (Linux 0.0.0)</span>
+    </div>
+    <div class="veredicto veredicto--ok">✔ Todas las pruebas pasaron</div>
+  </div>
+</header>
+
+<main class="cont">
+  
+
+  <div class="kpis">
+    <div class="kpi"><span>Casos de prueba</span><strong>213</strong></div>
+    <div class="kpi kpi--ok"><span>Aprobadas</span><strong>213</strong></div>
+    <div class="kpi "><span>Fallidas</span><strong>0</strong></div>
+    <div class="kpi"><span>Omitidas</span><strong>0</strong></div>
+    <div class="kpi"><span>Tasa de éxito</span><strong>100%</strong></div>
+    <div class="kpi"><span>Módulos probados</span><strong>27</strong></div>
+  </div>
+
+  <section class="bloque">
+    <h2>Resumen por módulo</h2>
+    <div class="tabla-wrap"><table class="tabla">
+      <thead><tr><th>Módulo</th><th class="num">Casos</th><th class="num">Aprobadas</th><th class="num">Fallidas</th><th class="num">Omitidas</th><th class="num">Tiempo</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><a href="#App%20(componente%20ra%C3%ADz%20%2F%20layout%20principal)">App (componente raíz / layout principal)</a></td>
+          <td class="num">10</td>
+          <td class="num ok">10</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">114 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Bienvenida%20(inicio%20de%20sesi%C3%B3n)">Bienvenida (inicio de sesión)</a></td>
+          <td class="num">10</td>
+          <td class="num ok">10</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">493 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Carreras%20(CRUD%20de%20carreras)">Carreras (CRUD de carreras)</a></td>
+          <td class="num">12</td>
+          <td class="num ok">12</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">174 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#CrearHorario%20(vista%20en%20construcci%C3%B3n)">CrearHorario (vista en construcción)</a></td>
+          <td class="num">2</td>
+          <td class="num ok">2</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">31 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Dashboard%20(pantalla%20de%20inicio)">Dashboard (pantalla de inicio)</a></td>
+          <td class="num">5</td>
+          <td class="num ok">5</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">48 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Grupos%20(CRUD%20de%20grupos%20y%20tutores)">Grupos (CRUD de grupos y tutores)</a></td>
+          <td class="num">9</td>
+          <td class="num ok">9</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">190 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Horarios%20(vista%20de%20horario%20por%20grupo%20desde%20resultado.json)">Horarios (vista de horario por grupo desde resultado.json)</a></td>
+          <td class="num">8</td>
+          <td class="num ok">8</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">218 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Interceptor%20de%20autenticaci%C3%B3n%20(authInterceptor)">Interceptor de autenticación (authInterceptor)</a></td>
+          <td class="num">3</td>
+          <td class="num ok">3</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">22 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Interceptor%20de%20errores%20(errorInterceptor)">Interceptor de errores (errorInterceptor)</a></td>
+          <td class="num">3</td>
+          <td class="num ok">3</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">16 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Justificantes%20(revisi%C3%B3n%20de%20justificantes%20de%20faltas)">Justificantes (revisión de justificantes de faltas)</a></td>
+          <td class="num">13</td>
+          <td class="num ok">13</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">314 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#LandingPage%20(p%C3%A1gina%20de%20presentaci%C3%B3n)">LandingPage (página de presentación)</a></td>
+          <td class="num">4</td>
+          <td class="num ok">4</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">104 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#MainLayout%20(contenedor%20con%20navbar)">MainLayout (contenedor con navbar)</a></td>
+          <td class="num">2</td>
+          <td class="num ok">2</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">44 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Materias%20(CRUD%2C%20filtros%20y%20salones)">Materias (CRUD, filtros y salones)</a></td>
+          <td class="num">14</td>
+          <td class="num ok">14</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">365 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Navbar%20(barra%20lateral%20de%20navegaci%C3%B3n)">Navbar (barra lateral de navegación)</a></td>
+          <td class="num">6</td>
+          <td class="num ok">6</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">118 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#NotFound%20(p%C3%A1gina%20404)">NotFound (página 404)</a></td>
+          <td class="num">3</td>
+          <td class="num ok">3</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">25 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Pipe%20orderByStart%20(OrderByStartPipe)">Pipe orderByStart (OrderByStartPipe)</a></td>
+          <td class="num">5</td>
+          <td class="num ok">5</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">8 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Profesores%20(CRUD%20y%20disponibilidad%20por%20bloques)">Profesores (CRUD y disponibilidad por bloques)</a></td>
+          <td class="num">14</td>
+          <td class="num ok">14</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">309 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Psic%C3%B3logos%20(CRUD%20y%20disponibilidad)">Psicólogos (CRUD y disponibilidad)</a></td>
+          <td class="num">9</td>
+          <td class="num ok">9</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">399 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Salones%20(CRUD%2C%20b%C3%BAsqueda%20y%20paginaci%C3%B3n)">Salones (CRUD, búsqueda y paginación)</a></td>
+          <td class="num">13</td>
+          <td class="num ok">13</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">219 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Scheduler%20(generador%20de%20horarios)">Scheduler (generador de horarios)</a></td>
+          <td class="num">25</td>
+          <td class="num ok">25</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">725 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Servicio%20de%20formulario%20de%20horario%20(HorarioFormService)">Servicio de formulario de horario (HorarioFormService)</a></td>
+          <td class="num">9</td>
+          <td class="num ok">9</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">60 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Servicio%20de%20horarios%20guardados%20(SchedulerService)">Servicio de horarios guardados (SchedulerService)</a></td>
+          <td class="num">5</td>
+          <td class="num ok">5</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">44 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Servicio%20de%20TDIs%20(TdisService)">Servicio de TDIs (TdisService)</a></td>
+          <td class="num">4</td>
+          <td class="num ok">4</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">20 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#Talleres%20(vista%20en%20construcci%C3%B3n)">Talleres (vista en construcción)</a></td>
+          <td class="num">1</td>
+          <td class="num ok">1</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">14 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#TDIs%20(Tokens%20del%20Desarrollo%20Integral)">TDIs (Tokens del Desarrollo Integral)</a></td>
+          <td class="num">15</td>
+          <td class="num ok">15</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">329 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#TdisAprobarEvidencia%20(vista%20en%20construcci%C3%B3n)">TdisAprobarEvidencia (vista en construcción)</a></td>
+          <td class="num">1</td>
+          <td class="num ok">1</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">31 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr>
+        <tr>
+          <td><a href="#VerHorarios%20(consulta%20de%20horarios%20por%20grupo)">VerHorarios (consulta de horarios por grupo)</a></td>
+          <td class="num">8</td>
+          <td class="num ok">8</td>
+          <td class="num ">0</td>
+          <td class="num">0</td>
+          <td class="num">182 ms</td>
+          <td><span class="estado estado--ok">Aprobada</span></td>
+        </tr></tbody>
+    </table></div>
+  </section>
+
+  
+    <section class="bloque">
+      <h2>Cobertura de código</h2>
+      <div class="cobertura">
+        
+      <div class="cob">
+        <div class="cob__cab"><span>Sentencias</span><strong>85.0%</strong></div>
+        <div class="barra"><div class="barra__relleno barra__relleno--alto" style="width:85.04%"></div></div>
+        <small>1223 de 1438</small>
+      </div>
+        
+      <div class="cob">
+        <div class="cob__cab"><span>Ramas</span><strong>74.2%</strong></div>
+        <div class="barra"><div class="barra__relleno barra__relleno--medio" style="width:74.24%"></div></div>
+        <small>470 de 633</small>
+      </div>
+        
+      <div class="cob">
+        <div class="cob__cab"><span>Funciones</span><strong>85.2%</strong></div>
+        <div class="barra"><div class="barra__relleno barra__relleno--alto" style="width:85.19%"></div></div>
+        <small>397 de 466</small>
+      </div>
+        
+      <div class="cob">
+        <div class="cob__cab"><span>Líneas</span><strong>85.5%</strong></div>
+        <div class="barra"><div class="barra__relleno barra__relleno--alto" style="width:85.5%"></div></div>
+        <small>1115 de 1304</small>
+      </div>
+      </div>
+      <p class="nota">Detalle por archivo: <a href="cobertura/index.html">cobertura/index.html</a></p>
+    </section>
+
+  <section class="bloque">
+    <h2>Detalle de casos de prueba</h2>
+    <div class="controles">
+      <input id="buscar" type="search" placeholder="Buscar por ID, módulo o descripción…" aria-label="Buscar caso de prueba">
+      <button type="button" data-filtro="todas" class="activo">Todas</button>
+      <button type="button" data-filtro="fallo">Fallidas</button>
+      <button type="button" data-filtro="exito">Aprobadas</button>
+      <button type="button" id="expandir">Expandir todo</button>
+    </div>
+    
+      <details class="modulo" id="App%20(componente%20ra%C3%ADz%20%2F%20layout%20principal)" >
+        <summary>
+          <span class="modulo__nombre">App (componente raíz / layout principal)</span>
+          <span class="modulo__conteo">10/10</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="app-01 se crea la aplicación app (componente raíz / layout principal)">
+            <td class="id">APP-01</td>
+            <td>se crea la aplicación</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">28 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="app-02 sin sesión guardada muestra el nombre y carrera por defecto app (componente raíz / layout principal)">
+            <td class="id">APP-02</td>
+            <td>sin sesión guardada muestra el nombre y carrera por defecto</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">14 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="app-03 lee nombre y carrera del usuario guardado en localstorage app (componente raíz / layout principal)">
+            <td class="id">APP-03</td>
+            <td>lee nombre y carrera del usuario guardado en localStorage</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">3 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="app-04 si userdata está corrupto usa &quot;usuario&quot; sin romper la app app (componente raíz / layout principal)">
+            <td class="id">APP-04</td>
+            <td>si userData está corrupto usa &quot;Usuario&quot; sin romper la app</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">6 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="app-05 marca eslogin=true en /login y false en otras rutas app (componente raíz / layout principal)">
+            <td class="id">APP-05</td>
+            <td>marca esLogin=true en /login y false en otras rutas</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="app-06 en escritorio el botón de menú colapsa/expande el sidebar app (componente raíz / layout principal)">
+            <td class="id">APP-06</td>
+            <td>en escritorio el botón de menú colapsa/expande el sidebar</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">14 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="app-07 en móvil el botón de menú abre el sidebar como overlay y se cierra al tocar fuera app (componente raíz / layout principal)">
+            <td class="id">APP-07</td>
+            <td>en móvil el botón de menú abre el sidebar como overlay y se cierra al tocar fuera</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">9 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="app-08 al pasar a escritorio (resize) se cierra el overlay móvil app (componente raíz / layout principal)">
+            <td class="id">APP-08</td>
+            <td>al pasar a escritorio (resize) se cierra el overlay móvil</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">7 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="app-09 cerrar sesión confirmada borra userdata y manda a /login app (componente raíz / layout principal)">
+            <td class="id">APP-09</td>
+            <td>cerrar sesión confirmada borra userData y manda a /login</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">5 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="app-10 si el usuario cancela, la sesión se conserva app (componente raíz / layout principal)">
+            <td class="id">APP-10</td>
+            <td>si el usuario cancela, la sesión se conserva</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">11 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Bienvenida%20(inicio%20de%20sesi%C3%B3n)" >
+        <summary>
+          <span class="modulo__nombre">Bienvenida (inicio de sesión)</span>
+          <span class="modulo__conteo">10/10</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="log-01 se crea el componente con el formulario vacío bienvenida (inicio de sesión)">
+            <td class="id">LOG-01</td>
+            <td>se crea el componente con el formulario vacío</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">20 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="log-02 muestra los campos de correo y contraseña y el botón &quot;iniciar sesión&quot; bienvenida (inicio de sesión)">
+            <td class="id">LOG-02</td>
+            <td>muestra los campos de correo y contraseña y el botón &quot;Iniciar Sesión&quot;</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">20 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="log-03 el botón del ojito alterna la contraseña entre oculta y visible bienvenida (inicio de sesión)">
+            <td class="id">LOG-03</td>
+            <td>el botón del ojito alterna la contraseña entre oculta y visible</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">19 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="log-04 login correcto guarda token y usuario y redirige al dashboard bienvenida (inicio de sesión)">
+            <td class="id">LOG-04</td>
+            <td>login correcto guarda token y usuario y redirige al dashboard</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">42 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="log-05 credenciales incorrectas muestran el error y no guardan sesión bienvenida (inicio de sesión)">
+            <td class="id">LOG-05</td>
+            <td>credenciales incorrectas muestran el error y no guardan sesión</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">20 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="log-06 error del servidor muestra &quot;error al conectar con el servidor&quot; bienvenida (inicio de sesión)">
+            <td class="id">LOG-06</td>
+            <td>error del servidor muestra &quot;Error al conectar con el servidor&quot;</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">18 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="log-07 si el servidor tarda más de 4 s cambia el mensaje de carga bienvenida (inicio de sesión)">
+            <td class="id">LOG-07</td>
+            <td>si el servidor tarda más de 4 s cambia el mensaje de carga</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">13 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="log-08 después de 30 s sin respuesta muestra el aviso de timeout y luego lo limpia bienvenida (inicio de sesión)">
+            <td class="id">LOG-08</td>
+            <td>después de 30 s sin respuesta muestra el aviso de timeout y luego lo limpia</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">313 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="log-09 evita el doble envío mientras está cargando bienvenida (inicio de sesión)">
+            <td class="id">LOG-09</td>
+            <td>evita el doble envío mientras está cargando</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="log-10 mientras carga muestra el modal y deshabilita el botón bienvenida (inicio de sesión)">
+            <td class="id">LOG-10</td>
+            <td>mientras carga muestra el modal y deshabilita el botón</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">11 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Carreras%20(CRUD%20de%20carreras)" >
+        <summary>
+          <span class="modulo__nombre">Carreras (CRUD de carreras)</span>
+          <span class="modulo__conteo">12/12</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="car-01 se crea el componente y pide la lista al iniciar carreras (crud de carreras)">
+            <td class="id">CAR-01</td>
+            <td>se crea el componente y pide la lista al iniciar</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">8 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="car-02 carga las carreras, se queda solo con id y nombre y las pinta en la tabla carreras (crud de carreras)">
+            <td class="id">CAR-02</td>
+            <td>carga las carreras, se queda solo con id y nombre y las pinta en la tabla</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">29 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="car-03 si no hay carreras muestra el mensaje de tabla vacía carreras (crud de carreras)">
+            <td class="id">CAR-03</td>
+            <td>si no hay carreras muestra el mensaje de tabla vacía</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">14 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="car-04 si el backend falla al cargar se muestra notificación de error carreras (crud de carreras)">
+            <td class="id">CAR-04</td>
+            <td>si el backend falla al cargar se muestra notificación de error</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">15 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="car-05 no envía nada si el nombre está vacío o con puros espacios carreras (crud de carreras)">
+            <td class="id">CAR-05</td>
+            <td>no envía nada si el nombre está vacío o con puros espacios</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">9 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="car-06 agrega una carrera con post, la añade a la lista y cierra el modal carreras (crud de carreras)">
+            <td class="id">CAR-06</td>
+            <td>agrega una carrera con POST, la añade a la lista y cierra el modal</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">16 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="car-07 si el backend responde { error } no agrega la carrera carreras (crud de carreras)">
+            <td class="id">CAR-07</td>
+            <td>si el backend responde { error } no agrega la carrera</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">15 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="car-08 editar abre el modal con una copia y guardar hace patch /carreras/:id carreras (crud de carreras)">
+            <td class="id">CAR-08</td>
+            <td>editar abre el modal con una copia y guardar hace PATCH /carreras/:id</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">15 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="car-09 eliminar pide confirmación y solo borra (delete) al confirmar carreras (crud de carreras)">
+            <td class="id">CAR-09</td>
+            <td>eliminar pide confirmación y solo borra (DELETE) al confirmar</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">16 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="car-10 cancelar la eliminación no borra nada carreras (crud de carreras)">
+            <td class="id">CAR-10</td>
+            <td>cancelar la eliminación no borra nada</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">13 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="car-11 el modal de confirmación aparece en pantalla con el mensaje carreras (crud de carreras)">
+            <td class="id">CAR-11</td>
+            <td>el modal de confirmación aparece en pantalla con el mensaje</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">9 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="car-12 cerrar el modal limpia el formulario y el modo edición carreras (crud de carreras)">
+            <td class="id">CAR-12</td>
+            <td>cerrar el modal limpia el formulario y el modo edición</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">15 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="CrearHorario%20(vista%20en%20construcci%C3%B3n)" >
+        <summary>
+          <span class="modulo__nombre">CrearHorario (vista en construcción)</span>
+          <span class="modulo__conteo">2/2</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="crh-01 se crea el componente crearhorario (vista en construcción)">
+            <td class="id">CRH-01</td>
+            <td>se crea el componente</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">5 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="crh-02 cargarprofesores() se resuelve sin errores crearhorario (vista en construcción)">
+            <td class="id">CRH-02</td>
+            <td>cargarProfesores() se resuelve sin errores</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">26 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Dashboard%20(pantalla%20de%20inicio)" >
+        <summary>
+          <span class="modulo__nombre">Dashboard (pantalla de inicio)</span>
+          <span class="modulo__conteo">5/5</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="das-01 se crea el componente dashboard (pantalla de inicio)">
+            <td class="id">DAS-01</td>
+            <td>se crea el componente</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">4 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="das-02 saluda al usuario con su nombre y organización dashboard (pantalla de inicio)">
+            <td class="id">DAS-02</td>
+            <td>saluda al usuario con su nombre y organización</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">22 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="das-03 sin sesión redirige al inicio de sesión dashboard (pantalla de inicio)">
+            <td class="id">DAS-03</td>
+            <td>sin sesión redirige al inicio de sesión</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">13 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="das-04 muestra los 6 accesos de &quot;¿cómo empezar?&quot; con su ruta dashboard (pantalla de inicio)">
+            <td class="id">DAS-04</td>
+            <td>muestra los 6 accesos de &quot;¿Cómo empezar?&quot; con su ruta</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">5 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="das-05 togglesidebar() alterna el estado del sidebar dashboard (pantalla de inicio)">
+            <td class="id">DAS-05</td>
+            <td>toggleSidebar() alterna el estado del sidebar</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">4 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Grupos%20(CRUD%20de%20grupos%20y%20tutores)" >
+        <summary>
+          <span class="modulo__nombre">Grupos (CRUD de grupos y tutores)</span>
+          <span class="modulo__conteo">9/9</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="gru-01 al iniciar carga grupos y carreras grupos (crud de grupos y tutores)">
+            <td class="id">GRU-01</td>
+            <td>al iniciar carga grupos y carreras</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">18 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="gru-02 no crea un grupo si falta la carrera grupos (crud de grupos y tutores)">
+            <td class="id">GRU-02</td>
+            <td>no crea un grupo si falta la carrera</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">19 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="gru-03 crea el grupo con post y limpia el formulario grupos (crud de grupos y tutores)">
+            <td class="id">GRU-03</td>
+            <td>crea el grupo con POST y limpia el formulario</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">44 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="gru-04 editar y guardar hace patch /grupos/:id y reemplaza el grupo grupos (crud de grupos y tutores)">
+            <td class="id">GRU-04</td>
+            <td>editar y guardar hace PATCH /grupos/:id y reemplaza el grupo</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">19 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="gru-05 guardaredicion() sin grupo en edición no hace nada grupos (crud de grupos y tutores)">
+            <td class="id">GRU-05</td>
+            <td>guardarEdicion() sin grupo en edición no hace nada</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">21 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="gru-06 cancelaredicion() limpia el modo edición grupos (crud de grupos y tutores)">
+            <td class="id">GRU-06</td>
+            <td>cancelarEdicion() limpia el modo edición</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">19 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="gru-07 getnombretutor() regresa el nombre completo del tutor o &quot;-&quot; grupos (crud de grupos y tutores)">
+            <td class="id">GRU-07</td>
+            <td>getNombreTutor() regresa el nombre completo del tutor o &quot;-&quot;</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">18 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="gru-08 eliminar con confirmación hace delete y quita el grupo grupos (crud de grupos y tutores)">
+            <td class="id">GRU-08</td>
+            <td>eliminar con confirmación hace DELETE y quita el grupo</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="gru-09 si falla la carga de grupos se notifica grupos (crud de grupos y tutores)">
+            <td class="id">GRU-09</td>
+            <td>si falla la carga de grupos se notifica</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">15 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Horarios%20(vista%20de%20horario%20por%20grupo%20desde%20resultado.json)" >
+        <summary>
+          <span class="modulo__nombre">Horarios (vista de horario por grupo desde resultado.json)</span>
+          <span class="modulo__conteo">8/8</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="hor-01 se crea el componente horarios (vista de horario por grupo desde resultado.json)">
+            <td class="id">HOR-01</td>
+            <td>se crea el componente</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">22 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hor-02 agrupa todas las clases del resultado por grupo horarios (vista de horario por grupo desde resultado.json)">
+            <td class="id">HOR-02</td>
+            <td>agrupa todas las clases del resultado por grupo</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">21 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hor-03 formatstart() convierte &quot;lun17&quot; en &quot;lunes 17:00&quot; horarios (vista de horario por grupo desde resultado.json)">
+            <td class="id">HOR-03</td>
+            <td>formatStart() convierte &quot;Lun17&quot; en &quot;Lunes 17:00&quot;</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">21 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hor-04 formatstart() deja igual lo que no reconoce horarios (vista de horario por grupo desde resultado.json)">
+            <td class="id">HOR-04</td>
+            <td>formatStart() deja igual lo que no reconoce</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">21 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hor-05 getclase() encuentra la clase de un día y hora horarios (vista de horario por grupo desde resultado.json)">
+            <td class="id">HOR-05</td>
+            <td>getClase() encuentra la clase de un día y hora</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">20 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hor-06 pinta una tabla por grupo con los 5 días de la semana horarios (vista de horario por grupo desde resultado.json)">
+            <td class="id">HOR-06</td>
+            <td>pinta una tabla por grupo con los 5 días de la semana</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">26 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hor-07 cargarsalones() obtiene los salones del backend horarios (vista de horario por grupo desde resultado.json)">
+            <td class="id">HOR-07</td>
+            <td>cargarSalones() obtiene los salones del backend</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">44 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hor-08 cargarsalones() avisa con alert si falla horarios (vista de horario por grupo desde resultado.json)">
+            <td class="id">HOR-08</td>
+            <td>cargarSalones() avisa con alert si falla</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">43 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Interceptor%20de%20autenticaci%C3%B3n%20(authInterceptor)" >
+        <summary>
+          <span class="modulo__nombre">Interceptor de autenticación (authInterceptor)</span>
+          <span class="modulo__conteo">3/3</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="aut-01 agrega el header authorization &quot;bearer &lt;token&gt;&quot; cuando hay token guardado interceptor de autenticación (authinterceptor)">
+            <td class="id">AUT-01</td>
+            <td>agrega el header Authorization &quot;Bearer &lt;token&gt;&quot; cuando hay token guardado</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">7 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="aut-02 no agrega authorization cuando no hay token interceptor de autenticación (authinterceptor)">
+            <td class="id">AUT-02</td>
+            <td>no agrega Authorization cuando no hay token</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">3 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="aut-03 conserva los headers que ya traía la petición interceptor de autenticación (authinterceptor)">
+            <td class="id">AUT-03</td>
+            <td>conserva los headers que ya traía la petición</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">12 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Interceptor%20de%20errores%20(errorInterceptor)" >
+        <summary>
+          <span class="modulo__nombre">Interceptor de errores (errorInterceptor)</span>
+          <span class="modulo__conteo">3/3</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="err-01 ante un 401 borra el token, redirige a /login y propaga el error interceptor de errores (errorinterceptor)">
+            <td class="id">ERR-01</td>
+            <td>ante un 401 borra el token, redirige a /login y propaga el error</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">4 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="err-02 ante un 500 no cierra sesión ni redirige, pero sí propaga el error interceptor de errores (errorinterceptor)">
+            <td class="id">ERR-02</td>
+            <td>ante un 500 NO cierra sesión ni redirige, pero sí propaga el error</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">9 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="err-03 deja pasar las respuestas exitosas sin tocarlas interceptor de errores (errorinterceptor)">
+            <td class="id">ERR-03</td>
+            <td>deja pasar las respuestas exitosas sin tocarlas</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">3 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Justificantes%20(revisi%C3%B3n%20de%20justificantes%20de%20faltas)" >
+        <summary>
+          <span class="modulo__nombre">Justificantes (revisión de justificantes de faltas)</span>
+          <span class="modulo__conteo">13/13</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="jus-01 al iniciar consulta get /justificantes/admin justificantes (revisión de justificantes de faltas)">
+            <td class="id">JUS-01</td>
+            <td>al iniciar consulta GET /justificantes/admin</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="jus-02 los contadores muestran pendientes, aprobados y rechazados justificantes (revisión de justificantes de faltas)">
+            <td class="id">JUS-02</td>
+            <td>los contadores muestran pendientes, aprobados y rechazados</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">19 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="jus-03 filtra por estado justificantes (revisión de justificantes de faltas)">
+            <td class="id">JUS-03</td>
+            <td>filtra por estado</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">16 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="jus-04 busca alumno por nombre o correo (aunque no tenga nombre) justificantes (revisión de justificantes de faltas)">
+            <td class="id">JUS-04</td>
+            <td>busca alumno por nombre o correo (aunque no tenga nombre)</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">20 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="jus-05 combina filtro de estado y de alumno justificantes (revisión de justificantes de faltas)">
+            <td class="id">JUS-05</td>
+            <td>combina filtro de estado y de alumno</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">20 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="jus-06 pinta una fila por justificante y botones aprobar/rechazar solo en pendientes justificantes (revisión de justificantes de faltas)">
+            <td class="id">JUS-06</td>
+            <td>pinta una fila por justificante y botones Aprobar/Rechazar solo en pendientes</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">20 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="jus-07 sin resultados muestra el mensaje de &quot;no se encontraron justificantes&quot; justificantes (revisión de justificantes de faltas)">
+            <td class="id">JUS-07</td>
+            <td>sin resultados muestra el mensaje de &quot;No se encontraron justificantes&quot;</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">15 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="jus-08 abrir detalle carga el comentario existente y cerrar lo limpia justificantes (revisión de justificantes de faltas)">
+            <td class="id">JUS-08</td>
+            <td>abrir detalle carga el comentario existente y cerrar lo limpia</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">24 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="jus-09 aprobar hace patch /justificantes/admin/:id/estado con el comentario y actualiza la lista justificantes (revisión de justificantes de faltas)">
+            <td class="id">JUS-09</td>
+            <td>aprobar hace PATCH /justificantes/admin/:id/estado con el comentario y actualiza la lista</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">22 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="jus-10 rechazar sin comentario no manda comentarioadmin justificantes (revisión de justificantes de faltas)">
+            <td class="id">JUS-10</td>
+            <td>rechazar sin comentario no manda comentarioAdmin</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">19 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="jus-11 si falla el cambio de estado se avisa y no cambia la lista justificantes (revisión de justificantes de faltas)">
+            <td class="id">JUS-11</td>
+            <td>si falla el cambio de estado se avisa y no cambia la lista</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">87 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="jus-12 claseestado() y textoestado() traducen cada estado justificantes (revisión de justificantes de faltas)">
+            <td class="id">JUS-12</td>
+            <td>claseEstado() y textoEstado() traducen cada estado</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">18 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="jus-13 si falla la carga se notifica el error justificantes (revisión de justificantes de faltas)">
+            <td class="id">JUS-13</td>
+            <td>si falla la carga se notifica el error</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="LandingPage%20(p%C3%A1gina%20de%20presentaci%C3%B3n)" >
+        <summary>
+          <span class="modulo__nombre">LandingPage (página de presentación)</span>
+          <span class="modulo__conteo">4/4</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="lp-01 se crea el componente landingpage (página de presentación)">
+            <td class="id">LP-01</td>
+            <td>se crea el componente</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">8 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="lp-02 muestra una tarjeta por cada capacidad del sistema landingpage (página de presentación)">
+            <td class="id">LP-02</td>
+            <td>muestra una tarjeta por cada capacidad del sistema</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">13 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="lp-03 muestra los 4 pasos de &quot;¿cómo funciona?&quot; en orden landingpage (página de presentación)">
+            <td class="id">LP-03</td>
+            <td>muestra los 4 pasos de &quot;¿Cómo funciona?&quot; en orden</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">61 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="lp-04 el año actual se calcula dinámicamente landingpage (página de presentación)">
+            <td class="id">LP-04</td>
+            <td>el año actual se calcula dinámicamente</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">22 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="MainLayout%20(contenedor%20con%20navbar)" >
+        <summary>
+          <span class="modulo__nombre">MainLayout (contenedor con navbar)</span>
+          <span class="modulo__conteo">2/2</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="lay-01 se crea el componente mainlayout (contenedor con navbar)">
+            <td class="id">LAY-01</td>
+            <td>se crea el componente</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="lay-02 incluye la barra de navegación y el router-outlet mainlayout (contenedor con navbar)">
+            <td class="id">LAY-02</td>
+            <td>incluye la barra de navegación y el router-outlet</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">27 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Materias%20(CRUD%2C%20filtros%20y%20salones)" >
+        <summary>
+          <span class="modulo__nombre">Materias (CRUD, filtros y salones)</span>
+          <span class="modulo__conteo">14/14</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="mat-01 al iniciar pide materias, carreras y salones materias (crud, filtros y salones)">
+            <td class="id">MAT-01</td>
+            <td>al iniciar pide materias, carreras y salones</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">21 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="mat-02 normaliza los salones que vienen del backend (arreglo, objeto o texto) materias (crud, filtros y salones)">
+            <td class="id">MAT-02</td>
+            <td>normaliza los salones que vienen del backend (arreglo, objeto o texto)</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">22 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="mat-03 getsaloneslist() acepta todos los formatos de salones materias (crud, filtros y salones)">
+            <td class="id">MAT-03</td>
+            <td>getSalonesList() acepta todos los formatos de salones</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">10 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="mat-04 formatsalones() une con coma o muestra &quot;-&quot; si no hay materias (crud, filtros y salones)">
+            <td class="id">MAT-04</td>
+            <td>formatSalones() une con coma o muestra &quot;-&quot; si no hay</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">16 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="mat-05 filtra por nombre (sin importar mayúsculas), carrera, grado y salón materias (crud, filtros y salones)">
+            <td class="id">MAT-05</td>
+            <td>filtra por nombre (sin importar mayúsculas), carrera, grado y salón</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">27 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="mat-06 limpiarfiltros() regresa a la lista completa materias (crud, filtros y salones)">
+            <td class="id">MAT-06</td>
+            <td>limpiarFiltros() regresa a la lista completa</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="mat-07 togglesalon() agrega y quita salones de la materia en edición sin duplicar materias (crud, filtros y salones)">
+            <td class="id">MAT-07</td>
+            <td>toggleSalon() agrega y quita salones de la materia en edición sin duplicar</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">33 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="mat-08 no crea una materia sin nombre materias (crud, filtros y salones)">
+            <td class="id">MAT-08</td>
+            <td>no crea una materia sin nombre</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">32 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="mat-09 no crea una materia sin al menos un salón materias (crud, filtros y salones)">
+            <td class="id">MAT-09</td>
+            <td>no crea una materia sin al menos un salón</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">30 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="mat-10 crea la materia con post y la agrega a la lista materias (crud, filtros y salones)">
+            <td class="id">MAT-10</td>
+            <td>crea la materia con POST y la agrega a la lista</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">25 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="mat-11 si grado u horas vienen vacíos manda 1 por defecto materias (crud, filtros y salones)">
+            <td class="id">MAT-11</td>
+            <td>si grado u horas vienen vacíos manda 1 por defecto</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">25 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="mat-12 editar y guardar hace patch /materias/:id y actualiza la materia materias (crud, filtros y salones)">
+            <td class="id">MAT-12</td>
+            <td>editar y guardar hace PATCH /materias/:id y actualiza la materia</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">18 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="mat-13 eliminar con confirmación hace delete y quita la materia materias (crud, filtros y salones)">
+            <td class="id">MAT-13</td>
+            <td>eliminar con confirmación hace DELETE y quita la materia</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">72 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="mat-14 si falla la carga de materias se notifica el error materias (crud, filtros y salones)">
+            <td class="id">MAT-14</td>
+            <td>si falla la carga de materias se notifica el error</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Navbar%20(barra%20lateral%20de%20navegaci%C3%B3n)" >
+        <summary>
+          <span class="modulo__nombre">Navbar (barra lateral de navegación)</span>
+          <span class="modulo__conteo">6/6</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="nav-01 se crea el componente navbar (barra lateral de navegación)">
+            <td class="id">NAV-01</td>
+            <td>se crea el componente</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">20 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="nav-02 muestra los datos del usuario guardado navbar (barra lateral de navegación)">
+            <td class="id">NAV-02</td>
+            <td>muestra los datos del usuario guardado</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">5 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="nav-03 si los campos no son texto usa valores por defecto navbar (barra lateral de navegación)">
+            <td class="id">NAV-03</td>
+            <td>si los campos no son texto usa valores por defecto</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">12 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="nav-04 detecta la pantalla de login al navegar navbar (barra lateral de navegación)">
+            <td class="id">NAV-04</td>
+            <td>detecta la pantalla de login al navegar</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">34 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="nav-05 cerrar sesión confirmada limpia userdata y redirige a /login navbar (barra lateral de navegación)">
+            <td class="id">NAV-05</td>
+            <td>cerrar sesión confirmada limpia userData y redirige a /login</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">14 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="nav-06 alterna el sidebar según el tamaño de pantalla navbar (barra lateral de navegación)">
+            <td class="id">NAV-06</td>
+            <td>alterna el sidebar según el tamaño de pantalla</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">33 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="NotFound%20(p%C3%A1gina%20404)" >
+        <summary>
+          <span class="modulo__nombre">NotFound (página 404)</span>
+          <span class="modulo__conteo">3/3</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="nf-01 se crea el componente notfound (página 404)">
+            <td class="id">NF-01</td>
+            <td>se crea el componente</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="nf-02 muestra el código 404 y el título &quot;página no encontrada&quot; notfound (página 404)">
+            <td class="id">NF-02</td>
+            <td>muestra el código 404 y el título &quot;Página no encontrada&quot;</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">3 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="nf-03 muestra el botón &quot;volver al inicio&quot; notfound (página 404)">
+            <td class="id">NF-03</td>
+            <td>muestra el botón &quot;Volver al inicio&quot;</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">5 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Pipe%20orderByStart%20(OrderByStartPipe)" >
+        <summary>
+          <span class="modulo__nombre">Pipe orderByStart (OrderByStartPipe)</span>
+          <span class="modulo__conteo">5/5</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="ord-01 ordena las clases por día de la semana y luego por hora pipe orderbystart (orderbystartpipe)">
+            <td class="id">ORD-01</td>
+            <td>ordena las clases por día de la semana y luego por hora</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">2 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ord-02 no modifica el arreglo original (regresa una copia) pipe orderbystart (orderbystartpipe)">
+            <td class="id">ORD-02</td>
+            <td>no modifica el arreglo original (regresa una copia)</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">2 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ord-03 los días desconocidos (p. ej. dom) quedan al final pipe orderbystart (orderbystartpipe)">
+            <td class="id">ORD-03</td>
+            <td>los días desconocidos (p. ej. Dom) quedan al final</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">1 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ord-04 si el formato no es válido conserva el orden relativo pipe orderbystart (orderbystartpipe)">
+            <td class="id">ORD-04</td>
+            <td>si el formato no es válido conserva el orden relativo</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">2 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ord-05 regresa un arreglo vacío si recibe uno vacío pipe orderbystart (orderbystartpipe)">
+            <td class="id">ORD-05</td>
+            <td>regresa un arreglo vacío si recibe uno vacío</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">1 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Profesores%20(CRUD%20y%20disponibilidad%20por%20bloques)" >
+        <summary>
+          <span class="modulo__nombre">Profesores (CRUD y disponibilidad por bloques)</span>
+          <span class="modulo__conteo">14/14</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="pro-01 al iniciar carga profesores y las materias para el selector profesores (crud y disponibilidad por bloques)">
+            <td class="id">PRO-01</td>
+            <td>al iniciar carga profesores y las materias para el selector</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">15 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="pro-02 el buscador encuentra por nombre, apellidos, correo o materia profesores (crud y disponibilidad por bloques)">
+            <td class="id">PRO-02</td>
+            <td>el buscador encuentra por nombre, apellidos, correo o materia</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">9 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="pro-03 toggledia() marca y desmarca días de un bloque profesores (crud y disponibilidad por bloques)">
+            <td class="id">PRO-03</td>
+            <td>toggleDia() marca y desmarca días de un bloque</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">11 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="pro-04 un día ya usado en otro bloque queda bloqueado profesores (crud y disponibilidad por bloques)">
+            <td class="id">PRO-04</td>
+            <td>un día ya usado en otro bloque queda bloqueado</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">106 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="pro-05 eliminarbloque() quita el bloque, y si es el último lo deja vacío profesores (crud y disponibilidad por bloques)">
+            <td class="id">PRO-05</td>
+            <td>eliminarBloque() quita el bloque, y si es el último lo deja vacío</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="pro-06 no crea un profesor si faltan nombre, apellidos o email profesores (crud y disponibilidad por bloques)">
+            <td class="id">PRO-06</td>
+            <td>no crea un profesor si faltan nombre, apellidos o email</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">20 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="pro-07 crea el profesor enviando solo los bloques de disponibilidad completos profesores (crud y disponibilidad por bloques)">
+            <td class="id">PRO-07</td>
+            <td>crea el profesor enviando solo los bloques de disponibilidad completos</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">15 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="pro-08 muestra el mensaje real del backend cuando falla la creación profesores (crud y disponibilidad por bloques)">
+            <td class="id">PRO-08</td>
+            <td>muestra el mensaje real del backend cuando falla la creación</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">28 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="pro-09 traduce errores de conexión y de sesión a mensajes entendibles profesores (crud y disponibilidad por bloques)">
+            <td class="id">PRO-09</td>
+            <td>traduce errores de conexión y de sesión a mensajes entendibles</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">13 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="pro-10 editar carga los bloques guardados en metadata.disponibilidad profesores (crud y disponibilidad por bloques)">
+            <td class="id">PRO-10</td>
+            <td>editar carga los bloques guardados en metadata.disponibilidad</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">18 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="pro-11 guardar edición hace patch /profesores/:id, actualiza y recarga la lista profesores (crud y disponibilidad por bloques)">
+            <td class="id">PRO-11</td>
+            <td>guardar edición hace PATCH /profesores/:id, actualiza y recarga la lista</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">15 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="pro-12 si el patch responde 200 con { error } no se toma como éxito profesores (crud y disponibilidad por bloques)">
+            <td class="id">PRO-12</td>
+            <td>si el PATCH responde 200 con { error } no se toma como éxito</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">18 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="pro-13 guardar edición sin profesor identificado no manda nada profesores (crud y disponibilidad por bloques)">
+            <td class="id">PRO-13</td>
+            <td>guardar edición sin profesor identificado no manda nada</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">10 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="pro-14 eliminar con confirmación hace delete y lo quita de la lista profesores (crud y disponibilidad por bloques)">
+            <td class="id">PRO-14</td>
+            <td>eliminar con confirmación hace DELETE y lo quita de la lista</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">14 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Psic%C3%B3logos%20(CRUD%20y%20disponibilidad)" >
+        <summary>
+          <span class="modulo__nombre">Psicólogos (CRUD y disponibilidad)</span>
+          <span class="modulo__conteo">9/9</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="psi-01 al iniciar carga la lista de psicólogos psicólogos (crud y disponibilidad)">
+            <td class="id">PSI-01</td>
+            <td>al iniciar carga la lista de psicólogos</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">29 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="psi-02 toggledia() marca y desmarca días del bloque psicólogos (crud y disponibilidad)">
+            <td class="id">PSI-02</td>
+            <td>toggleDia() marca y desmarca días del bloque</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">21 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="psi-03 no crea si faltan nombre, apellidos o email psicólogos (crud y disponibilidad)">
+            <td class="id">PSI-03</td>
+            <td>no crea si faltan nombre, apellidos o email</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">34 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="psi-04 no crea si no hay al menos un bloque de disponibilidad completo psicólogos (crud y disponibilidad)">
+            <td class="id">PSI-04</td>
+            <td>no crea si no hay al menos un bloque de disponibilidad completo</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">157 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="psi-05 crea el psicólogo con post enviando solo bloques completos psicólogos (crud y disponibilidad)">
+            <td class="id">PSI-05</td>
+            <td>crea el psicólogo con POST enviando solo bloques completos</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">39 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="psi-06 si el backend responde { error } no se agrega psicólogos (crud y disponibilidad)">
+            <td class="id">PSI-06</td>
+            <td>si el backend responde { error } no se agrega</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">27 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="psi-07 editar copia los bloques y guardar hace patch /psicologos/:id psicólogos (crud y disponibilidad)">
+            <td class="id">PSI-07</td>
+            <td>editar copia los bloques y guardar hace PATCH /psicologos/:id</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">33 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="psi-08 un psicólogo sin disponibilidad se edita con un bloque vacío psicólogos (crud y disponibilidad)">
+            <td class="id">PSI-08</td>
+            <td>un psicólogo sin disponibilidad se edita con un bloque vacío</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">30 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="psi-09 eliminar con confirmación hace delete y lo quita de la lista psicólogos (crud y disponibilidad)">
+            <td class="id">PSI-09</td>
+            <td>eliminar con confirmación hace DELETE y lo quita de la lista</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">29 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Salones%20(CRUD%2C%20b%C3%BAsqueda%20y%20paginaci%C3%B3n)" >
+        <summary>
+          <span class="modulo__nombre">Salones (CRUD, búsqueda y paginación)</span>
+          <span class="modulo__conteo">13/13</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="sal-01 se crea el componente y toma el nombre del usuario en sesión salones (crud, búsqueda y paginación)">
+            <td class="id">SAL-01</td>
+            <td>se crea el componente y toma el nombre del usuario en sesión</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">11 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sal-02 sin sesión usa &quot;usuario&quot; como nombre salones (crud, búsqueda y paginación)">
+            <td class="id">SAL-02</td>
+            <td>sin sesión usa &quot;Usuario&quot; como nombre</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">14 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sal-03 carga los salones y los muestra en la tabla salones (crud, búsqueda y paginación)">
+            <td class="id">SAL-03</td>
+            <td>carga los salones y los muestra en la tabla</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">8 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sal-04 no permite guardar un salón sin nombre salones (crud, búsqueda y paginación)">
+            <td class="id">SAL-04</td>
+            <td>no permite guardar un salón sin nombre</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">16 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sal-05 agrega un salón con post y cierra el modal salones (crud, búsqueda y paginación)">
+            <td class="id">SAL-05</td>
+            <td>agrega un salón con POST y cierra el modal</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">15 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sal-06 editar y guardar hace patch /salones/:id y actualiza la fila salones (crud, búsqueda y paginación)">
+            <td class="id">SAL-06</td>
+            <td>editar y guardar hace PATCH /salones/:id y actualiza la fila</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">13 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sal-07 eliminar solo hace delete después de confirmar salones (crud, búsqueda y paginación)">
+            <td class="id">SAL-07</td>
+            <td>eliminar solo hace DELETE después de confirmar</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">6 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sal-08 si falla el delete el salón se conserva y se avisa salones (crud, búsqueda y paginación)">
+            <td class="id">SAL-08</td>
+            <td>si falla el DELETE el salón se conserva y se avisa</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">15 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sal-09 la búsqueda filtra sin importar mayúsculas y regresa a la página 1 salones (crud, búsqueda y paginación)">
+            <td class="id">SAL-09</td>
+            <td>la búsqueda filtra sin importar mayúsculas y regresa a la página 1</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">14 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sal-10 la búsqueda sin resultados muestra el mensaje correspondiente salones (crud, búsqueda y paginación)">
+            <td class="id">SAL-10</td>
+            <td>la búsqueda sin resultados muestra el mensaje correspondiente</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">18 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sal-11 pagina de 10 en 10 (25 salones = 3 páginas) salones (crud, búsqueda y paginación)">
+            <td class="id">SAL-11</td>
+            <td>pagina de 10 en 10 (25 salones = 3 páginas)</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sal-12 no permite ir a páginas fuera de rango salones (crud, búsqueda y paginación)">
+            <td class="id">SAL-12</td>
+            <td>no permite ir a páginas fuera de rango</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">61 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sal-13 la paginación solo aparece cuando hay más de una página salones (crud, búsqueda y paginación)">
+            <td class="id">SAL-13</td>
+            <td>la paginación solo aparece cuando hay más de una página</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">11 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Scheduler%20(generador%20de%20horarios)" >
+        <summary>
+          <span class="modulo__nombre">Scheduler (generador de horarios)</span>
+          <span class="modulo__conteo">25/25</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="sch-01 se crea el componente y muestra el título scheduler (generador de horarios)">
+            <td class="id">SCH-01</td>
+            <td>se crea el componente y muestra el título</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">23 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-02 al iniciar pide el preview, los horarios creados y despierta el servidor de python scheduler (generador de horarios)">
+            <td class="id">SCH-02</td>
+            <td>al iniciar pide el preview, los horarios creados y despierta el servidor de Python</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">25 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-03 lee división y turno del usuario guardado scheduler (generador de horarios)">
+            <td class="id">SCH-03</td>
+            <td>lee división y turno del usuario guardado</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">10 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-04 manda el token en las peticiones al backend scheduler (generador de horarios)">
+            <td class="id">SCH-04</td>
+            <td>manda el token en las peticiones al backend</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">22 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-05 el preview filtra grupos y salones por la división del usuario y los ordena scheduler (generador de horarios)">
+            <td class="id">SCH-05</td>
+            <td>el preview filtra grupos y salones por la división del usuario y los ordena</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">18 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-06 sin división en sesión muestra todos los grupos scheduler (generador de horarios)">
+            <td class="id">SCH-06</td>
+            <td>sin división en sesión muestra todos los grupos</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">21 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-07 normaliza profesores (nombre completo, materias y disponibilidad en json o texto) scheduler (generador de horarios)">
+            <td class="id">SCH-07</td>
+            <td>normaliza profesores (nombre completo, materias y disponibilidad en JSON o texto)</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">7 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-08 normaliza los salones de cada materia scheduler (generador de horarios)">
+            <td class="id">SCH-08</td>
+            <td>normaliza los salones de cada materia</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">19 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-09 si falla algún catálogo avisa cuáles no se pudieron cargar scheduler (generador de horarios)">
+            <td class="id">SCH-09</td>
+            <td>si falla algún catálogo avisa cuáles no se pudieron cargar</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">30 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-10 los contadores y &quot;seleccionar todo&quot; funcionan por catálogo scheduler (generador de horarios)">
+            <td class="id">SCH-10</td>
+            <td>los contadores y &quot;seleccionar todo&quot; funcionan por catálogo</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">20 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-11 agrupa los horarios guardados por grupo y por profesor scheduler (generador de horarios)">
+            <td class="id">SCH-11</td>
+            <td>agrupa los horarios guardados por grupo y por profesor</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">23 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-12 normaliza clases con formato {dia, hora, materia...} al formato de la tabla scheduler (generador de horarios)">
+            <td class="id">SCH-12</td>
+            <td>normaliza clases con formato {dia, hora, materia...} al formato de la tabla</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">32 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-13 una clase sin datos recibe valores por defecto scheduler (generador de horarios)">
+            <td class="id">SCH-13</td>
+            <td>una clase sin datos recibe valores por defecto</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">15 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-14 si el backend responde 401 al cargar horarios avisa que la sesión expiró scheduler (generador de horarios)">
+            <td class="id">SCH-14</td>
+            <td>si el backend responde 401 al cargar horarios avisa que la sesión expiró</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-15 getclasecolorclass() asigna siempre el mismo color a la misma materia scheduler (generador de horarios)">
+            <td class="id">SCH-15</td>
+            <td>getClaseColorClass() asigna siempre el mismo color a la misma materia</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">26 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-16 no genera si no hay nada seleccionado y dice qué falta scheduler (generador de horarios)">
+            <td class="id">SCH-16</td>
+            <td>no genera si no hay nada seleccionado y dice qué falta</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">14 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-17 genera en python, guarda en nest y cambia a la vista de horarios scheduler (generador de horarios)">
+            <td class="id">SCH-17</td>
+            <td>genera en Python, guarda en Nest y cambia a la vista de horarios</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-18 si el generador deja materias fuera, guarda y muestra advertencia con el detalle scheduler (generador de horarios)">
+            <td class="id">SCH-18</td>
+            <td>si el generador deja materias fuera, guarda y muestra advertencia con el detalle</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">37 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-19 si el generador responde error muestra el mensaje y la referencia del job scheduler (generador de horarios)">
+            <td class="id">SCH-19</td>
+            <td>si el generador responde error muestra el mensaje y la referencia del job</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">23 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-20 si el generador responde sin clases no intenta guardar scheduler (generador de horarios)">
+            <td class="id">SCH-20</td>
+            <td>si el generador responde sin clases no intenta guardar</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">56 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-21 si se genera pero no se puede guardar lo indica claramente scheduler (generador de horarios)">
+            <td class="id">SCH-21</td>
+            <td>si se genera pero no se puede guardar lo indica claramente</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">24 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-22 sin conexión con el generador muestra mensaje de red scheduler (generador de horarios)">
+            <td class="id">SCH-22</td>
+            <td>sin conexión con el generador muestra mensaje de red</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">24 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-23 la paginación de grupos y profesores respeta los límites scheduler (generador de horarios)">
+            <td class="id">SCH-23</td>
+            <td>la paginación de grupos y profesores respeta los límites</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">13 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-24 los detalles largos del toast se resumen a 6 elementos scheduler (generador de horarios)">
+            <td class="id">SCH-24</td>
+            <td>los detalles largos del toast se resumen a 6 elementos</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">10 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="sch-25 cambiarmodo() y cerrartoast() actualizan la vista scheduler (generador de horarios)">
+            <td class="id">SCH-25</td>
+            <td>cambiarModo() y cerrarToast() actualizan la vista</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">199 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Servicio%20de%20formulario%20de%20horario%20(HorarioFormService)" >
+        <summary>
+          <span class="modulo__nombre">Servicio de formulario de horario (HorarioFormService)</span>
+          <span class="modulo__conteo">9/9</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="hfs-01 buildhorario() sin datos crea un formulario vacío e inválido (nombre requerido) servicio de formulario de horario (horarioformservice)">
+            <td class="id">HFS-01</td>
+            <td>buildHorario() sin datos crea un formulario vacío e inválido (nombre requerido)</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">4 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hfs-02 buildhorario() con datos arma días y clases anidados y gethorariovalue() los regresa igual servicio de formulario de horario (horarioformservice)">
+            <td class="id">HFS-02</td>
+            <td>buildHorario() con datos arma días y clases anidados y getHorarioValue() los regresa igual</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">6 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hfs-03 valida el formato de hora hh:mm (24 h) servicio de formulario de horario (horarioformservice)">
+            <td class="id">HFS-03</td>
+            <td>valida el formato de hora HH:mm (24 h)</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">4 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hfs-04 una clase sin profesor, materia o salón es inválida servicio de formulario de horario (horarioformservice)">
+            <td class="id">HFS-04</td>
+            <td>una clase sin profesor, materia o salón es inválida</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">9 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hfs-05 creatediagroup() usa &quot;lun&quot; como día por defecto servicio de formulario de horario (horarioformservice)">
+            <td class="id">HFS-05</td>
+            <td>createDiaGroup() usa &quot;Lun&quot; como día por defecto</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">9 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hfs-06 adddia() / removedia() agregan y quitan días servicio de formulario de horario (horarioformservice)">
+            <td class="id">HFS-06</td>
+            <td>addDia() / removeDia() agregan y quitan días</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">10 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hfs-07 addclase() / removeclase() agregan y quitan clases de un día servicio de formulario de horario (horarioformservice)">
+            <td class="id">HFS-07</td>
+            <td>addClase() / removeClase() agregan y quitan clases de un día</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">6 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hfs-08 findconflictsindia() detecta clases que se enciman servicio de formulario de horario (horarioformservice)">
+            <td class="id">HFS-08</td>
+            <td>findConflictsInDia() detecta clases que se enciman</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">9 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="hfs-09 findconflictsindia() no marca conflicto en clases consecutivas servicio de formulario de horario (horarioformservice)">
+            <td class="id">HFS-09</td>
+            <td>findConflictsInDia() no marca conflicto en clases consecutivas</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">3 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Servicio%20de%20horarios%20guardados%20(SchedulerService)" >
+        <summary>
+          <span class="modulo__nombre">Servicio de horarios guardados (SchedulerService)</span>
+          <span class="modulo__conteo">5/5</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="ssv-01 sin caché consulta /scheduler/allschedules y guarda la respuesta en localstorage servicio de horarios guardados (schedulerservice)">
+            <td class="id">SSV-01</td>
+            <td>sin caché consulta /scheduler/allschedules y guarda la respuesta en localStorage</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">13 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ssv-02 con caché regresa los datos guardados sin llamar al backend servicio de horarios guardados (schedulerservice)">
+            <td class="id">SSV-02</td>
+            <td>con caché regresa los datos guardados sin llamar al backend</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">6 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ssv-03 si el backend responde con error regresa [] y no guarda caché servicio de horarios guardados (schedulerservice)">
+            <td class="id">SSV-03</td>
+            <td>si el backend responde con error regresa [] y no guarda caché</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">8 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ssv-04 si no hay conexión (fetch rechaza) regresa [] servicio de horarios guardados (schedulerservice)">
+            <td class="id">SSV-04</td>
+            <td>si no hay conexión (fetch rechaza) regresa []</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">14 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ssv-05 clearcache() elimina la caché de horarios servicio de horarios guardados (schedulerservice)">
+            <td class="id">SSV-05</td>
+            <td>clearCache() elimina la caché de horarios</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">3 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Servicio%20de%20TDIs%20(TdisService)" >
+        <summary>
+          <span class="modulo__nombre">Servicio de TDIs (TdisService)</span>
+          <span class="modulo__conteo">4/4</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="tds-01 getall() hace get a /tdis y regresa la lista servicio de tdis (tdisservice)">
+            <td class="id">TDS-01</td>
+            <td>getAll() hace GET a /tdis y regresa la lista</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">5 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tds-02 create() hace post a /tdis con el dto en el body servicio de tdis (tdisservice)">
+            <td class="id">TDS-02</td>
+            <td>create() hace POST a /tdis con el DTO en el body</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">7 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tds-03 update() hace patch a /tdis/:id servicio de tdis (tdisservice)">
+            <td class="id">TDS-03</td>
+            <td>update() hace PATCH a /tdis/:id</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">5 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tds-04 delete() hace delete a /tdis/:id servicio de tdis (tdisservice)">
+            <td class="id">TDS-04</td>
+            <td>delete() hace DELETE a /tdis/:id</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">3 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="Talleres%20(vista%20en%20construcci%C3%B3n)" >
+        <summary>
+          <span class="modulo__nombre">Talleres (vista en construcción)</span>
+          <span class="modulo__conteo">1/1</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="tal-01 se crea el componente talleres (vista en construcción)">
+            <td class="id">TAL-01</td>
+            <td>se crea el componente</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">14 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="TDIs%20(Tokens%20del%20Desarrollo%20Integral)" >
+        <summary>
+          <span class="modulo__nombre">TDIs (Tokens del Desarrollo Integral)</span>
+          <span class="modulo__conteo">15/15</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="tdi-01 al iniciar carga los tdis y quita el estado de carga tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-01</td>
+            <td>al iniciar carga los TDIs y quita el estado de carga</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">14 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tdi-02 si falla la carga muestra error y quita el estado de carga tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-02</td>
+            <td>si falla la carga muestra error y quita el estado de carga</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">12 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tdi-03 calcula el total de tdis y la suma de tokens por ganar tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-03</td>
+            <td>calcula el total de TDIs y la suma de tokens por ganar</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tdi-04 el buscador filtra por cualquier campo sin importar mayúsculas tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-04</td>
+            <td>el buscador filtra por cualquier campo sin importar mayúsculas</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">18 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tdi-05 muestra la etiqueta del nivel de impacto tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-05</td>
+            <td>muestra la etiqueta del nivel de impacto</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">18 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tdi-06 pinta las filas en la tabla tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-06</td>
+            <td>pinta las filas en la tabla</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">18 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tdi-07 no guarda si faltan eje, nombre, persona encargada o correo tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-07</td>
+            <td>no guarda si faltan eje, nombre, persona encargada o correo</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">34 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tdi-08 agregar limpia espacios, convierte números y recarga la lista tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-08</td>
+            <td>agregar limpia espacios, convierte números y recarga la lista</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">18 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tdi-09 si el eje ya existe (409) muestra el mensaje específico tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-09</td>
+            <td>si el eje ya existe (409) muestra el mensaje específico</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">16 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tdi-10 editar abre el modal y guardar llama a update(id, tdi) tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-10</td>
+            <td>editar abre el modal y guardar llama a update(id, tdi)</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">18 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tdi-11 guardaredicion() sin modo edición no llama al servicio tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-11</td>
+            <td>guardarEdicion() sin modo edición no llama al servicio</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">19 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tdi-12 eliminar pide confirmación y solo borra al confirmar tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-12</td>
+            <td>eliminar pide confirmación y solo borra al confirmar</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">85 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tdi-13 un tdi sin id no se puede eliminar tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-13</td>
+            <td>un TDI sin id no se puede eliminar</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">10 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tdi-14 versolicitud() abre la solicitud existente o avisa si no existe tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-14</td>
+            <td>verSolicitud() abre la solicitud existente o avisa si no existe</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">17 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="tdi-15 cerrar el modal regresa el formulario a valores vacíos tdis (tokens del desarrollo integral)">
+            <td class="id">TDI-15</td>
+            <td>cerrar el modal regresa el formulario a valores vacíos</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">15 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="TdisAprobarEvidencia%20(vista%20en%20construcci%C3%B3n)" >
+        <summary>
+          <span class="modulo__nombre">TdisAprobarEvidencia (vista en construcción)</span>
+          <span class="modulo__conteo">1/1</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="tae-01 se crea el componente tdisaprobarevidencia (vista en construcción)">
+            <td class="id">TAE-01</td>
+            <td>se crea el componente</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">31 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+      <details class="modulo" id="VerHorarios%20(consulta%20de%20horarios%20por%20grupo)" >
+        <summary>
+          <span class="modulo__nombre">VerHorarios (consulta de horarios por grupo)</span>
+          <span class="modulo__conteo">8/8</span>
+          <span class="estado estado--ok">Aprobada</span>
+        </summary>
+        <div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>ID</th><th>Caso de prueba</th><th>Resultado</th><th class="num">Tiempo</th></tr></thead>
+          <tbody>
+          <tr data-estado="exito" data-texto="ver-01 se crea el componente verhorarios (consulta de horarios por grupo)">
+            <td class="id">VER-01</td>
+            <td>se crea el componente</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">45 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ver-02 carga los grupos y selecciona el primero verhorarios (consulta de horarios por grupo)">
+            <td class="id">VER-02</td>
+            <td>carga los grupos y selecciona el primero</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">32 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ver-03 acepta también la respuesta con formato { schedules: [...] } verhorarios (consulta de horarios por grupo)">
+            <td class="id">VER-03</td>
+            <td>acepta también la respuesta con formato { schedules: [...] }</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">19 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ver-04 si no hay horarios no selecciona grupo verhorarios (consulta de horarios por grupo)">
+            <td class="id">VER-04</td>
+            <td>si no hay horarios no selecciona grupo</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">6 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ver-05 gethorariosporgrupo() regresa solo las clases del grupo seleccionado verhorarios (consulta de horarios por grupo)">
+            <td class="id">VER-05</td>
+            <td>getHorariosPorGrupo() regresa solo las clases del grupo seleccionado</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">22 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ver-06 gethorariogrid() acomoda cada clase en su día y hora verhorarios (consulta de horarios por grupo)">
+            <td class="id">VER-06</td>
+            <td>getHorarioGrid() acomoda cada clase en su día y hora</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">23 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ver-07 pinta la tabla con las materias del grupo seleccionado verhorarios (consulta de horarios por grupo)">
+            <td class="id">VER-07</td>
+            <td>pinta la tabla con las materias del grupo seleccionado</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">22 ms</td>
+          </tr>
+          <tr data-estado="exito" data-texto="ver-08 si el grupo no tiene clases muestra &quot;no hay horarios disponibles.&quot; verhorarios (consulta de horarios por grupo)">
+            <td class="id">VER-08</td>
+            <td>si el grupo no tiene clases muestra &quot;No hay horarios disponibles.&quot;</td>
+            <td><span class="estado estado--ok">Aprobada</span></td>
+            <td class="num">13 ms</td>
+          </tr></tbody>
+        </table></div>
+      </details>
+  </section>
+
+  
+    <section class="bloque">
+      <h2>Hallazgos detectados durante las pruebas</h2>
+      <p class="nota">Observaciones sobre el código de la aplicación encontradas al diseñar los casos de prueba.</p>
+      <div class="tabla-wrap"><table class="tabla">
+        <thead><tr><th>ID</th><th>Severidad</th><th>Módulo</th><th>Descripción</th><th>Recomendación</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td class="id">H-01</td>
+              <td><span class="sev sev--alta">Alta</span></td>
+              <td>App / Navbar — cerrar sesión</td>
+              <td>cerrarSesion() solo borra 'userData'; el 'token' se queda en localStorage y authInterceptor lo sigue mandando en cada petición después de cerrar sesión.<div class="sub">Evidencia: APP-09, NAV-05 y AUT-01 (el interceptor agrega el token mientras exista)</div></td>
+              <td>Agregar localStorage.removeItem('token') en cerrarSesion() de app.ts y navbar.ts.</td>
+            </tr>
+            <tr>
+              <td class="id">H-02</td>
+              <td><span class="sev sev--media">Media</span></td>
+              <td>NotFound (404)</td>
+              <td>La plantilla usa routerLink=&quot;/&quot; pero el componente no importa RouterLink, así que el botón 'Volver al inicio' se renderiza como un &lt;a&gt; sin href y no navega.<div class="sub">Evidencia: NF-03 (el botón existe, pero no tiene href)</div></td>
+              <td>Agregar RouterLink al arreglo imports del componente NotFound.</td>
+            </tr>
+            <tr>
+              <td class="id">H-03</td>
+              <td><span class="sev sev--media">Media</span></td>
+              <td>Carreras</td>
+              <td>El componente llena 'notificacion' (éxito y error) pero carreras.html no tiene el modal de notificación, así que el usuario nunca ve esos mensajes.<div class="sub">Evidencia: CAR-04, CAR-06, CAR-07</div></td>
+              <td>Copiar el bloque de notificación que ya usan salones.html o materias.html.</td>
+            </tr>
+            <tr>
+              <td class="id">H-04</td>
+              <td><span class="sev sev--baja">Baja</span></td>
+              <td>App / Navbar — menú lateral</td>
+              <td>Las plantillas usan routerLinkActive=&quot;active&quot; pero los componentes no importan RouterLinkActive, por lo que la opción actual del menú nunca se resalta.<div class="sub">Evidencia: Revisión de app.ts y navbar.ts</div></td>
+              <td>Agregar RouterLinkActive a los imports de App y Navbar.</td>
+            </tr>
+            <tr>
+              <td class="id">H-05</td>
+              <td><span class="sev sev--baja">Baja</span></td>
+              <td>Scheduler / VerHorarios / Horarios</td>
+              <td>Las URLs del backend y del generador en Python están escritas a mano (onrender.com) en lugar de usar environment.apiUrl; en desarrollo estas pantallas consultan producción.<div class="sub">Evidencia: SCH-02, SSV-01, HOR-07</div></td>
+              <td>Mover las URLs a environment.ts / environment.production.ts.</td>
+            </tr>
+            <tr>
+              <td class="id">H-06</td>
+              <td><span class="sev sev--baja">Baja</span></td>
+              <td>Grupos</td>
+              <td>cargarTutores() y getNombreTutor() funcionan, pero nunca se llaman desde ngOnInit ni desde la plantilla (código sin uso).<div class="sub">Evidencia: GRU-07</div></td>
+              <td>Llamar cargarTutores() en ngOnInit y mostrar el tutor en la tabla, o eliminar ese código.</td>
+            </tr>
+            <tr>
+              <td class="id">H-07</td>
+              <td><span class="sev sev--baja">Baja</span></td>
+              <td>Bienvenida (login)</td>
+              <td>Se envía la petición de login aunque correo y contraseña estén vacíos (el atributo required no bloquea ngSubmit).<div class="sub">Evidencia: LOG-05</div></td>
+              <td>Validar email y contraseña antes de llamar al backend, o usar #form=&quot;ngForm&quot; y revisar form.valid.</td>
+            </tr>
+        </tbody>
+      </table></div>
+    </section>
+
+  <footer>
+    Generado automáticamente por Karma + Jasmine (Angular TestBed) · Para regenerarlo: <code>pnpm test:reporte</code>
+  </footer>
+</main>
+
+<script>
+  (function () {
+    var filtro = 'todas';
+    var buscar = document.getElementById('buscar');
+    function aplicar() {
+      var q = (buscar.value || '').trim().toLowerCase();
+      document.querySelectorAll('details.modulo').forEach(function (d) {
+        var visibles = 0;
+        d.querySelectorAll('tbody tr[data-texto]').forEach(function (tr) {
+          var ok = (filtro === 'todas' || tr.dataset.estado === filtro) && (!q || tr.dataset.texto.indexOf(q) !== -1);
+          tr.style.display = ok ? '' : 'none';
+          var sig = tr.nextElementSibling;
+          if (sig && sig.classList.contains('fila-error')) sig.style.display = ok ? '' : 'none';
+          if (ok) visibles++;
+        });
+        d.style.display = visibles ? '' : 'none';
+        if (q || filtro !== 'todas') d.open = visibles > 0;
+      });
+    }
+    buscar.addEventListener('input', aplicar);
+    document.querySelectorAll('[data-filtro]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        filtro = b.dataset.filtro;
+        document.querySelectorAll('[data-filtro]').forEach(function (x) { x.classList.toggle('activo', x === b); });
+        aplicar();
+      });
+    });
+    var expandido = false;
+    document.getElementById('expandir').addEventListener('click', function (e) {
+      expandido = !expandido;
+      document.querySelectorAll('details.modulo').forEach(function (d) { d.open = expandido; });
+      e.target.textContent = expandido ? 'Contraer todo' : 'Expandir todo';
+    });
+    window.addEventListener('beforeprint', function () {
+      document.querySelectorAll('details.modulo').forEach(function (d) { d.open = true; });
+    });
+  })();
+</script>
+</body>
+</html>

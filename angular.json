@@ -110,7 +110,17 @@
             ],
             "styles": [
               "src/styles.scss"
-            ]
+            ],
+            "karmaConfig": "karma.conf.js",
+            "codeCoverage": true,
+            "codeCoverageExclude": [
+              "src/environments/**"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src"
+              ]
+            }
           }
         }
       }

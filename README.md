@@ -16,7 +16,8 @@ Bienvenido a la plataforma **Horarios UTEQ**. Esta aplicación permite gestionar
    - [Profesores, Salones, Materias, Grupos, Carreras](#modulos)
 5. [Exportar horarios a PDF](#exportar-pdf)
 6. [Preguntas frecuentes](#faq)
-7. [Soporte](#soporte)
+7. [Pruebas automatizadas](#pruebas)
+8. [Soporte](#soporte)
 
 ---
 
@@ -122,6 +123,30 @@ Desde el dashboard puedes navegar a los distintos módulos usando la barra later
 **¿Puedo usar la app en el celular?**
 
 - Sí, la interfaz es responsiva y se adapta a dispositivos móviles.
+
+---
+
+## <a name="pruebas"></a>Pruebas automatizadas
+
+El proyecto tiene pruebas unitarias con **Jasmine + Karma** (Angular TestBed) para servicios, interceptores, pipes y todos los componentes. El backend y el generador de Python se simulan (`HttpTestingController` y espías de `fetch`), así que no hace falta tener el servidor corriendo.
+
+```bash
+pnpm install
+pnpm test:reporte   # corre todo una vez en Chrome headless y genera los reportes
+pnpm test           # modo interactivo (abre Chrome y se re-ejecuta al guardar)
+```
+
+Al terminar `pnpm test:reporte` se generan:
+
+| Archivo | Contenido |
+|---|---|
+| `reportes/reporte-pruebas.html` | Reporte de resultados: resumen, detalle por módulo, cobertura y hallazgos |
+| `reportes/cobertura/index.html` | Cobertura de código por archivo (karma-coverage) |
+
+- Cada caso tiene un ID (`CAR-01`, `SCH-17`, …) para poder citarlo en el reporte.
+- Los hallazgos encontrados al diseñar las pruebas están en `testing/hallazgos.json` y aparecen al final del reporte.
+- El reporter que arma el HTML es `testing/karma-reporte-html.js` (no necesita dependencias extra).
+- En NixOS, `nix develop` ya trae Chromium y exporta `CHROME_BIN`. En otras distros, si Karma no encuentra Chrome: `export CHROME_BIN=$(which chromium)`.
 
 ---
 

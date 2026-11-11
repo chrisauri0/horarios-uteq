@@ -1,0 +1,58 @@
+[
+  {
+    "id": "H-01",
+    "severidad": "Alta",
+    "modulo": "App / Navbar — cerrar sesión",
+    "descripcion": "cerrarSesion() solo borra 'userData'; el 'token' se queda en localStorage y authInterceptor lo sigue mandando en cada petición después de cerrar sesión.",
+    "evidencia": "APP-09, NAV-05 y AUT-01 (el interceptor agrega el token mientras exista)",
+    "recomendacion": "Agregar localStorage.removeItem('token') en cerrarSesion() de app.ts y navbar.ts."
+  },
+  {
+    "id": "H-02",
+    "severidad": "Media",
+    "modulo": "NotFound (404)",
+    "descripcion": "La plantilla usa routerLink=\"/\" pero el componente no importa RouterLink, así que el botón 'Volver al inicio' se renderiza como un <a> sin href y no navega.",
+    "evidencia": "NF-03 (el botón existe, pero no tiene href)",
+    "recomendacion": "Agregar RouterLink al arreglo imports del componente NotFound."
+  },
+  {
+    "id": "H-03",
+    "severidad": "Media",
+    "modulo": "Carreras",
+    "descripcion": "El componente llena 'notificacion' (éxito y error) pero carreras.html no tiene el modal de notificación, así que el usuario nunca ve esos mensajes.",
+    "evidencia": "CAR-04, CAR-06, CAR-07",
+    "recomendacion": "Copiar el bloque de notificación que ya usan salones.html o materias.html."
+  },
+  {
+    "id": "H-04",
+    "severidad": "Baja",
+    "modulo": "App / Navbar — menú lateral",
+    "descripcion": "Las plantillas usan routerLinkActive=\"active\" pero los componentes no importan RouterLinkActive, por lo que la opción actual del menú nunca se resalta.",
+    "evidencia": "Revisión de app.ts y navbar.ts",
+    "recomendacion": "Agregar RouterLinkActive a los imports de App y Navbar."
+  },
+  {
+    "id": "H-05",
+    "severidad": "Baja",
+    "modulo": "Scheduler / VerHorarios / Horarios",
+    "descripcion": "Las URLs del backend y del generador en Python están escritas a mano (onrender.com) en lugar de usar environment.apiUrl; en desarrollo estas pantallas consultan producción.",
+    "evidencia": "SCH-02, SSV-01, HOR-07",
+    "recomendacion": "Mover las URLs a environment.ts / environment.production.ts."
+  },
+  {
+    "id": "H-06",
+    "severidad": "Baja",
+    "modulo": "Grupos",
+    "descripcion": "cargarTutores() y getNombreTutor() funcionan, pero nunca se llaman desde ngOnInit ni desde la plantilla (código sin uso).",
+    "evidencia": "GRU-07",
+    "recomendacion": "Llamar cargarTutores() en ngOnInit y mostrar el tutor en la tabla, o eliminar ese código."
+  },
+  {
+    "id": "H-07",
+    "severidad": "Baja",
+    "modulo": "Bienvenida (login)",
+    "descripcion": "Se envía la petición de login aunque correo y contraseña estén vacíos (el atributo required no bloquea ngSubmit).",
+    "evidencia": "LOG-05",
+    "recomendacion": "Validar email y contraseña antes de llamar al backend, o usar #form=\"ngForm\" y revisar form.valid."
+  }
+]
